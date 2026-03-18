@@ -338,14 +338,14 @@ const MessageCard = (props: MessageCardProps) => {
     return (
         <div className={styles.messageCardInnerContainer}>
             {props.isNewDate && <div className={styles.date}>{<Chip label={dateLabel}
-                                                                    sx={{height: 'auto', width: 'auto', backgroundColor: 'rgba(16,185,129,0.1)', color: '#059669'}}/>}</div>}
+                                                                    sx={{height: 'auto', width: 'auto', backgroundColor: 'rgba(0,135,90,0.1)', color: '#006644'}}/>}</div>}
             <div className={isOwnMessage ? styles.ownMessage : styles.othersMessage}>
                 <div onContextMenu={handleContextMenu} style={{cursor: 'context-menu'}}>
                     <Chip label={label}
                           sx={{
                               height: 'auto',
                               width: 'auto',
-                              backgroundColor: isOwnMessage ? '#10B981' : '#FFFFFF',
+                              backgroundColor: isOwnMessage ? '#00875A' : '#FFFFFF',
                               color: isOwnMessage ? '#FFFFFF' : '#18191C',
                               ml: '0.75rem',
                               boxShadow: '0 1px 2px rgba(0,0,0,0.1)',

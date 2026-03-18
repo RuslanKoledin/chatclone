@@ -14,7 +14,6 @@ import {TOKEN} from "../../config/Config";
 
 interface ChatCardProps {
     chat: ChatDTO;
-    isActive?: boolean;
 }
 
 const ChatCard = (props: ChatCardProps) => {
@@ -26,15 +25,6 @@ const ChatCard = (props: ChatCardProps) => {
 
     const isPinned = authState.reqUser?.pinnedChatIds?.includes(props.chat.id.toString()) || false;
     const isMuted = authState.reqUser?.mutedChatIds?.includes(props.chat.id.toString()) || false;
-
-    // Online status for 1-on-1 chats
-    const getChatPartner = () => {
-        if (props.chat.isGroup) return null;
-        const users = props.chat.users || [];
-        return users.find(u => u.id !== authState.reqUser?.id) || null;
-    };
-    const partner = getChatPartner();
-    const isOnline = partner?.isOnline || false;
 
     const handleContextMenu = (event: React.MouseEvent) => {
         event.preventDefault();
@@ -79,7 +69,7 @@ const ChatCard = (props: ChatCardProps) => {
     const sortedMessages: MessageDTO[] = props.chat.messages.sort((a, b) => +new Date(a.timeStamp) - +new Date(b.timeStamp));
     const lastMessage: MessageDTO | undefined = sortedMessages.length > 0 ? sortedMessages[sortedMessages.length - 1] : undefined;
     const lastMessageContent: string = lastMessage ? lastMessage.content.length > 25 ? lastMessage.content.slice(0, 25) + "..." : lastMessage.content : "";
-    const lastMessageName: string = lastMessage ? lastMessage.user.fullName === authState.reqUser?.fullName ? "Вы" : lastMessage.user.fullName : "";
+    const lastMessageName: string = lastMessage ? lastMessage.user.fullName === authState.reqUser?.fullName ? "You" : lastMessage.user.fullName : "";
     const lastMessageString: string = lastMessage ? lastMessageName + ": " + lastMessageContent : "";
     const lastDate: string = lastMessage ? transformDateToString(new Date(lastMessage.timeStamp)) : "";
     const numberOfReadMessages: number = props.chat.messages.filter(msg =>
@@ -87,40 +77,33 @@ const ChatCard = (props: ChatCardProps) => {
     const numberOfUnreadMessages: number = props.chat.messages.length - numberOfReadMessages;
 
     return (
-        <div
-            className={`${styles.chatCardOuterContainer} ${props.isActive ? styles.chatCardOuterContainerActive : ''}`}
-            onContextMenu={handleContextMenu}
-        >
+        <div className={styles.chatCardOuterContainer} onContextMenu={handleContextMenu}>
             <div className={styles.chatCardAvatarContainer}>
                 <Avatar sx={{
                     width: '2.5rem',
                     height: '2.5rem',
                     fontSize: '1rem',
-                    bgcolor: props.isActive ? '#10B981' : '#E5E7EB',
-                    color: props.isActive ? '#FFFFFF' : '#374151',
+                    mr: '0.75rem'
                 }}>
                     {initials}
                 </Avatar>
-                {isOnline && <span className={styles.onlineIndicator}></span>}
             </div>
             <div className={styles.chatCardContentContainer}>
                 <div className={styles.chatCardContentInnerContainer}>
                     <div className={styles.chatNameRow}>
-                        {isPinned && <PushPinIcon sx={{ fontSize: '0.85rem', color: '#10B981', mr: 0.3 }} />}
-                        {isMuted && <VolumeOffIcon sx={{ fontSize: '0.85rem', color: '#9CA3AF', mr: 0.3 }} />}
+                        {isPinned && <PushPinIcon sx={{ fontSize: '0.9rem', color: '#00875A', mr: 0.5 }} />}
+                        {isMuted && <VolumeOffIcon sx={{ fontSize: '0.9rem', color: '#999', mr: 0.5 }} />}
                         <p className={styles.chatCardLargeTextContainer}>{name}</p>
                     </div>
-                    <span className={styles.chatCardTimeContainer}>{lastDate}</span>
+                    <p className={styles.chatCardSmallTextContainer}>{lastDate}</p>
                 </div>
                 <div className={styles.chatCardContentInnerContainer}>
                     <p className={styles.chatCardSmallTextContainer}>{lastMessageString}</p>
-                    {numberOfUnreadMessages > 0 && (
-                        <span className={styles.unreadBadge}>{numberOfUnreadMessages}</span>
-                    )}
+                    {<Badge badgeContent={numberOfUnreadMessages} color='primary' sx={{mr: '0.75rem'}}/>}
                 </div>
             </div>
 
-            {/* Context menu */}
+            {/* Контекстное меню */}
             <Menu
                 open={contextMenu !== null}
                 onClose={handleCloseContextMenu}

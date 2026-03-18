@@ -6,14 +6,8 @@ import {AppDispatch, RootState} from "../redux/Store";
 import {TOKEN} from "../config/Config";
 import EditGroupChat from "./editChat/EditGroupChat";
 import Profile from "./profile/Profile";
-import {Avatar, Divider, IconButton, InputAdornment, Menu, MenuItem, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, List, ListItem, ListItemButton, ListItemAvatar, ListItemText, Checkbox, Tooltip} from "@mui/material";
+import {Avatar, Divider, IconButton, InputAdornment, Menu, MenuItem, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, List, ListItem, ListItemButton, ListItemAvatar, ListItemText, Checkbox} from "@mui/material";
 import ChatIcon from '@mui/icons-material/Chat';
-import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
-import GroupsIcon from '@mui/icons-material/Groups';
-import ContactsIcon from '@mui/icons-material/Contacts';
-import SettingsIcon from '@mui/icons-material/Settings';
-import LogoutIcon from '@mui/icons-material/Logout';
-import AddIcon from '@mui/icons-material/Add';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import {currentUser, logoutUser} from "../redux/auth/AuthAction";
 import SearchIcon from '@mui/icons-material/Search';
@@ -43,8 +37,6 @@ import {
     getNotificationSettings
 } from "../utils/notifications";
 
-type SidebarTab = 'chats' | 'groups' | 'contacts' | 'settings';
-
 const Homepage = () => {
 
     const authState = useSelector((state: RootState) => state.auth);
@@ -68,12 +60,11 @@ const Homepage = () => {
     const [isConnected, setIsConnected] = useState<boolean>(false);
     const [isAppActive, setIsAppActive] = useState<boolean>(true);
     const [subscribeTry, setSubscribeTry] = useState<number>(1);
-    const [typingUsers, setTypingUsers] = useState<Map<string, string>>(new Map());
+    const [typingUsers, setTypingUsers] = useState<Map<string, string>>(new Map()); // chatId -> userName
     const [typingTimeouts, setTypingTimeouts] = useState<Map<string, NodeJS.Timeout>>(new Map());
     const [forwardDialogOpen, setForwardDialogOpen] = useState<boolean>(false);
     const [messageToForward, setMessageToForward] = useState<MessageDTO | null>(null);
     const [selectedChatsForForward, setSelectedChatsForForward] = useState<string[]>([]);
-    const [activeTab, setActiveTab] = useState<SidebarTab>('chats');
     const open = Boolean(anchor);
 
     useEffect(() => {
@@ -122,6 +113,7 @@ const Homepage = () => {
         setCurrentChat(chatState.editedGroup);
     }, [chatState.editedGroup]);
 
+    // Обновляем текущий чат когда обновляется список чатов (для pinnedMessage и т.д.)
     useEffect(() => {
         if (currentChat && chatState.chats) {
             const updatedChat = chatState.chats.find(c => c.id === currentChat.id);
@@ -153,6 +145,7 @@ const Homepage = () => {
         const reqUser = authState.reqUser;
         if (isConnected && stompClient && stompClient.connected && reqUser && reqUser.id) {
             const subscription: Subscription = stompClient.subscribe("/topic/" + reqUser.id.toString(), onMessageReceive);
+
             return () => subscription.unsubscribe();
         } else {
             const timeout = setTimeout(() => setSubscribeTry(subscribeTry + 1), 500);
@@ -162,7 +155,9 @@ const Homepage = () => {
 
     useEffect(() => {
         connect();
+        // Запрашиваем разрешение на уведомления при загрузке
         requestNotificationPermission();
+
         const updateAppActivity = () => {
             const active = document.visibilityState === 'visible' && document.hasFocus();
             setIsAppActive(active);
@@ -171,9 +166,11 @@ const Homepage = () => {
             }
         };
         updateAppActivity();
+
         document.addEventListener('visibilitychange', updateAppActivity);
         window.addEventListener('focus', updateAppActivity);
         window.addEventListener('blur', updateAppActivity);
+
         return () => {
             document.removeEventListener('visibilitychange', updateAppActivity);
             window.removeEventListener('focus', updateAppActivity);
@@ -194,6 +191,7 @@ const Homepage = () => {
         const headers = {
             Authorization: `${AUTHORIZATION_PREFIX}${token}`
         };
+
         const socket: WebSocket = new SockJS("http://localhost:8080/ws");
         const client: Client = over(socket);
         client.connect(headers, onConnect, onError);
@@ -212,17 +210,27 @@ const Homepage = () => {
     const onMessageReceive = (payload: any) => {
         try {
             const data = JSON.parse(payload.body);
+            console.log('WebSocket message received:', data);
+            // Проверяем тип события
             if (data.isTyping !== undefined) {
+                // Это typing событие
+                console.log('Typing event:', data);
                 const typingEvent: TypingEventDTO = data;
                 handleTypingEvent(typingEvent);
             } else if (data.type === 'READ_RECEIPT') {
+                // Это событие прочтения - обновляем сообщения в текущем чате
+                console.log('Read receipt received:', data);
                 if (currentChat?.id && token && data.chatId === currentChat.id.toString()) {
                     dispatch(getAllMessages(currentChat.id, token));
                     dispatch(getUserChats(token));
                 }
             } else {
+                // Это обычное сообщение - добавляем его напрямую в store для мгновенного отображения
                 const wsMessage: WebSocketMessageDTO = data;
+
+                // Проверяем, относится ли сообщение к текущему чату
                 if (currentChat && wsMessage.chat?.id?.toString() === currentChat.id.toString()) {
+                    // Преобразуем WebSocketMessageDTO в MessageDTO для добавления в store
                     const message: MessageDTO = {
                         id: wsMessage.id,
                         content: wsMessage.content,
@@ -231,6 +239,8 @@ const Homepage = () => {
                         readBy: []
                     };
                     dispatch({type: messageActionTypes.RECEIVE_MESSAGE, payload: message});
+
+                    // Если это входящее сообщение в открытом чате, помечаем его прочитанным сразу
                     const senderId = wsMessage.user?.id?.toString();
                     const reqUserId = authState.reqUser?.id?.toString();
                     if (token && senderId && reqUserId && senderId !== reqUserId && isAppActive) {
@@ -238,14 +248,23 @@ const Homepage = () => {
                         sendReadReceipt(currentChat.id.toString());
                     }
                 }
+
+                // Обновляем список чатов для отображения последнего сообщения
                 if (token) {
                     dispatch(getUserChats(token));
                 }
+
+                // Уведомления о новом сообщении
                 const settings = getNotificationSettings();
+
+                // Если вкладка не в фокусе - показываем уведомления
                 if (!isTabFocused()) {
+                    // Звуковое уведомление
                     if (settings.soundEnabled) {
                         playNotificationSound();
                     }
+
+                    // Браузерное уведомление
                     if (settings.browserNotificationsEnabled && data.user && data.content) {
                         const senderName = data.user.fullName || 'Новое сообщение';
                         const messagePreview = data.content.length > 50
@@ -253,6 +272,8 @@ const Homepage = () => {
                             : data.content;
                         showBrowserNotification(senderName, messagePreview);
                     }
+
+                    // Обновляем title страницы
                     updatePageTitle(1);
                 }
             }
@@ -262,13 +283,19 @@ const Homepage = () => {
     };
 
     const handleTypingEvent = (event: TypingEventDTO) => {
+        // Игнорируем свои события (сравниваем как строки)
         if (event.userId === authState.reqUser?.id?.toString()) return;
+
         setTypingUsers(prev => {
             const newMap = new Map(prev);
             if (event.isTyping) {
                 newMap.set(event.chatId, event.userName);
+
+                // Очищаем старый таймаут если есть
                 const oldTimeout = typingTimeouts.get(event.chatId);
                 if (oldTimeout) clearTimeout(oldTimeout);
+
+                // Устанавливаем таймаут на 3 секунды для автоочистки
                 const timeout = setTimeout(() => {
                     setTypingUsers(p => {
                         const m = new Map(p);
@@ -276,6 +303,7 @@ const Homepage = () => {
                         return m;
                     });
                 }, 3000);
+
                 setTypingTimeouts(p => {
                     const m = new Map(p);
                     m.set(event.chatId, timeout);
@@ -303,10 +331,12 @@ const Homepage = () => {
                 userName: authState.reqUser.fullName || 'Пользователь',
                 isTyping
             };
+            console.log('Sending typing event:', typingEvent);
             stompClient.send("/app/typing", {}, JSON.stringify(typingEvent));
         }
     };
 
+    // Отправляем событие о прочтении сообщений
     const sendReadReceipt = (chatId: string) => {
         if (stompClient && authState.reqUser && isConnected) {
             const readReceipt = {
@@ -406,6 +436,7 @@ const Homepage = () => {
     };
 
     const onOpenProfile = () => {
+        onCloseMenu();
         setIsShowProfile(true);
     };
 
@@ -446,6 +477,7 @@ const Homepage = () => {
     const onClickChat = (chat: ChatDTO) => {
         if (token) {
             dispatch(markChatAsRead(chat.id, token));
+            // Отправляем WebSocket событие о прочтении
             sendReadReceipt(chat.id.toString());
         }
         setCurrentChat(chat);
@@ -460,119 +492,11 @@ const Homepage = () => {
             </InputAdornment>
     };
 
-    // Filter chats based on active tab
-    const getFilteredChats = () => {
-        if (!chatState.chats) return [];
-        let filtered = chatState.chats;
-
-        if (activeTab === 'groups') {
-            filtered = filtered.filter(c => c.isGroup);
-        } else if (activeTab === 'chats') {
-            // show all chats
-        }
-
-        if (query.length > 0) {
-            filtered = filtered.filter(x =>
-                x.isGroup ? x.chatName.toLowerCase().includes(query) :
-                    x.users[0].id === authState.reqUser?.id ? x.users[1].fullName.toLowerCase().includes(query) :
-                        x.users[0].fullName.toLowerCase().includes(query)
-            );
-        }
-
-        // Sort: pinned first
-        const pinnedChatIds = authState.reqUser?.pinnedChatIds || [];
-        return filtered.slice().sort((a, b) => {
-            const aIsPinned = pinnedChatIds.includes(a.id.toString());
-            const bIsPinned = pinnedChatIds.includes(b.id.toString());
-            if (aIsPinned && !bIsPinned) return -1;
-            if (!aIsPinned && bIsPinned) return 1;
-            return 0;
-        });
-    };
-
-    const getChatListTitle = () => {
-        switch (activeTab) {
-            case 'groups': return 'Группы';
-            case 'contacts': return 'Контакты';
-            case 'settings': return 'Настройки';
-            default: return 'Чаты';
-        }
-    };
-
     return (
         <div>
             <div className={styles.outerContainer}>
                 <div className={styles.innerContainer}>
-
-                    {/* ═══ Column 1: Sidebar Navigation ═══ */}
-                    <div className={styles.sidebarNav}>
-                        <div className={styles.sidebarLogo}>
-                            HC
-                        </div>
-
-                        <div className={styles.sidebarMenu}>
-                            <Tooltip title="Чаты" placement="right">
-                                <div
-                                    className={`${styles.sidebarMenuItem} ${activeTab === 'chats' ? styles.sidebarMenuItemActive : ''}`}
-                                    onClick={() => setActiveTab('chats')}
-                                >
-                                    <ChatBubbleOutlineIcon />
-                                </div>
-                            </Tooltip>
-
-                            <Tooltip title="Группы" placement="right">
-                                <div
-                                    className={`${styles.sidebarMenuItem} ${activeTab === 'groups' ? styles.sidebarMenuItemActive : ''}`}
-                                    onClick={() => setActiveTab('groups')}
-                                >
-                                    <GroupsIcon />
-                                </div>
-                            </Tooltip>
-
-                            <Tooltip title="Контакты" placement="right">
-                                <div
-                                    className={`${styles.sidebarMenuItem} ${activeTab === 'contacts' ? styles.sidebarMenuItemActive : ''}`}
-                                    onClick={() => setActiveTab('contacts')}
-                                >
-                                    <ContactsIcon />
-                                </div>
-                            </Tooltip>
-
-                            <Tooltip title="Настройки" placement="right">
-                                <div
-                                    className={`${styles.sidebarMenuItem} ${activeTab === 'settings' ? styles.sidebarMenuItemActive : ''}`}
-                                    onClick={() => setActiveTab('settings')}
-                                >
-                                    <SettingsIcon />
-                                </div>
-                            </Tooltip>
-                        </div>
-
-                        <div className={styles.sidebarUserSection}>
-                            <Tooltip title="Профиль" placement="right">
-                                <div className={styles.sidebarAvatar} onClick={onOpenProfile}>
-                                    <Avatar sx={{
-                                        width: 36,
-                                        height: 36,
-                                        fontSize: 14,
-                                        bgcolor: '#10B981',
-                                        cursor: 'pointer',
-                                    }}>
-                                        {initials}
-                                    </Avatar>
-                                </div>
-                            </Tooltip>
-
-                            <Tooltip title="Выйти" placement="right">
-                                <div className={styles.sidebarMenuItem} onClick={onLogout}>
-                                    <LogoutIcon sx={{ fontSize: 20 }} />
-                                </div>
-                            </Tooltip>
-                        </div>
-                    </div>
-
-                    {/* ═══ Column 2: Chat List ═══ */}
-                    <div className={styles.chatListPanel}>
+                    <div className={styles.sideBarContainer}>
                         {isShowCreateSingleChat &&
                             <CreateSingleChat setIsShowCreateSingleChat={setIsShowCreateSingleChat}/>}
                         {isShowCreateGroupChat &&
@@ -583,19 +507,26 @@ const Homepage = () => {
                             <div className={styles.profileContainer}>
                                 <Profile onCloseProfile={onCloseProfile} initials={initials}/>
                             </div>}
-
-                        {!isShowCreateSingleChat && !isShowEditGroupChat && !isShowCreateGroupChat && !isShowProfile && (
-                            <>
-                                <div className={styles.chatListHeader}>
-                                    <h2 className={styles.chatListTitle}>{getChatListTitle()}</h2>
-                                    <div className={styles.chatListActions}>
-                                        <Tooltip title="Новый чат">
-                                            <IconButton onClick={onCreateSingleChat} size="small">
-                                                <ChatIcon />
-                                            </IconButton>
-                                        </Tooltip>
-                                        <IconButton onClick={onOpenMenu} size="small">
-                                            <MoreVertIcon />
+                        {!isShowCreateSingleChat && !isShowEditGroupChat && !isShowCreateGroupChat && !isShowProfile &&
+                            <div className={styles.sideBarInnerContainer}>
+                                <div className={styles.navContainer}>
+                                    <div onClick={onOpenProfile} className={styles.userInfoContainer}>
+                                        <Avatar sx={{
+                                            width: '2.5rem',
+                                            height: '2.5rem',
+                                            fontSize: '1rem',
+                                            mr: '0.75rem'
+                                        }}>
+                                            {initials}
+                                        </Avatar>
+                                        <p>{authState.reqUser?.fullName}</p>
+                                    </div>
+                                    <div>
+                                        <IconButton onClick={onCreateSingleChat}>
+                                            <ChatIcon/>
+                                        </IconButton>
+                                        <IconButton onClick={onOpenMenu}>
+                                            <MoreVertIcon/>
                                         </IconButton>
                                         <Menu
                                             id="basic-menu"
@@ -603,16 +534,17 @@ const Homepage = () => {
                                             open={open}
                                             onClose={onCloseMenu}
                                             MenuListProps={{'aria-labelledby': 'basic-button'}}>
-                                            <MenuItem onClick={onCreateGroupChat}>Создать группу</MenuItem>
+                                            <MenuItem onClick={onOpenProfile}>Profile</MenuItem>
+                                            <MenuItem onClick={onCreateGroupChat}>Create Group</MenuItem>
+                                            <MenuItem onClick={onLogout}>Logout</MenuItem>
                                         </Menu>
                                     </div>
                                 </div>
-
                                 <div className={styles.searchContainer}>
                                     <TextField
                                         id='search'
                                         type='text'
-                                        placeholder='Поиск...'
+                                        label='Search your chats ...'
                                         size='small'
                                         fullWidth
                                         value={query}
@@ -620,43 +552,49 @@ const Homepage = () => {
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position='start'>
-                                                    <SearchIcon sx={{ color: '#9CA3AF' }} />
+                                                    <SearchIcon/>
                                                 </InputAdornment>
                                             ),
                                             endAdornment: getSearchEndAdornment(),
                                         }}
-                                        sx={{
-                                            '& .MuiOutlinedInput-root': {
-                                                borderRadius: '999px',
-                                                backgroundColor: '#F3F4F6',
-                                                fontSize: 14,
-                                            },
-                                            '& .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: 'transparent',
-                                            },
-                                            '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: '#E5E7EB',
-                                            },
-                                            '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                                                borderColor: '#10B981',
-                                                borderWidth: '1.5px',
-                                            },
+                                        InputLabelProps={{
+                                            shrink: focused || query.length > 0,
+                                            style: {marginLeft: focused || query.length > 0 ? 0 : 30}
                                         }}
-                                    />
+                                        onFocus={() => setFocused(true)}
+                                        onBlur={() => setFocused(false)}/>
                                 </div>
-
                                 <div className={styles.chatsContainer}>
-                                    {getFilteredChats().map((chat: ChatDTO) => (
+                                    {query.length > 0 && chatState.chats?.filter(x =>
+                                        x.isGroup ? x.chatName.toLowerCase().includes(query) :
+                                            x.users[0].id === authState.reqUser?.id ? x.users[1].fullName.toLowerCase().includes(query) :
+                                                x.users[0].fullName.toLowerCase().includes(query))
+                                        .map((chat: ChatDTO) => (
+                                            <div key={chat.id} onClick={() => onClickChat(chat)}>
+                                                <Divider/>
+                                                <ChatCard chat={chat}/>
+                                            </div>
+                                        ))}
+                                    {query.length === 0 && chatState.chats
+                                        ?.slice()
+                                        .sort((a, b) => {
+                                            const pinnedChatIds = authState.reqUser?.pinnedChatIds || [];
+                                            const aIsPinned = pinnedChatIds.includes(a.id.toString());
+                                            const bIsPinned = pinnedChatIds.includes(b.id.toString());
+                                            if (aIsPinned && !bIsPinned) return -1;
+                                            if (!aIsPinned && bIsPinned) return 1;
+                                            return 0; // Сохраняем исходный порядок (по времени последнего сообщения)
+                                        })
+                                        .map((chat: ChatDTO) => (
                                         <div key={chat.id} onClick={() => onClickChat(chat)}>
-                                            <ChatCard chat={chat} isActive={currentChat?.id === chat.id} />
+                                            <Divider/>
+                                            <ChatCard chat={chat}/>
                                         </div>
                                     ))}
+                                    {chatState.chats?.length > 0 ? <Divider/> : null}
                                 </div>
-                            </>
-                        )}
+                            </div>}
                     </div>
-
-                    {/* ═══ Column 3: Chat Window ═══ */}
                     <div className={styles.messagesContainer}>
                         {!currentChat && <WelcomePage reqUser={authState.reqUser}/>}
                         {currentChat && <MessagePage
@@ -683,7 +621,7 @@ const Homepage = () => {
                 </div>
             </div>
 
-            {/* Forward dialog */}
+            {/* Диалог выбора чатов для пересылки */}
             <Dialog open={forwardDialogOpen} onClose={() => setForwardDialogOpen(false)} maxWidth="sm" fullWidth>
                 <DialogTitle>Переслать сообщение</DialogTitle>
                 <DialogContent>
@@ -692,7 +630,7 @@ const Homepage = () => {
                             <ListItem key={chat.id} disablePadding>
                                 <ListItemButton onClick={() => handleForwardToggleChat(chat.id.toString())}>
                                     <ListItemAvatar>
-                                        <Avatar sx={{ bgcolor: '#10B981' }}>
+                                        <Avatar sx={{ bgcolor: '#00875A' }}>
                                             {getInitialsFromName(getChatName(chat, authState.reqUser))}
                                         </Avatar>
                                     </ListItemAvatar>
@@ -712,7 +650,7 @@ const Homepage = () => {
                         onClick={handleForwardConfirm}
                         variant="contained"
                         disabled={selectedChatsForForward.length === 0}
-                        sx={{ bgcolor: '#10B981', '&:hover': { bgcolor: '#059669' } }}
+                        sx={{ bgcolor: '#00875A', '&:hover': { bgcolor: '#006644' } }}
                     >
                         Переслать ({selectedChatsForForward.length})
                     </Button>
