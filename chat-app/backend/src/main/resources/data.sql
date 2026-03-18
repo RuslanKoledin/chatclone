@@ -7,14 +7,14 @@ DELETE FROM CHAT;
 DELETE FROM APP_USER;
 
 -- Тестовые пользователи: r_koledin / test и b_bob / test
--- Пароль 'test' хэширован через BCrypt
-INSERT INTO APP_USER(id, username, email, password, full_name, last_seen, is_online)
-VALUES ('be900497-cc68-4504-9b99-4e5deaf1e6c0', 'r_koledin', 'r.koledin@test.com',
-        '$2a$10$Zah7KtWiuRy6DzgLvnsV0.nC1dlZ.O5nJK77N4iooUEuOMpVPqiXi', 'Ruslan Koledin', NULL, false), -- Password: test
-       ('f290f384-60ba-4cdd-af96-26c88ede0264', 'b_bob', 'b.bob@test.com',
-        '$2a$10$Zah7KtWiuRy6DzgLvnsV0.nC1dlZ.O5nJK77N4iooUEuOMpVPqiXi', 'Bob Builder', NULL, false), -- Password: test
-       ('7a9f7b3f-8ab7-46d7-8a16-2b5b8c4c8a1a', 'a_tom', 'a.tom@test.com',
-        '$2a$10$Zah7KtWiuRy6DzgLvnsV0.nC1dlZ.O5nJK77N4iooUEuOMpVPqiXi', 'Tom Adams', NULL, false); -- Password: test
+-- Пароль пустой — аутентификация через AD, пароль не хранится
+INSERT INTO APP_USER(id, username, email, password, full_name, department, title, last_seen, is_online)
+VALUES ('be900497-cc68-4504-9b99-4e5deaf1e6c0', 'r_koledin', 'r.koledin@cbk.kg',
+        '', 'Koledin Ruslan', 'ОПО', 'Специалист', NULL, false),
+       ('f290f384-60ba-4cdd-af96-26c88ede0264', 'b_bob', 'b.bob@cbk.kg',
+        '', 'Bob Builder', 'IT отдел', 'Разработчик', NULL, false),
+       ('7a9f7b3f-8ab7-46d7-8a16-2b5b8c4c8a1a', 'a_tom', 'a.tom@cbk.kg',
+        '', 'Tom Adams', 'Бухгалтерия', 'Бухгалтер', NULL, false);
 
 -- Чат между r_koledin и b_bob
 INSERT INTO CHAT(id, chat_name, is_group, created_by_id)
