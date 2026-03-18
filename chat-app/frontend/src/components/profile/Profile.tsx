@@ -1,4 +1,4 @@
-import React, {Dispatch, useEffect, useState} from "react";
+import React, {Dispatch, useEffect, useRef, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../redux/Store";
 import {AuthReducerState, UpdateUserRequestDTO} from "../../redux/auth/AuthModel";
@@ -10,6 +10,7 @@ import CreateIcon from '@mui/icons-material/Create';
 import CheckIcon from '@mui/icons-material/Check';
 import styles from './Profile.module.scss';
 import CloseIcon from '@mui/icons-material/Close';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 
 
 interface ProfileProps {
@@ -24,6 +25,7 @@ const Profile = (props: ProfileProps) => {
     const dispatch: Dispatch<any> = useDispatch();
     const auth: AuthReducerState = useSelector((state: RootState) => state.auth);
     const token: string | null = localStorage.getItem(TOKEN);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (auth.reqUser) {
@@ -63,16 +65,54 @@ const Profile = (props: ProfileProps) => {
         setFullName(e.target.value);
     };
 
+    const onPhotoClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const onPhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !token) return;
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            const base64 = reader.result as string;
+            const data: UpdateUserRequestDTO = {
+                fullName: auth.reqUser?.fullName ?? '',
+                profilePhoto: base64,
+            };
+            dispatch(updateUser(data, token));
+        };
+        reader.readAsDataURL(file);
+        // reset so same file can be re-selected
+        e.target.value = '';
+    };
+
     return (
         <div className={styles.outerContainer}>
             <div className={styles.headingContainer}>
                 <IconButton onClick={props.onCloseProfile}>
                     <WestIcon fontSize='medium'/>
                 </IconButton>
-                <h2>Profile</h2>
+                <h2>Профиль</h2>
             </div>
             <div className={styles.avatarContainer}>
-                <Avatar sx={{width: '12vw', height: '12vw', fontSize: '5vw'}}>{props.initials}</Avatar>
+                <div className={styles.avatarWrapper} onClick={onPhotoClick}>
+                    <Avatar
+                        src={auth.reqUser?.profilePhoto ?? undefined}
+                        sx={{width: '12vw', height: '12vw', fontSize: '5vw'}}
+                    >
+                        {!auth.reqUser?.profilePhoto && props.initials}
+                    </Avatar>
+                    <div className={styles.cameraOverlay}>
+                        <CameraAltIcon sx={{fontSize: '1.4vw', color: '#fff'}}/>
+                    </div>
+                </div>
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{display: 'none'}}
+                    onChange={onPhotoChange}
+                />
             </div>
             <div className={styles.nameContainer}>
                 {!isEditName &&
@@ -87,7 +127,7 @@ const Profile = (props: ProfileProps) => {
                         <TextField
                             id="fullName"
                             type="text"
-                            label="Enter your full name"
+                            label="Введите имя"
                             variant="outlined"
                             onChange={onChangeFullName}
                             value={fullName}
@@ -103,7 +143,7 @@ const Profile = (props: ProfileProps) => {
                     </div>}
             </div>
             <div className={styles.infoContainer}>
-                <p className={styles.infoText}>This name will appear on your messages</p>
+                <p className={styles.infoText}>Это имя будет отображаться в ваших сообщениях</p>
             </div>
         </div>
     );

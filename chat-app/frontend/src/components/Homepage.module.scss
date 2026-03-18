@@ -1,8 +1,7 @@
-/* ─── Layout ────────────────────────────────────────────────────── */
 .outerContainer {
   position: fixed;
   inset: 0;
-  background-color: var(--bg, #EDF7F4);
+  background-color: var(--content-bg);
 }
 
 .innerContainer {
@@ -10,27 +9,22 @@
   height: 100vh;
   width: 100vw;
   overflow: hidden;
-  background-color: var(--bg, #EDF7F4);
 }
 
 /* ─── Sidebar ───────────────────────────────────────────────────── */
 .sideBarContainer {
-  width: 360px;
-  min-width: 300px;
-  max-width: 400px;
+  width: 340px;
+  min-width: 280px;
+  max-width: 380px;
   height: 100%;
-  background: linear-gradient(180deg, #2EBE96 0%, #1A8276 100%);
-  border-right: none;
+  background-color: var(--sidebar-bg);
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  box-shadow: 3px 0 16px rgba(26,130,118,0.28);
+  transition: background-color 0.2s ease;
 }
 
-.profileContainer {
-  width: 100%;
-  height: 100%;
-}
+.profileContainer { width: 100%; height: 100%; }
 
 .sideBarInnerContainer {
   width: 100%;
@@ -45,11 +39,20 @@
   justify-content: space-between;
   align-items: center;
   padding: 0 8px 0 16px;
-  height: 64px;
-  background-color: rgba(0, 0, 0, 0.12);
-  border-bottom: 1px solid rgba(255,255,255,0.10);
+  height: 60px;
+  background-color: var(--sidebar-nav-bg);
+  border-bottom: 1px solid var(--sidebar-border);
   flex-shrink: 0;
-  backdrop-filter: blur(8px);
+  transition: background-color 0.2s ease;
+
+  // Все иконки в шапке — цвет из темы
+  :global(.MuiIconButton-root) {
+    color: var(--sidebar-icon) !important;
+    &:hover {
+      background-color: var(--sidebar-icon-hover-bg) !important;
+      color: var(--sidebar-icon-hover) !important;
+    }
+  }
 }
 
 .userInfoContainer {
@@ -61,17 +64,15 @@
 }
 
 .navBrandText {
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 700;
-  color: #FFFFFF;
-  letter-spacing: -0.4px;
-  text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  color: var(--sidebar-text);
+  letter-spacing: -0.3px;
 }
 
 .navRightSection {
   display: flex;
   align-items: center;
-  gap: 0;
 }
 
 .navUserInfo {
@@ -81,75 +82,59 @@
   padding: 4px;
   border-radius: 50%;
   transition: background-color 0.15s ease;
-
-  &:hover {
-    background-color: rgba(255,255,255,0.15);
-  }
+  &:hover { background-color: var(--sidebar-icon-hover-bg); }
 }
 
 .optionsContainer {
   display: flex;
   align-items: center;
   gap: 2px;
-
-  // Force icons white in sidebar nav
-  :global(.MuiIconButton-root) {
-    color: rgba(255,255,255,0.85) !important;
-    &:hover {
-      background-color: rgba(255,255,255,0.15) !important;
-      color: #FFFFFF !important;
-    }
-  }
 }
 
 /* ─── Search ────────────────────────────────────────────────────── */
 .searchContainer {
-  padding: 10px 12px 12px;
+  padding: 10px 12px;
   background-color: transparent;
-  border-bottom: 1px solid rgba(255,255,255,0.10);
+  border-bottom: 1px solid var(--sidebar-border);
   flex-shrink: 0;
 
-  .MuiOutlinedInput-root {
-    border-radius: 999px !important;
-    background-color: rgba(255,255,255,0.18) !important;
+  :global(.MuiOutlinedInput-root) {
+    border-radius: 8px !important;
+    background-color: var(--sidebar-input-bg) !important;
     font-size: 14px;
-    color: #FFFFFF !important;
+    color: var(--sidebar-input-text) !important;
     transition: background-color 0.2s ease;
   }
-  .MuiOutlinedInput-notchedOutline {
-    border-color: transparent !important;
-  }
-  .MuiOutlinedInput-root:hover {
-    background-color: rgba(255,255,255,0.26) !important;
-    .MuiOutlinedInput-notchedOutline {
-      border-color: transparent !important;
-    }
-  }
-  .MuiOutlinedInput-root.Mui-focused {
-    background-color: rgba(255,255,255,0.30) !important;
-    .MuiOutlinedInput-notchedOutline {
-      border-color: rgba(255,255,255,0.50) !important;
+  :global(.MuiOutlinedInput-notchedOutline) { border-color: transparent !important; }
+  :global(.MuiOutlinedInput-root.Mui-focused) {
+    :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: var(--accent) !important;
       border-width: 1.5px !important;
     }
   }
-  .MuiInputLabel-root { display: none; }
-  .MuiInputBase-input::placeholder { color: rgba(255,255,255,0.65); font-size: 14px; }
-  .MuiInputBase-input { color: #FFFFFF !important; }
-  .MuiInputAdornment-root .MuiSvgIcon-root { color: rgba(255,255,255,0.70) !important; }
+  :global(.MuiInputLabel-root) { display: none; }
+  :global(.MuiInputBase-input) {
+    color: var(--sidebar-input-text) !important;
+    &::placeholder {
+      color: var(--sidebar-input-placeholder) !important;
+      opacity: 1 !important;
+    }
+  }
+  :global(.MuiInputAdornment-root) :global(.MuiSvgIcon-root) {
+    color: var(--sidebar-icon) !important;
+  }
 }
 
 /* ─── Chat list ─────────────────────────────────────────────────── */
 .chatsContainer {
   flex: 1;
-  background-color: transparent;
   overflow-y: auto;
 
-  // Tinted scrollbar for green sidebar
+  &::-webkit-scrollbar { width: 4px; }
+  &::-webkit-scrollbar-track { background: transparent; }
   &::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.25);
-  }
-  &::-webkit-scrollbar-thumb:hover {
-    background: rgba(255,255,255,0.40);
+    background: var(--sidebar-scrollbar);
+    border-radius: 4px;
   }
 }
 
@@ -157,8 +142,6 @@
 .messagesContainer {
   flex: 1;
   min-width: 0;
-  background-color: #EDF7F4;
-  background-image:
-    radial-gradient(circle at 20% 50%, rgba(46,190,150,0.04) 0%, transparent 60%),
-    radial-gradient(circle at 80% 20%, rgba(255,176,32,0.03) 0%, transparent 60%);
+  background-color: var(--content-bg);
+  transition: background-color 0.2s ease;
 }

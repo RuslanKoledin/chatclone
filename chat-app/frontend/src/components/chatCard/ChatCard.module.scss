@@ -2,34 +2,21 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding: 10px 16px;
-  transition: background-color 0.15s ease;
+  padding: 10px 14px;
+  transition: background-color 0.12s ease;
   position: relative;
   background-color: transparent;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid var(--sidebar-border);
 
-  &:hover {
-    background-color: rgba(255,255,255,0.12);
-  }
-
-  &:active {
-    background-color: rgba(255,255,255,0.20);
-  }
+  &:hover { background-color: var(--sidebar-hover); }
 }
 
-// Selected state — lighter semi-transparent with yellow-orange left accent
 .chatCardOuterContainerActive {
-  background-color: rgba(255,255,255,0.18);
-  border-left: 3px solid #FFB020;
-  padding-left: 13px;
+  background-color: var(--sidebar-active-bg);
+  border-left: 3px solid var(--accent);
+  padding-left: 11px;
 
-  &:hover {
-    background-color: rgba(255,255,255,0.24);
-  }
-
-  .chatCardLargeTextContainer {
-    color: #FFFFFF;
-  }
+  &:hover { background-color: var(--sidebar-active-bg); }
 }
 
 .chatCardAvatarContainer {
@@ -38,18 +25,13 @@
   position: relative;
 }
 
-.chatCardContentContainer {
-  flex: 1;
-  min-width: 0;
-  padding: 1px 0;
-  border-bottom: none;
-}
+.chatCardContentContainer { flex: 1; min-width: 0; }
 
 .chatCardContentInnerContainer {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
 
 .chatNameRow {
@@ -60,9 +42,9 @@
 }
 
 .chatCardLargeTextContainer {
-  font-size: 15px;
+  font-size: 14.5px;
   font-weight: 600;
-  color: #FFFFFF;
+  color: var(--sidebar-text);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -72,7 +54,7 @@
 
 .chatCardSmallTextContainer {
   font-size: 13px;
-  color: rgba(255,255,255,0.70);
+  color: var(--sidebar-text-muted);
   margin: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -81,20 +63,19 @@
 }
 
 .chatCardTimeContainer {
-  font-size: 11.5px;
-  color: rgba(255,255,255,0.60);
+  font-size: 11px;
+  color: var(--sidebar-text-muted);
   flex-shrink: 0;
   margin-left: 8px;
-  padding-top: 1px;
+  padding-top: 2px;
   white-space: nowrap;
 }
 
 .chatCardTimeUnread {
-  color: #FFB020;
+  color: var(--accent);
   font-weight: 600;
 }
 
-// Unread badge — MBank accent yellow
 .unreadBadge {
   display: inline-flex;
   align-items: center;
@@ -102,12 +83,10 @@
   min-width: 20px;
   height: 20px;
   padding: 0 5px;
-  background-color: #FFB020;
-  color: #1A2E28;
+  background-color: var(--accent);
+  color: #FFFFFF;
   border-radius: 999px;
   font-size: 11px;
   font-weight: 700;
   flex-shrink: 0;
-  letter-spacing: 0;
-  box-shadow: 0 2px 6px rgba(255,176,32,0.40);
 }

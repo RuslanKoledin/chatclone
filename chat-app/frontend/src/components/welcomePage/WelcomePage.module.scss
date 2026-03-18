@@ -3,51 +3,34 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  background-color: #E8E0D8;
-  background-image:
-    repeating-linear-gradient(
-      45deg,
-      rgba(0,0,0,0.012) 0px,
-      rgba(0,0,0,0.012) 1px,
-      transparent 1px,
-      transparent 14px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      rgba(0,0,0,0.012) 0px,
-      rgba(0,0,0,0.012) 1px,
-      transparent 1px,
-      transparent 14px
-    );
+  background-color: var(--welcome-bg);
+  transition: background-color 0.2s ease;
 }
 
 .innerWelcomeContainer {
   text-align: center;
-  padding: 52px 60px;
+  padding: 48px 56px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0;
-  background-color: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 28px;
-  box-shadow: 0 4px 32px rgba(0,0,0,0.09);
-  border: 1px solid rgba(255,255,255,0.95);
+  background-color: var(--welcome-card-bg);
+  border-radius: 20px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  transition: background-color 0.2s ease;
 
   h1 {
-    color: #111827;
-    font-size: 22px;
+    color: var(--welcome-title);
+    font-size: 20px;
     font-weight: 600;
-    margin: 20px 0 10px;
-    letter-spacing: -0.4px;
+    margin: 18px 0 8px;
+    letter-spacing: -0.3px;
   }
 
   p {
-    color: #9CA3AF;
+    color: var(--welcome-text);
     font-size: 14px;
     margin: 0;
     line-height: 1.6;
-    max-width: 280px;
+    max-width: 260px;
   }
 }

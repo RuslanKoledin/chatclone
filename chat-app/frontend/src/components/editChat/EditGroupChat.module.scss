@@ -3,7 +3,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  background-color: #FFFFFF;
+  background-color: var(--header-bg);
   overflow: hidden;
 }
 
@@ -12,16 +12,21 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #FFFFFF;
-  border-bottom: 1px solid #E5E7EB;
+  background-color: var(--sidebar-nav-bg);
+  border-bottom: 1px solid var(--sidebar-border);
   padding: 0 12px 0 16px;
   flex-shrink: 0;
 
   h2 {
     font-size: 16px;
     font-weight: 600;
-    color: #111827;
+    color: var(--header-text);
     margin: 0;
+  }
+
+  :global(.MuiIconButton-root) {
+    color: var(--sidebar-icon) !important;
+    &:hover { background-color: var(--sidebar-icon-hover-bg) !important; }
   }
 }
 
@@ -29,7 +34,7 @@
   padding: 8px 16px 4px;
   font-size: 12px;
   font-weight: 600;
-  color: #9CA3AF;
+  color: var(--sidebar-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin: 0;
@@ -39,7 +44,7 @@
   display: flex;
   align-items: center;
   padding: 10px 16px;
-  border-bottom: 1px solid #F3F4F6;
+  border-bottom: 1px solid var(--sidebar-border);
   flex-shrink: 0;
 }
 
@@ -51,25 +56,36 @@
 
 .editGroupChatTextField {
   padding: 10px 12px;
-  border-bottom: 1px solid #F3F4F6;
+  border-bottom: 1px solid var(--sidebar-border);
   flex-shrink: 0;
 
-  .MuiOutlinedInput-root {
+  :global(.MuiOutlinedInput-root) {
     border-radius: 999px !important;
-    background-color: #F3F4F6 !important;
+    background-color: var(--sidebar-input-bg) !important;
     font-size: 14px;
+    color: var(--header-text) !important;
   }
-  .MuiOutlinedInput-notchedOutline {
+  :global(.MuiOutlinedInput-notchedOutline) {
     border-color: transparent !important;
   }
-  .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-    border-color: #00875A !important;
+  :global(.MuiOutlinedInput-root:hover) :global(.MuiOutlinedInput-notchedOutline) {
+    border-color: var(--accent) !important;
   }
-  .MuiOutlinedInput-root.Mui-focused {
-    background-color: #FFFFFF !important;
-    .MuiOutlinedInput-notchedOutline {
-      border-color: #00875A !important;
-      border-width: 1.5px !important;
+  :global(.MuiOutlinedInput-root.Mui-focused) :global(.MuiOutlinedInput-notchedOutline) {
+    border-color: var(--accent) !important;
+    border-width: 1.5px !important;
+  }
+  :global(.MuiInputBase-input) {
+    color: var(--header-text) !important;
+    &::placeholder {
+      color: var(--sidebar-text-muted) !important;
+      opacity: 1 !important;
     }
+  }
+  :global(.MuiInputLabel-root) { color: var(--sidebar-text-muted) !important; }
+  :global(.MuiSvgIcon-root) { color: var(--sidebar-icon) !important; }
+  :global(.MuiIconButton-root) {
+    color: var(--sidebar-icon) !important;
+    &:hover { background-color: var(--sidebar-icon-hover-bg) !important; }
   }
 }

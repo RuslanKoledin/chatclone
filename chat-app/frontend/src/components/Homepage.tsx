@@ -11,6 +11,9 @@ import ChatIcon from '@mui/icons-material/Chat';
 import MBankLogo from "./common/MBankLogo";
 import ColorAvatar from "./common/ColorAvatar";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import {useTheme} from "../theme/ThemeContext";
 import {currentUser, logoutUser} from "../redux/auth/AuthAction";
 import SearchIcon from '@mui/icons-material/Search';
 import {getUserChats, markChatAsRead, pinMessage, unpinMessage} from "../redux/chat/ChatAction";
@@ -41,6 +44,7 @@ import {
 
 const Homepage = () => {
 
+    const { theme, toggleTheme } = useTheme();
     const authState = useSelector((state: RootState) => state.auth);
     const chatState = useSelector((state: RootState) => state.chat);
     const messageState = useSelector((state: RootState) => state.message);
@@ -514,12 +518,16 @@ const Homepage = () => {
                                 <div className={styles.navContainer}>
                                     <div onClick={onOpenProfile} className={styles.userInfoContainer}>
                                         <MBankLogo size={36} />
-                                        <span className={styles.navBrandText}>MBank Chat</span>
+                                        <span className={styles.navBrandText}>MChat</span>
                                     </div>
                                     <div className={styles.navRightSection}>
+                                        <IconButton onClick={toggleTheme} size="small" title={theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}>
+                                            {theme === 'light' ? <DarkModeIcon fontSize="small"/> : <LightModeIcon fontSize="small"/>}
+                                        </IconButton>
                                         <div onClick={onOpenProfile} className={styles.navUserInfo}>
                                             <ColorAvatar
                                                 name={authState.reqUser?.fullName || ''}
+                                                src={authState.reqUser?.profilePhoto ?? undefined}
                                                 size={32}
                                                 sx={{ cursor: 'pointer' }}
                                             />
@@ -537,9 +545,9 @@ const Homepage = () => {
                                                 open={open}
                                                 onClose={onCloseMenu}
                                                 MenuListProps={{'aria-labelledby': 'basic-button'}}>
-                                                <MenuItem onClick={onOpenProfile}>Profile</MenuItem>
-                                                <MenuItem onClick={onCreateGroupChat}>Create Group</MenuItem>
-                                                <MenuItem onClick={onLogout}>Logout</MenuItem>
+                                                <MenuItem onClick={onOpenProfile}>Профиль</MenuItem>
+                                                <MenuItem onClick={onCreateGroupChat}>Создать группу</MenuItem>
+                                                <MenuItem onClick={onLogout}>Выйти</MenuItem>
                                             </Menu>
                                         </div>
                                     </div>

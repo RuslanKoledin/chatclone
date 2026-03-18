@@ -71,10 +71,10 @@ const CreateSingleChat = (props: CreateSingleChatProps) => {
                 <IconButton onClick={onHandleBack}>
                     <WestIcon fontSize='medium'/>
                 </IconButton>
-                <h2>Create New Chat</h2>
+                <h2>Новый чат</h2>
             </div>
             <div className={styles.createSingleChatTextContainer}>
-                <p className={styles.createSingleChatText}>Start chat with:</p>
+                <p className={styles.createSingleChatText}>Начать чат с:</p>
             </div>
             <div className={styles.createSingleChatSelectedUserContainer}>
                 {selectedUser && <GroupMember member={selectedUser} key={selectedUser.id}/>}
@@ -83,12 +83,11 @@ const CreateSingleChat = (props: CreateSingleChatProps) => {
                 <TextField
                     id='searchUser'
                     type='text'
-                    label='Search user to chat ...'
+                    label='Поиск пользователя...'
                     size='small'
                     fullWidth
                     value={userQuery}
                     onChange={onChangeQuery}
-                    sx={{backgroundColor: 'white'}}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position='start'>
@@ -109,7 +108,7 @@ const CreateSingleChat = (props: CreateSingleChatProps) => {
                     <GroupMember member={user} onAddMember={onSetUser} key={user.id}/>)}
             </div>
             <div className={styles.createSingleChatButton}>
-                <Button variant={"contained"} onClick={onCreate}>Create Chat</Button>
+                <Button variant={"contained"} onClick={onCreate}>Создать чат</Button>
             </div>
         </div>
     );

@@ -41,15 +41,17 @@ interface ColorAvatarProps {
     size?: number;
     fontSize?: number;
     sx?: object;
+    src?: string;
 }
 
-const ColorAvatar: React.FC<ColorAvatarProps> = ({ name, size = 40, fontSize, sx = {} }) => {
+const ColorAvatar: React.FC<ColorAvatarProps> = ({ name, size = 40, fontSize, sx = {}, src }) => {
     const color = getAvatarColor(name);
     const initials = getInitials(name);
     const calculatedFontSize = fontSize ?? Math.round(size * 0.38);
 
     return (
         <Avatar
+            src={src ?? undefined}
             sx={{
                 width: size,
                 height: size,
@@ -63,7 +65,7 @@ const ColorAvatar: React.FC<ColorAvatarProps> = ({ name, size = 40, fontSize, sx
                 ...sx,
             }}
         >
-            {initials}
+            {!src && initials}
         </Avatar>
     );
 };

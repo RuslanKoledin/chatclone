@@ -412,7 +412,7 @@ const MessagePage = (props: MessagePageProps) => {
                             <TextField
                                 id='searchMessages'
                                 type='text'
-                                label='Search for messages ...'
+                                label='Поиск сообщений...'
                                 size='small'
                                 fullWidth
                                 value={messageQuery}
@@ -440,9 +440,9 @@ const MessagePage = (props: MessagePageProps) => {
                             open={open}
                             onClose={onCloseMenu}
                             MenuListProps={{'aria-labelledby': 'basic-button'}}>
-                            {props.chat.isGroup && <MenuItem onClick={onEditGroupChat}>Edit Group Chat</MenuItem>}
+                            {props.chat.isGroup && <MenuItem onClick={onEditGroupChat}>Редактировать группу</MenuItem>}
                             <MenuItem onClick={onDeleteChat}>
-                                {props.chat.isGroup ? 'Delete Group Chat' : 'Delete Chat'}
+                                {props.chat.isGroup ? 'Удалить группу' : 'Удалить чат'}
                             </MenuItem>
                         </Menu>
                     </div>

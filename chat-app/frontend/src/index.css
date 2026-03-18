@@ -1,55 +1,152 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-:root {
-  /* ── MBank Brand Palette ───────────────────────────────── */
-  --green:          #22A88A;
-  --green-dark:     #1A8A76;
-  --green-darker:   #147060;
-  --green-light:    #3DCBA3;
-  --green-bg:       #E8F7F3;
+/* ══════════════════════════════════════════════
+   LIGHT THEME (default)
+══════════════════════════════════════════════ */
+:root, [data-theme="light"] {
+  --accent: #2EB67D;
+  --accent-hover: #239e67;
 
-  --gradient-start: #2EBE96;
-  --gradient-end:   #1A7A6B;
-  --gradient-sidebar: linear-gradient(180deg, #2EBE96 0%, #1A8276 100%);
+  /* Sidebar */
+  --sidebar-bg: #F5F7F9;
+  --sidebar-nav-bg: #ECEEF1;
+  --sidebar-border: rgba(0,0,0,0.08);
+  --sidebar-text: #111827;
+  --sidebar-text-muted: rgba(0,0,0,0.42);
+  --sidebar-hover: rgba(0,0,0,0.05);
+  --sidebar-active-bg: rgba(46,182,125,0.12);
+  --sidebar-input-bg: rgba(0,0,0,0.06);
+  --sidebar-input-text: #111827;
+  --sidebar-input-placeholder: rgba(0,0,0,0.35);
+  --sidebar-icon: rgba(0,0,0,0.50);
+  --sidebar-icon-hover-bg: rgba(0,0,0,0.07);
+  --sidebar-icon-hover: #111827;
+  --sidebar-scrollbar: rgba(0,0,0,0.12);
 
-  --accent:         #FFB020;
-  --accent-dark:    #E09800;
-  --accent-light:   #FFF3D6;
+  /* Content */
+  --content-bg: #F0F2F5;
 
-  /* ── Backgrounds ──────────────────────────────────────── */
-  --bg:               #F0F9F6;
-  --sidebar-bg:       #1E9E82;
-  --header-bg:        #FFFFFF;
-  --message-area-bg:  #EDF7F4;
+  /* Header */
+  --header-bg: #FFFFFF;
+  --header-border: #E5E7EB;
+  --header-text: #111827;
+  --header-subtext: #2EB67D;
 
-  /* ── Bubbles ──────────────────────────────────────────── */
-  --bubble-own:       #22A88A;
-  --bubble-own-text:  #FFFFFF;
-  --bubble-other:     #FFFFFF;
-  --bubble-other-text:#111827;
+  /* Others messages */
+  --msg-others-bg: #FFFFFF;
+  --msg-others-text: #111827;
+  --msg-others-time: #9CA3AF;
+  --msg-others-reply-bg: rgba(0,0,0,0.06);
+  --msg-others-attachment-bg: #F3F4F6;
+  --msg-others-attachment-text: #374151;
 
-  /* ── Text ─────────────────────────────────────────────── */
-  --text-primary:   #111827;
-  --text-secondary: #6B7280;
-  --text-light:     #9CA3AF;
+  /* Date separator */
+  --date-bg: rgba(255,255,255,0.85);
+  --date-text: #6B7280;
 
-  /* ── Borders ──────────────────────────────────────────── */
-  --border:       #C8E8E0;
-  --border-light: #E8F7F3;
+  /* Footer / input */
+  --footer-bg: #FFFFFF;
+  --footer-border: #E5E7EB;
+  --input-bg: #F3F4F6;
+  --input-border: #E5E7EB;
+  --input-border-hover: #D1D5DB;
+  --reply-preview-bg: #F3F4F6;
+  --files-preview-bg: #F3F4F6;
 
-  /* ── Shadows ──────────────────────────────────────────── */
-  --shadow-bubble: 0 1px 2px rgba(0,0,0,0.13);
-  --shadow-sm:     0 1px 3px rgba(0,0,0,0.08);
-  --shadow-md:     0 4px 12px rgba(0,0,0,0.10);
-  --shadow-lg:     0 8px 24px rgba(0,0,0,0.14);
+  /* Pinned */
+  --pinned-bg: #FFFFFF;
+  --pinned-hover: #F9FAFB;
+  --pinned-border: #E5E7EB;
+  --pinned-text: #6B7280;
 
-  /* ── Radius ───────────────────────────────────────────── */
-  --radius-sm:   8px;
-  --radius-md:   12px;
-  --radius-lg:   20px;
-  --radius-pill: 999px;
+  /* Welcome */
+  --welcome-bg: #F0F2F5;
+  --welcome-card-bg: #FFFFFF;
+  --welcome-title: #111827;
+  --welcome-text: #9CA3AF;
+
+  /* MUI menus */
+  --menu-bg: #FFFFFF;
+  --menu-border: #E5E7EB;
+  --menu-item-hover: #F3F4F6;
+  --menu-item-text: #111827;
 }
 
+/* ══════════════════════════════════════════════
+   DARK THEME
+══════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --accent: #2EB67D;
+  --accent-hover: #239e67;
+
+  /* Sidebar */
+  --sidebar-bg: #1A1D21;
+  --sidebar-nav-bg: #212428;
+  --sidebar-border: rgba(255,255,255,0.06);
+  --sidebar-text: #E8E8E8;
+  --sidebar-text-muted: rgba(255,255,255,0.38);
+  --sidebar-hover: rgba(255,255,255,0.07);
+  --sidebar-active-bg: rgba(46,182,125,0.14);
+  --sidebar-input-bg: rgba(255,255,255,0.10);
+  --sidebar-input-text: #FFFFFF;
+  --sidebar-input-placeholder: rgba(255,255,255,0.55);
+  --sidebar-icon: rgba(255,255,255,0.55);
+  --sidebar-icon-hover-bg: rgba(255,255,255,0.10);
+  --sidebar-icon-hover: #FFFFFF;
+  --sidebar-scrollbar: rgba(255,255,255,0.12);
+
+  /* Content */
+  --content-bg: #17191D;
+
+  /* Header */
+  --header-bg: #1E2128;
+  --header-border: rgba(255,255,255,0.07);
+  --header-text: #E8E8E8;
+  --header-subtext: #2EB67D;
+
+  /* Others messages */
+  --msg-others-bg: #2A2D35;
+  --msg-others-text: #E0E0E0;
+  --msg-others-time: rgba(255,255,255,0.38);
+  --msg-others-reply-bg: rgba(0,0,0,0.22);
+  --msg-others-attachment-bg: rgba(255,255,255,0.08);
+  --msg-others-attachment-text: #C8C8C8;
+
+  /* Date separator */
+  --date-bg: rgba(255,255,255,0.08);
+  --date-text: rgba(255,255,255,0.42);
+
+  /* Footer / input */
+  --footer-bg: #1E2128;
+  --footer-border: rgba(255,255,255,0.07);
+  --input-bg: #2A2D35;
+  --input-border: rgba(255,255,255,0.10);
+  --input-border-hover: rgba(255,255,255,0.20);
+  --reply-preview-bg: rgba(255,255,255,0.07);
+  --files-preview-bg: rgba(255,255,255,0.07);
+
+  /* Pinned */
+  --pinned-bg: #1E2128;
+  --pinned-hover: #252830;
+  --pinned-border: rgba(255,255,255,0.07);
+  --pinned-text: rgba(255,255,255,0.42);
+
+  /* Welcome */
+  --welcome-bg: #17191D;
+  --welcome-card-bg: #1E2128;
+  --welcome-title: #E8E8E8;
+  --welcome-text: rgba(255,255,255,0.38);
+
+  /* MUI menus */
+  --menu-bg: #252830;
+  --menu-border: rgba(255,255,255,0.08);
+  --menu-item-hover: rgba(255,255,255,0.07);
+  --menu-item-text: #E0E0E0;
+}
+
+/* ══════════════════════════════════════════════
+   BASE
+══════════════════════════════════════════════ */
 * { box-sizing: border-box; }
 
 body {
@@ -57,83 +154,83 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg);
-  color: var(--text-primary);
+  background-color: var(--content-bg);
+  color: var(--header-text);
   font-size: 14px;
   line-height: 1.5;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* ─── Scrollbar ─────────────────────────────────────────────────── */
+/* Scrollbar */
 ::-webkit-scrollbar        { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: rgba(34,168,138,0.35); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(34,168,138,0.60); }
+::-webkit-scrollbar-thumb  { background: var(--sidebar-scrollbar); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(128,128,128,0.4); }
 
-/* ─── MUI global overrides ──────────────────────────────────────── */
+/* MUI overrides */
 .MuiIconButton-root {
-  color: var(--text-secondary) !important;
   transition: background-color 0.15s ease, color 0.15s ease !important;
 }
-.MuiIconButton-root:hover {
-  background-color: var(--green-bg) !important;
-  color: var(--green) !important;
-}
 .MuiMenu-paper {
-  border-radius: var(--radius-md) !important;
-  box-shadow: var(--shadow-lg) !important;
-  border: 1px solid var(--border) !important;
+  background-color: var(--menu-bg) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.18) !important;
+  border: 1px solid var(--menu-border) !important;
 }
 .MuiMenuItem-root {
   font-size: 14px !important;
   font-family: 'Inter', sans-serif !important;
-  color: var(--text-primary) !important;
-  border-radius: var(--radius-sm) !important;
+  color: var(--menu-item-text) !important;
+  border-radius: 8px !important;
   margin: 2px 6px !important;
   padding: 8px 12px !important;
 }
 .MuiMenuItem-root:hover {
-  background-color: var(--green-bg) !important;
-  color: var(--green-dark) !important;
+  background-color: var(--menu-item-hover) !important;
 }
-.MuiDivider-root { border-color: var(--border) !important; }
-
-/* ─── Buttons ───────────────────────────────────────────────────── */
-.mbank-btn-primary {
-  background: linear-gradient(135deg, var(--gradient-start) 0%, var(--gradient-end) 100%) !important;
-  color: #FFFFFF !important;
-  font-weight: 600 !important;
-  text-transform: none !important;
-  border-radius: 12px !important;
-  padding: 12px 24px !important;
-  box-shadow: 0 4px 14px rgba(34,168,138,0.35) !important;
-  font-size: 15px !important;
-  letter-spacing: 0 !important;
-  transition: all 0.2s ease !important;
-}
-.mbank-btn-primary:hover {
-  background: linear-gradient(135deg, var(--green-light) 0%, var(--green) 100%) !important;
-  box-shadow: 0 6px 20px rgba(34,168,138,0.45) !important;
-  transform: translateY(-1px);
-}
-.mbank-btn-primary:disabled {
-  background: var(--border) !important;
-  color: var(--text-light) !important;
-  box-shadow: none !important;
-  transform: none !important;
+.MuiDivider-root {
+  border-color: var(--header-border) !important;
 }
 
-/* ─── Inputs ────────────────────────────────────────────────────── */
-.mbank-input .MuiOutlinedInput-root {
-  border-radius: 10px;
-  background-color: #F9FAFB;
+/* Dark theme — explicit overrides for MUI Portal elements (Emotion specificity fix) */
+html[data-theme="dark"] .MuiMenu-paper {
+  background-color: #252830 !important;
+  border-color: rgba(255,255,255,0.08) !important;
 }
-.mbank-input .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-  border-color: var(--green);
+html[data-theme="dark"] .MuiMenuItem-root {
+  color: #E0E0E0 !important;
 }
-.mbank-input .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-  border-color: var(--green);
-  border-width: 2px;
+html[data-theme="dark"] .MuiMenuItem-root:hover {
+  background-color: rgba(255,255,255,0.07) !important;
 }
-.mbank-input .MuiInputLabel-root.Mui-focused {
-  color: var(--green);
+html[data-theme="dark"] .MuiDivider-root {
+  border-color: rgba(255,255,255,0.08) !important;
+}
+html[data-theme="dark"] .MuiDialog-paper {
+  background-color: #1E2128 !important;
+  color: #E8E8E8 !important;
+}
+html[data-theme="dark"] .MuiDialogTitle-root {
+  color: #E8E8E8 !important;
+}
+html[data-theme="dark"] .MuiDialogContentText-root {
+  color: rgba(255,255,255,0.7) !important;
+}
+html[data-theme="dark"] .MuiListItemText-primary {
+  color: #E8E8E8 !important;
+}
+html[data-theme="dark"] .MuiListItemText-secondary {
+  color: rgba(255,255,255,0.5) !important;
+}
+html[data-theme="dark"] .MuiListItemButton-root {
+  color: #E8E8E8 !important;
+}
+html[data-theme="dark"] .MuiListItemButton-root:hover {
+  background-color: rgba(255,255,255,0.07) !important;
+}
+html[data-theme="dark"] .MuiCheckbox-root {
+  color: rgba(255,255,255,0.55) !important;
+}
+html[data-theme="dark"] .MuiCheckbox-root.Mui-checked {
+  color: #2EB67D !important;
 }

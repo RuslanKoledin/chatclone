@@ -2,17 +2,26 @@
   width: 100%;
   height: 100%;
   overflow-y: auto;
-  background-color: #FFFFFF;
+  background-color: var(--header-bg);
+  color: var(--header-text);
 }
 
 .headingContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: linear-gradient(135deg, #00875A 0%, #006644 100%);
-  color: white;
+  background-color: var(--sidebar-nav-bg);
+  border-bottom: 1px solid var(--sidebar-border);
+  color: var(--header-text);
   padding: 16px 20px;
   min-height: 64px;
+
+  :global(.MuiIconButton-root) {
+    color: var(--sidebar-icon) !important;
+    &:hover { background-color: var(--sidebar-icon-hover-bg) !important; }
+  }
+
+  h2 { margin: 0; font-size: 16px; font-weight: 600; }
 }
 
 .avatarContainer {
@@ -21,8 +30,33 @@
   justify-content: center;
   align-items: center;
   padding: 32px 20px 24px;
-  background: linear-gradient(180deg, #E8F5EE 0%, #FFFFFF 100%);
-  border-bottom: 1px solid #E5E7EB;
+  background-color: var(--content-bg);
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.avatarWrapper {
+  position: relative;
+  cursor: pointer;
+  border-radius: 50%;
+  overflow: hidden;
+
+  &:hover .cameraOverlay { opacity: 1; }
+}
+
+.cameraOverlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  border-radius: 50%;
+}
+
+.nameContainer {
+  width: 100%;
 }
 
 .createSingleChatTextField {
@@ -40,7 +74,12 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  border-bottom: 1px solid #F3F4F6;
+  border-bottom: 1px solid var(--sidebar-border);
+
+  :global(.MuiIconButton-root) {
+    color: var(--sidebar-icon) !important;
+    &:hover { background-color: var(--sidebar-icon-hover-bg) !important; }
+  }
 }
 
 .innerNameDynamicContainer {
@@ -49,7 +88,18 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  border-bottom: 1px solid #F3F4F6;
+  border-bottom: 1px solid var(--sidebar-border);
+
+  :global(.MuiIconButton-root) {
+    color: var(--sidebar-icon) !important;
+    &:hover { background-color: var(--sidebar-icon-hover-bg) !important; }
+  }
+  :global(.MuiOutlinedInput-root) {
+    color: var(--header-text) !important;
+    background-color: var(--input-bg) !important;
+  }
+  :global(.MuiOutlinedInput-notchedOutline) { border-color: var(--input-border) !important; }
+  :global(.MuiInputLabel-root) { color: var(--sidebar-text-muted) !important; }
 }
 
 .infoContainer {
@@ -58,7 +108,7 @@
 
 .infoText {
   padding: 12px 16px;
-  color: #374151;
+  color: var(--sidebar-text-muted);
   font-size: 14px;
-  border-bottom: 1px solid #F3F4F6;
+  border-bottom: 1px solid var(--sidebar-border);
 }
