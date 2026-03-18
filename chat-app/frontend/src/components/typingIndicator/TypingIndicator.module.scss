@@ -8,14 +8,14 @@
 .typingContent {
   display: flex;
   align-items: center;
-  background-color: rgba(0, 135, 90, 0.1);
+  background-color: rgba(16, 185, 129, 0.1);
   padding: 8px 14px;
   border-radius: 16px;
   font-size: 0.85rem;
 }
 
 .userName {
-  color: #00875A;
+  color: #10B981;
   font-weight: 500;
 }
 
@@ -33,7 +33,7 @@
 .dot {
   width: 5px;
   height: 5px;
-  background-color: #00875A;
+  background-color: #10B981;
   border-radius: 50%;
   animation: bounce 1.4s infinite ease-in-out;
 }

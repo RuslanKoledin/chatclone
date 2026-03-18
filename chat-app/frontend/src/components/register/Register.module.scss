@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1A7A6B 0%, #22A88A 40%, #2EBE96 75%, #3DCBA3 100%);
+  background: linear-gradient(135deg, #059669 0%, #10B981 50%, #34D399 100%);
   padding: 20px;
   position: relative;
   overflow: hidden;
@@ -67,7 +67,7 @@
 }
 
 .logoAccent {
-  color: #22A88A;
+  color: #10B981;
 }
 
 .subtitle {
@@ -103,25 +103,25 @@
 
   :global(.MuiOutlinedInput-root) {
     border-radius: 12px;
-    background-color: #F0F9F6;
+    background-color: #F0FDF4;
     font-size: 14px;
     transition: all 0.2s ease;
 
     :global(.MuiOutlinedInput-notchedOutline) {
-      border-color: #C8E8E0;
+      border-color: #D1FAE5;
     }
 
     &:hover {
       background-color: #FFFFFF;
       :global(.MuiOutlinedInput-notchedOutline) {
-        border-color: #22A88A;
+        border-color: #10B981;
       }
     }
 
     &:global(.Mui-focused) {
       background-color: #FFFFFF;
       :global(.MuiOutlinedInput-notchedOutline) {
-        border-color: #22A88A;
+        border-color: #10B981;
         border-width: 2px;
       }
     }
@@ -130,7 +130,7 @@
   :global(.MuiInputLabel-root) {
     color: #9CA3AF;
     font-size: 14px;
-    &:global(.Mui-focused) { color: #22A88A; }
+    &:global(.Mui-focused) { color: #10B981; }
   }
 }
 

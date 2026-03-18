@@ -14,7 +14,7 @@ const WelcomePage = (props: WelcomePageProps) => {
                 <ForumIcon sx={{
                     width: '8rem',
                     height: '8rem',
-                    color: '#00875A',
+                    color: '#10B981',
                 }}/>
                 <h1>Добро пожаловать, {props.reqUser?.fullName}!</h1>
                 <p>Выберите чат или начните новую беседу</p>

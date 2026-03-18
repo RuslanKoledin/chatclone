@@ -3,7 +3,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  background: linear-gradient(180deg, #F5F5F5 0%, #E8E8E8 100%);
+  background-color: var(--chat-bg, #F9FAFB);
 }
 
 .innerWelcomeContainer {
@@ -11,14 +11,14 @@
   padding: 40px;
 
   h1 {
-    color: #18191C;
+    color: var(--text-primary, #111827);
     font-size: 24px;
     font-weight: 600;
     margin: 20px 0 8px 0;
   }
 
   p {
-    color: #666666;
+    color: var(--text-secondary, #6B7280);
     font-size: 14px;
     margin: 0;
   }

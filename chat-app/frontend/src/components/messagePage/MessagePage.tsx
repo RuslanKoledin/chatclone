@@ -197,8 +197,9 @@ const MessagePage = (props: MessagePageProps) => {
         </InputAdornment>
     };
 
-    const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Enter') {
+    const onKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
             // Очищаем таймаут typing при отправке
             if (typingTimeoutRef.current) {
                 clearTimeout(typingTimeoutRef.current);
@@ -210,6 +211,7 @@ const MessagePage = (props: MessagePageProps) => {
             handleSendMessage();
             return;
         }
+        // Shift+Enter — перенос строки (default behavior)
 
         if (!e.ctrlKey && !e.metaKey && !e.altKey) {
             sendTypingStartIfNeeded();
@@ -375,7 +377,7 @@ const MessagePage = (props: MessagePageProps) => {
             {isDragOver && (
                 <div className={styles.dropZoneOverlay}>
                     <div className={styles.dropZoneContent}>
-                        <CloudUploadIcon sx={{ fontSize: '4rem', color: '#00875A' }} />
+                        <CloudUploadIcon sx={{ fontSize: '4rem', color: '#10B981' }} />
                         <p className={styles.dropZoneText}>Перетащите файлы сюда</p>
                         <span className={styles.dropZoneSubtext}>Отпустите, чтобы прикрепить</span>
                     </div>
@@ -455,7 +457,7 @@ const MessagePage = (props: MessagePageProps) => {
             {/* Закреплённое сообщение */}
             {props.chat.pinnedMessage && (
                 <div className={styles.pinnedMessageContainer}>
-                    <PushPinIcon sx={{ fontSize: '1rem', mr: 1, color: '#00875A' }} />
+                    <PushPinIcon sx={{ fontSize: '1rem', mr: 1, color: '#10B981' }} />
                     <div className={styles.pinnedMessageContent}>
                         <span className={styles.pinnedMessageLabel}>Закреплённое сообщение</span>
                         <span className={styles.pinnedMessageText}>
@@ -518,7 +520,7 @@ const MessagePage = (props: MessagePageProps) => {
                 {selectedFiles && selectedFiles.length > 0 && (
                     <div className={styles.filesPreviewContainer}>
                         <div className={styles.filesPreviewContent}>
-                            <AttachFileIcon sx={{ fontSize: '1rem', mr: 0.5, color: '#00875A' }} />
+                            <AttachFileIcon sx={{ fontSize: '1rem', mr: 0.5, color: '#10B981' }} />
                             <span className={styles.filesPreviewText}>
                                 {selectedFiles.length === 1
                                     ? selectedFiles[0].name
@@ -554,8 +556,9 @@ const MessagePage = (props: MessagePageProps) => {
                     <div className={styles.innerFooterContainer}>
                         <TextField
                             id='newMessage'
-                            type='text'
-                            label={selectedFiles && selectedFiles.length > 0 ? 'Добавить подпись...' : 'Enter new message ...'}
+                            multiline
+                            maxRows={5}
+                            placeholder={selectedFiles && selectedFiles.length > 0 ? 'Добавить подпись...' : 'Введите сообщение...'}
                             size='small'
                             onKeyDown={onKeyDown}
                             fullWidth
@@ -570,15 +573,23 @@ const MessagePage = (props: MessagePageProps) => {
                                     isTypingRef.current = false;
                                 }
                             }}
-                            sx={{backgroundColor: 'white'}}
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position='end'>
-                                        <IconButton onClick={handleSendMessage}>
-                                            <SendIcon/>
-                                        </IconButton>
-                                    </InputAdornment>),
-                            }}/>
+                            sx={{backgroundColor: 'white'}}/>
+                    </div>
+
+                    <div className={styles.sendButton}>
+                        <IconButton
+                            onClick={handleSendMessage}
+                            className="mbank-send-btn"
+                            sx={{
+                                bgcolor: '#10B981',
+                                color: '#FFFFFF',
+                                '&:hover': { bgcolor: '#059669', color: '#FFFFFF !important' },
+                                width: 40,
+                                height: 40,
+                            }}
+                        >
+                            <SendIcon sx={{ fontSize: 20 }} />
+                        </IconButton>
                     </div>
                 </div>
             </div>
