@@ -44,6 +44,9 @@ public class User {
     @ElementCollection
     private Set<UUID> mutedChatIds = new HashSet<>();
 
+    @Column(columnDefinition = "TEXT")
+    private String profilePhoto;
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

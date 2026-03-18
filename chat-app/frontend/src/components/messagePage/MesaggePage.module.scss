@@ -4,22 +4,29 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  background-color: #EDF7F4;
-  background-image:
-    radial-gradient(ellipse at 15% 85%, rgba(46,190,150,0.07) 0%, transparent 55%),
-    radial-gradient(ellipse at 85% 15%, rgba(255,176,32,0.04) 0%, transparent 55%);
+  background-color: var(--content-bg);
+  transition: background-color 0.2s ease;
 }
 
 /* ─── Header ────────────────────────────────────────────────────── */
 .messagePageHeaderContainer {
   width: 100%;
-  background-color: #FFFFFF;
-  border-bottom: 1px solid #C8E8E0;
-  height: 64px;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  height: 60px;
   box-sizing: border-box;
   flex-shrink: 0;
   z-index: 10;
-  box-shadow: 0 2px 8px rgba(34,168,138,0.08);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  :global(.MuiIconButton-root) {
+    color: var(--sidebar-icon) !important;
+    &:hover {
+      background-color: var(--sidebar-icon-hover-bg) !important;
+      color: var(--header-text) !important;
+    }
+  }
 }
 
 .messagePageInnerHeaderContainer {
@@ -34,11 +41,8 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #111827;
   min-width: 0;
   flex: 1;
-
-  h3, p { color: #111827; margin: 0; }
 }
 
 .avatarWrapper {
@@ -53,10 +57,9 @@
   right: 1px;
   width: 10px;
   height: 10px;
-  background-color: #22A88A;
-  border: 2px solid #FFFFFF;
+  background-color: var(--accent);
+  border: 2px solid var(--header-bg);
   border-radius: 50%;
-  box-shadow: 0 0 0 2px rgba(34,168,138,0.25);
 }
 
 .chatInfoContainer {
@@ -66,19 +69,18 @@
 }
 
 .chatName {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   margin: 0;
-  color: #111827;
+  color: var(--header-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  letter-spacing: -0.2px;
 }
 
 .statusText {
   font-size: 12px;
-  color: #22A88A;
+  color: var(--accent);
   margin-top: 1px;
   font-weight: 500;
 }
@@ -88,14 +90,14 @@
   display: flex;
   align-items: center;
   padding: 8px 16px;
-  background-color: #FFFFFF;
-  border-bottom: 1px solid #C8E8E0;
+  background-color: var(--pinned-bg);
+  border-bottom: 1px solid var(--pinned-border);
   cursor: pointer;
   flex-shrink: 0;
   gap: 10px;
   transition: background-color 0.15s;
 
-  &:hover { background-color: #E8F7F3; }
+  &:hover { background-color: var(--pinned-hover); }
 }
 
 .pinnedMessageContent {
@@ -108,14 +110,14 @@
 .pinnedMessageLabel {
   font-size: 11px;
   font-weight: 700;
-  color: #22A88A;
+  color: var(--accent);
   text-transform: uppercase;
   letter-spacing: 0.07em;
 }
 
 .pinnedMessageText {
   font-size: 13px;
-  color: #6B7280;
+  color: var(--pinned-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -137,15 +139,23 @@
 
 /* ─── Footer ────────────────────────────────────────────────────── */
 .footerContainer {
-  background-color: #FFFFFF;
-  border-top: 1px solid #C8E8E0;
+  background-color: var(--footer-bg);
+  border-top: 1px solid var(--footer-border);
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: 8px 0 10px;
   flex-shrink: 0;
-  box-shadow: 0 -2px 8px rgba(34,168,138,0.06);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+
+  :global(.MuiIconButton-root) {
+    color: var(--sidebar-icon) !important;
+    &:hover {
+      background-color: var(--sidebar-icon-hover-bg) !important;
+      color: var(--header-text) !important;
+    }
+  }
 }
 
 /* Reply preview */
@@ -155,10 +165,9 @@
   width: calc(100% - 20px);
   padding: 8px 12px;
   margin-bottom: 6px;
-  background-color: #E8F7F3;
-  border-radius: 12px;
-  border-left: 3px solid #22A88A;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  background-color: var(--reply-preview-bg);
+  border-radius: 10px;
+  border-left: 3px solid var(--accent);
   gap: 8px;
 }
 
@@ -174,7 +183,7 @@
 .replyPreviewUserName {
   font-size: 12px;
   font-weight: 600;
-  color: #22A88A;
+  color: var(--accent);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -182,7 +191,7 @@
 
 .replyPreviewText {
   font-size: 13px;
-  color: #6B7280;
+  color: var(--sidebar-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -195,9 +204,9 @@
   width: calc(100% - 20px);
   padding: 8px 12px;
   margin-bottom: 6px;
-  background-color: #E8F7F3;
-  border-radius: 12px;
-  border-left: 3px solid #FFB020;
+  background-color: var(--files-preview-bg);
+  border-radius: 10px;
+  border-left: 3px solid #F5A623;
   gap: 8px;
 }
 
@@ -210,7 +219,7 @@
 
 .filesPreviewText {
   font-size: 13px;
-  color: #374151;
+  color: var(--header-text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -229,26 +238,34 @@
   flex: 1;
   min-width: 0;
 
-  // Style the message input
-  .MuiOutlinedInput-root {
-    border-radius: 24px !important;
-    background-color: #F0F9F6 !important;
+  :global(.MuiOutlinedInput-root) {
+    border-radius: 10px !important;
+    background-color: var(--input-bg) !important;
     font-size: 14px;
+    color: var(--header-text) !important;
+    transition: background-color 0.2s ease;
   }
-  .MuiOutlinedInput-notchedOutline {
-    border-color: #C8E8E0 !important;
+  :global(.MuiOutlinedInput-notchedOutline) {
+    border-color: var(--input-border) !important;
   }
-  .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
-    border-color: #22A88A !important;
+  :global(.MuiOutlinedInput-root:hover) :global(.MuiOutlinedInput-notchedOutline) {
+    border-color: var(--input-border-hover) !important;
   }
-  .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-    border-color: #22A88A !important;
-    border-width: 2px !important;
+  :global(.MuiOutlinedInput-root.Mui-focused) :global(.MuiOutlinedInput-notchedOutline) {
+    border-color: var(--accent) !important;
+    border-width: 1.5px !important;
+  }
+  :global(.MuiInputBase-input) {
+    color: var(--header-text) !important;
+    &::placeholder {
+      color: var(--sidebar-text-muted) !important;
+      opacity: 1 !important;
+    }
   }
 }
 
 .attachButton { flex-shrink: 0; }
-.emojiButton { flex-shrink: 0; }
+.emojiButton  { flex-shrink: 0; }
 
 .emojiOuterContainer {
   position: relative;
@@ -262,28 +279,25 @@
   z-index: 100;
 }
 
-/* Send button accent */
+/* Send button */
 :global(.mbank-send-btn) {
-  background: linear-gradient(135deg, #2EBE96 0%, #1A8276 100%) !important;
+  background-color: var(--accent) !important;
   color: #FFFFFF !important;
-  box-shadow: 0 3px 10px rgba(34,168,138,0.40) !important;
-  &:hover {
-    box-shadow: 0 5px 16px rgba(34,168,138,0.55) !important;
-    transform: scale(1.05);
-  }
+  box-shadow: none !important;
+  &:hover { background-color: var(--accent-hover) !important; }
 }
 
 /* ─── Drop zone ─────────────────────────────────────────────────── */
 .dropZoneOverlay {
   position: absolute;
   inset: 0;
-  background-color: rgba(34,168,138,0.08);
+  background-color: rgba(46,182,125,0.06);
   backdrop-filter: blur(3px);
   z-index: 50;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px dashed #22A88A;
+  border: 2px dashed var(--accent);
   border-radius: 12px;
   margin: 12px;
   pointer-events: none;
@@ -294,19 +308,19 @@
   flex-direction: column;
   align-items: center;
   padding: 2.5rem 3rem;
-  background-color: rgba(255, 255, 255, 0.96);
-  border-radius: 20px;
-  box-shadow: 0 12px 40px rgba(34,168,138,0.16);
+  background-color: var(--header-bg);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.12);
 }
 
 .dropZoneText {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  color: #22A88A;
+  color: var(--accent);
   margin: 12px 0 4px;
 }
 
 .dropZoneSubtext {
   font-size: 13px;
-  color: #9CA3AF;
+  color: var(--sidebar-text-muted);
 }

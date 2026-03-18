@@ -1,0 +1,64 @@
+.chatCardOuterContainer {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 10px 16px;
+  transition: background-color 0.15s ease;
+  border-bottom: none;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.06);
+  }
+
+  &:active {
+    background-color: rgba(0, 229, 160, 0.08);
+  }
+}
+
+.chatCardAvatarContainer {
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.chatCardContentContainer {
+  flex: 1;
+  min-width: 0;
+}
+
+.chatCardContentInnerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatNameRow {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.chatCardLargeTextContainer {
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(240, 255, 248, 0.92);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chatCardSmallTextContainer {
+  font-size: 13px;
+  color: rgba(240, 255, 248, 0.45);
+  margin: 3px 0 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chatCardTimeContainer {
+  font-size: 11px;
+  color: rgba(240, 255, 248, 0.3);
+  flex-shrink: 0;
+  margin-left: 8px;
+}

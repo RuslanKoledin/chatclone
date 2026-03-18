@@ -1,0 +1,305 @@
+// Own messages — glass green bubble
+.ownMessage {
+  align-self: flex-end;
+  margin-top: 0.5rem;
+  max-width: 66%;
+}
+
+// Others' messages — glass dark bubble
+.othersMessage {
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  max-width: 66%;
+}
+
+.date {
+  align-self: center;
+  margin-top: 1rem;
+  font-size: 0.71rem;
+  color: rgba(240, 255, 248, 0.35);
+  background-color: rgba(255, 255, 255, 0.05);
+  padding: 3px 12px;
+  border-radius: 12px;
+}
+
+// Own message — green glass
+.ownMessage .bubbleContainer {
+  background: rgba(0, 180, 120, 0.25);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 229, 160, 0.25);
+  border-radius: 16px 4px 16px 16px;
+  padding: 0.65rem 0.95rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+}
+
+// Others' message — dark glass
+.othersMessage .bubbleContainer {
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px 16px 16px 16px;
+  padding: 0.65rem 0.95rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.bubbleContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.contentContainer {
+  margin-top: 0.2rem;
+  margin-bottom: 0.2rem;
+  text-wrap: wrap;
+  word-break: break-word;
+  line-height: 1.5;
+  color: rgba(240, 255, 248, 0.92);
+  font-size: 0.9rem;
+}
+
+.timeStatusContainer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 4px;
+  gap: 2px;
+}
+
+.timeText {
+  font-size: 0.67rem;
+  color: rgba(240, 255, 248, 0.35);
+}
+
+.othersMessage .timeText {
+  color: rgba(240, 255, 248, 0.3);
+}
+
+.messageCardInnerContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.editedLabel {
+  font-size: 0.62rem;
+  color: rgba(240, 255, 248, 0.35);
+  font-style: italic;
+  margin-right: 4px;
+}
+
+.deletedMessage {
+  font-style: italic;
+  color: rgba(240, 255, 248, 0.35);
+}
+
+.messageWrapper { position: relative; }
+.contextMenuTrigger { cursor: context-menu; }
+
+// Reply quote
+.replyContainer {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 6px;
+  padding: 4px 8px 4px 0;
+  cursor: pointer;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  margin-left: -4px;
+  margin-right: -4px;
+  padding-left: 4px;
+}
+
+.replyLine {
+  width: 3px;
+  background-color: #00E5A0;
+  border-radius: 2px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.replyContent {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.replyUserName {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #00E5A0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.replyText {
+  font-size: 0.72rem;
+  color: rgba(240, 255, 248, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.othersMessage .replyContainer {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.othersMessage .replyLine {
+  background-color: #FFD700;
+}
+
+.othersMessage .replyUserName {
+  color: #FFD700;
+}
+
+.othersMessage .replyText {
+  color: rgba(240, 255, 248, 0.45);
+}
+
+// Forwarded
+.forwardedHeader {
+  display: flex;
+  align-items: center;
+  font-size: 0.72rem;
+  font-style: italic;
+  color: rgba(240, 255, 248, 0.4);
+  margin-bottom: 4px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+// Attachments
+.attachmentsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.attachmentImage {
+  max-width: 260px;
+  max-height: 200px;
+  border-radius: 8px;
+  cursor: pointer;
+  object-fit: cover;
+}
+
+.attachmentFile {
+  display: flex;
+  align-items: center;
+  padding: 7px 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  text-decoration: none;
+  color: rgba(240, 255, 248, 0.8);
+  font-size: 0.84rem;
+  transition: all 0.2s;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.fileSize {
+  margin-left: 4px;
+  opacity: 0.4;
+  font-size: 0.75rem;
+}
+
+.audioContainer { margin: 4px 0; }
+.audioPlayer {
+  width: 100%;
+  max-width: 260px;
+  height: 36px;
+  border-radius: 18px;
+}
+
+// Reactions
+.reactionsContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.reactionBadge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  backdrop-filter: blur(4px);
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.12);
+    transform: scale(1.05);
+  }
+}
+
+.reactionBadgeActive {
+  background: rgba(0, 229, 160, 0.18);
+  border-color: rgba(0, 229, 160, 0.4);
+  box-shadow: 0 0 8px rgba(0, 229, 160, 0.2);
+}
+
+.othersMessage .reactionBadgeActive {
+  background: rgba(255, 215, 0, 0.15);
+  border-color: rgba(255, 215, 0, 0.35);
+}
+
+.reactionEmoji { font-size: 0.87rem; }
+
+.reactionCount {
+  font-size: 0.71rem;
+  color: rgba(240, 255, 248, 0.6);
+  font-weight: 500;
+}
+
+// Reaction picker
+.reactionPicker {
+  display: flex;
+  padding: 8px;
+  gap: 4px;
+  background: rgba(12, 28, 20, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(0, 229, 160, 0.15);
+  border-radius: 12px;
+}
+
+.reactionPickerButton {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1.25rem;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: scale(1.2);
+  }
+}
+
+// Search highlight
+.highlightedText {
+  background: rgba(255, 215, 0, 0.3);
+  color: #FFD700;
+  padding: 1px 2px;
+  border-radius: 2px;
+  font-weight: 500;
+}

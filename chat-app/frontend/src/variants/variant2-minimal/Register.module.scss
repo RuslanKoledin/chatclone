@@ -1,0 +1,178 @@
+.outerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: #F9FAFB;
+  padding: 20px;
+}
+
+// Very subtle background shapes
+.outerContainer::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  left: -250px;
+  top: -200px;
+  background: radial-gradient(circle, rgba(0,135,90,0.06) 0%, transparent 65%);
+  z-index: 0;
+}
+
+.outerContainer::after {
+  content: '';
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  right: -150px;
+  bottom: -100px;
+  background: radial-gradient(circle, rgba(255,215,0,0.07) 0%, transparent 65%);
+  z-index: 0;
+}
+
+.innerContainer {
+  width: 100%;
+  max-width: 400px;
+  padding: 44px 40px;
+  background-color: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06), 0 1px 4px rgba(0, 0, 0, 0.04);
+  position: relative;
+  z-index: 1;
+  border: 1px solid #E5E7EB;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logoText {
+  font-size: 30px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.logoAccent {
+  color: #00875A;
+}
+
+.subtitle {
+  text-align: center;
+  color: #9CA3AF;
+  font-size: 14px;
+  margin: 8px 0 32px 0;
+}
+
+.title {
+  font-size: 21px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+.text {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.inputGroup {
+  margin-bottom: 16px;
+}
+
+.textInput {
+  width: 100%;
+
+  :global(.MuiOutlinedInput-root) {
+    border-radius: 10px;
+    background-color: #F9FAFB;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #FFFFFF;
+      :global(.MuiOutlinedInput-notchedOutline) {
+        border-color: #00875A;
+      }
+    }
+
+    &:global(.Mui-focused) {
+      background-color: #FFFFFF;
+      :global(.MuiOutlinedInput-notchedOutline) {
+        border-color: #00875A;
+        border-width: 2px;
+      }
+    }
+  }
+
+  :global(.MuiInputLabel-root) {
+    color: #9CA3AF;
+
+    &:global(.Mui-focused) {
+      color: #00875A;
+    }
+  }
+}
+
+.forgotPassword {
+  text-align: right;
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
+
+.button {
+  margin-top: 16px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #E5E7EB;
+  }
+
+  span {
+    padding: 0 16px;
+    color: #D1D5DB;
+    font-size: 12px;
+  }
+}
+
+.bottomContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  gap: 4px;
+
+  p {
+    margin: 0;
+    color: #9CA3AF;
+    font-size: 14px;
+  }
+}
+
+.errorMessage {
+  background-color: #FEF2F2;
+  color: #EF4444;
+  border: 1px solid #FECACA;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 20px;
+  text-align: center;
+}

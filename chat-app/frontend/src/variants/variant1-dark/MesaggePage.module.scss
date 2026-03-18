@@ -1,0 +1,260 @@
+.outerMessagePageContainer {
+  width: 100%;
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.messagePageHeaderContainer {
+  width: 100%;
+  background-color: #1E2128;
+  border-bottom: 1px solid #2A2D35;
+  height: 60px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.messagePageInnerHeaderContainer {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #E8E8EC;
+}
+
+.messagePageHeaderNameContainer {
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  color: #E8E8EC;
+
+  h3, p {
+    color: #E8E8EC;
+    margin: 0;
+  }
+}
+
+.avatarWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.onlineIndicator {
+  position: absolute;
+  bottom: 2px;
+  right: 14px;
+  width: 10px;
+  height: 10px;
+  background-color: #00C985;
+  border: 2px solid #1E2128;
+  border-radius: 50%;
+}
+
+.chatInfoContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.chatName {
+  font-size: 1rem;
+  font-weight: 500;
+  margin: 0;
+  color: #E8E8EC;
+}
+
+.statusText {
+  font-size: 0.75rem;
+  color: #8A8D94;
+  margin-top: 2px;
+}
+
+.pinnedMessageContainer {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #1A1D24;
+  border-bottom: 1px solid #2A2D35;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: #1E2128;
+  }
+}
+
+.pinnedMessageContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.pinnedMessageLabel {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: #00C985;
+  text-transform: uppercase;
+}
+
+.pinnedMessageText {
+  font-size: 0.85rem;
+  color: #8A8D94;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.messageContentContainer {
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
+  background-color: #0F1117;
+  flex: 1;
+}
+
+.messageContentInnerContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.footerContainer {
+  background-color: #16181D;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0;
+  border-top: 1px solid #2A2D35;
+  flex-shrink: 0;
+}
+
+.replyPreviewContainer {
+  display: flex;
+  align-items: center;
+  width: 85%;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background-color: #1E2128;
+  border-radius: 8px;
+  border-left: 3px solid #00C985;
+}
+
+.replyPreviewLine {
+  display: none;
+}
+
+.replyPreviewContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.replyPreviewUserName {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #00C985;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.replyPreviewText {
+  font-size: 0.8rem;
+  color: #8A8D94;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inputRowContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.innerFooterContainer {
+  flex: 1;
+}
+
+.filesPreviewContainer {
+  display: flex;
+  align-items: center;
+  width: 85%;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background-color: rgba(0, 201, 133, 0.1);
+  border-radius: 8px;
+  border-left: 3px solid #00C985;
+}
+
+.filesPreviewContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.filesPreviewText {
+  font-size: 0.85rem;
+  color: #C8CDD8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.attachButton { margin-right: 0.5rem; }
+.emojiButton { margin-right: 1rem; }
+.emojiOuterContainer { position: relative; }
+
+.emojiContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-105%, -95.5%);
+  z-index: 1;
+}
+
+.dropZoneOverlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 201, 133, 0.1);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #00C985;
+  border-radius: 8px;
+  margin: 8px;
+  pointer-events: none;
+}
+
+.dropZoneContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: rgba(22, 24, 29, 0.95);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+.dropZoneText {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #00C985;
+  margin: 1rem 0 0.5rem;
+}
+
+.dropZoneSubtext {
+  font-size: 0.9rem;
+  color: #8A8D94;
+}

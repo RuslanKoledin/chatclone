@@ -1,4 +1,5 @@
-import {Avatar, IconButton, InputAdornment, Menu, MenuItem, TextField} from "@mui/material";
+import {IconButton, InputAdornment, Menu, MenuItem, TextField} from "@mui/material";
+import ColorAvatar from "../common/ColorAvatar";
 import {getChatName, getInitialsFromName} from "../utils/Utils";
 import React, {useEffect, useRef, useState} from "react";
 import {ChatDTO} from "../../redux/chat/ChatModel";
@@ -387,14 +388,10 @@ const MessagePage = (props: MessagePageProps) => {
                 <div className={styles.messagePageInnerHeaderContainer}>
                     <div className={styles.messagePageHeaderNameContainer}>
                         <div className={styles.avatarWrapper}>
-                            <Avatar sx={{
-                                width: '2.5rem',
-                                height: '2.5rem',
-                                fontSize: '1rem',
-                                mr: '0.75rem'
-                            }}>
-                                {getInitialsFromName(getChatName(props.chat, props.reqUser))}
-                            </Avatar>
+                            <ColorAvatar
+                                name={getChatName(props.chat, props.reqUser)}
+                                size={40}
+                            />
                             {getChatPartner()?.isOnline && (
                                 <span className={styles.onlineIndicator}></span>
                             )}
@@ -408,14 +405,14 @@ const MessagePage = (props: MessagePageProps) => {
                     </div>
                     <div className={styles.messagePageHeaderNameContainer}>
                         {!isSearch &&
-                            <IconButton onClick={onChangeSearch}>
+                            <IconButton onClick={onChangeSearch} sx={{ color: '#6B7280 !important' }}>
                                 <SearchIcon/>
                             </IconButton>}
                         {isSearch &&
                             <TextField
                                 id='searchMessages'
                                 type='text'
-                                label='Search for messages ...'
+                                label='Поиск сообщений...'
                                 size='small'
                                 fullWidth
                                 value={messageQuery}
@@ -443,9 +440,9 @@ const MessagePage = (props: MessagePageProps) => {
                             open={open}
                             onClose={onCloseMenu}
                             MenuListProps={{'aria-labelledby': 'basic-button'}}>
-                            {props.chat.isGroup && <MenuItem onClick={onEditGroupChat}>Edit Group Chat</MenuItem>}
+                            {props.chat.isGroup && <MenuItem onClick={onEditGroupChat}>Редактировать группу</MenuItem>}
                             <MenuItem onClick={onDeleteChat}>
-                                {props.chat.isGroup ? 'Delete Group Chat' : 'Delete Chat'}
+                                {props.chat.isGroup ? 'Удалить группу' : 'Удалить чат'}
                             </MenuItem>
                         </Menu>
                     </div>
@@ -555,7 +552,7 @@ const MessagePage = (props: MessagePageProps) => {
                         <TextField
                             id='newMessage'
                             type='text'
-                            label={selectedFiles && selectedFiles.length > 0 ? 'Добавить подпись...' : 'Enter new message ...'}
+                            placeholder={selectedFiles && selectedFiles.length > 0 ? 'Добавить подпись...' : 'Написать сообщение...'}
                             size='small'
                             onKeyDown={onKeyDown}
                             fullWidth
@@ -570,12 +567,38 @@ const MessagePage = (props: MessagePageProps) => {
                                     isTypingRef.current = false;
                                 }
                             }}
-                            sx={{backgroundColor: 'white'}}
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '24px',
+                                    backgroundColor: '#FFFFFF',
+                                    fontSize: '14px',
+                                    boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
+                                    '& fieldset': { borderColor: 'transparent' },
+                                    '&:hover fieldset': { borderColor: '#00875A' },
+                                    '&.Mui-focused fieldset': { borderColor: '#00875A', borderWidth: '1.5px' },
+                                },
+                                '& .MuiInputLabel-root': { display: 'none' },
+                                '& .MuiInputBase-input': { padding: '10px 14px' },
+                                '& .MuiInputBase-input::placeholder': { color: '#9CA3AF', opacity: 1 },
+                            }}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position='end'>
-                                        <IconButton onClick={handleSendMessage}>
-                                            <SendIcon/>
+                                        <IconButton
+                                            onClick={handleSendMessage}
+                                            sx={{
+                                                backgroundColor: '#00875A !important',
+                                                color: '#FFFFFF !important',
+                                                width: 34,
+                                                height: 34,
+                                                transition: 'background-color 0.18s ease, box-shadow 0.18s ease',
+                                                '&:hover': {
+                                                    backgroundColor: '#006644 !important',
+                                                    boxShadow: '0 3px 10px rgba(0,135,90,0.35)',
+                                                },
+                                            }}
+                                        >
+                                            <SendIcon sx={{ fontSize: '16px' }}/>
                                         </IconButton>
                                     </InputAdornment>),
                             }}/>

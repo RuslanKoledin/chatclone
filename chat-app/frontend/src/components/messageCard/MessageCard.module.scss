@@ -1,16 +1,14 @@
-/* ─── Animations ────────────────────────────────────────────────── */
 @keyframes msgSlideIn {
-  from { opacity: 0; transform: translateY(10px) scale(0.98); }
-  to   { opacity: 1; transform: translateY(0)   scale(1); }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ─── Message alignment ─────────────────────────────────────────── */
 .ownMessage {
   align-self: flex-end;
   margin-top: 2px;
   max-width: 65%;
   position: relative;
-  animation: msgSlideIn 0.18s ease-out;
+  animation: msgSlideIn 0.16s ease-out;
 }
 
 .othersMessage {
@@ -18,97 +16,59 @@
   margin-top: 2px;
   max-width: 65%;
   position: relative;
-  animation: msgSlideIn 0.18s ease-out;
+  animation: msgSlideIn 0.16s ease-out;
 }
 
-// Extra top margin when switching between senders
 .ownMessage + .othersMessage,
-.othersMessage + .ownMessage {
-  margin-top: 14px;
-}
+.othersMessage + .ownMessage { margin-top: 12px; }
 
 /* ─── Date separator ────────────────────────────────────────────── */
 .date {
   align-self: center;
-  margin: 18px 0 10px;
+  margin: 16px 0 8px;
   font-size: 12px;
-  color: #4A8B7B;
-  background-color: rgba(255,255,255,0.88);
-  padding: 4px 16px;
+  color: var(--date-text);
+  background-color: var(--date-bg);
+  padding: 4px 14px;
   border-radius: 999px;
-  box-shadow: 0 1px 4px rgba(34,168,138,0.12);
-  font-weight: 600;
+  font-weight: 500;
   backdrop-filter: blur(4px);
-  letter-spacing: 0.02em;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* ─── Bubbles ───────────────────────────────────────────────────── */
-
-// Own message — MBank green gradient with white text
 .ownMessage .bubbleContainer {
-  background: linear-gradient(135deg, #2EBE96 0%, #1A9E82 100%);
+  background-color: var(--accent);
   border-radius: 16px 16px 4px 16px;
   padding: 8px 12px 6px;
-  box-shadow: 0 2px 8px rgba(26,130,118,0.30);
-  position: relative;
+  box-shadow: 0 1px 4px rgba(46,182,125,0.22);
   display: flex;
   flex-direction: column;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    right: -7px;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 0 12px 10px;
-    border-color: transparent transparent #1A9E82 transparent;
-  }
+  transition: background-color 0.2s ease;
 }
 
-// Others' message — clean white card
 .othersMessage .bubbleContainer {
-  background-color: #FFFFFF;
+  background-color: var(--msg-others-bg);
   border-radius: 16px 16px 16px 4px;
   padding: 8px 12px 6px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  position: relative;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
   display: flex;
   flex-direction: column;
-
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: -7px;
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 10px 12px 0;
-    border-color: transparent #FFFFFF transparent transparent;
-  }
+  transition: background-color 0.2s ease;
 }
 
-.bubbleContainer {
-  display: flex;
-  flex-direction: column;
-}
+.bubbleContainer { display: flex; flex-direction: column; }
 
-/* ─── Text content ──────────────────────────────────────────────── */
-.ownMessage .contentContainer {
-  color: #FFFFFF;
-}
-
-.othersMessage .contentContainer {
-  color: #111827;
-}
+/* ─── Text ──────────────────────────────────────────────────────── */
+.ownMessage .contentContainer { color: #FFFFFF; }
+.othersMessage .contentContainer { color: var(--msg-others-text); }
 
 .contentContainer {
   margin: 0 0 2px;
   word-break: break-word;
   line-height: 1.55;
-  font-size: 14.2px;
+  font-size: 14px;
 }
 
 /* ─── Time & status ─────────────────────────────────────────────── */
@@ -120,56 +80,29 @@
   margin-top: 2px;
 }
 
-.ownMessage .timeText {
-  color: rgba(255,255,255,0.70);
-}
+.ownMessage .timeText    { color: rgba(255,255,255,0.65); }
+.othersMessage .timeText { color: var(--msg-others-time); }
 
-.othersMessage .timeText {
-  color: #8696A0;
-}
+.timeText { font-size: 11px; line-height: 1; }
 
-.timeText {
-  font-size: 11px;
-  line-height: 1;
-}
-
-.messageCardInnerContainer {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
+.messageCardInnerContainer { width: 100%; display: flex; flex-direction: column; }
 
 .editedLabel {
   font-size: 11px;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.60);
   font-style: italic;
   margin-right: 3px;
 }
+.othersMessage .editedLabel { color: var(--msg-others-time); }
 
-.othersMessage .editedLabel {
-  color: #8696A0;
-}
-
-.deletedMessage {
-  font-style: italic;
-  color: rgba(255,255,255,0.65);
-  font-size: 14px;
-}
-
-.othersMessage .deletedMessage {
-  color: #8696A0;
-}
+.deletedMessage { font-style: italic; color: rgba(255,255,255,0.60); font-size: 14px; }
+.othersMessage .deletedMessage { color: var(--msg-others-time); }
 
 .messageWrapper { position: relative; }
 .contextMenuTrigger { cursor: context-menu; }
 
-/* ─── Sender name (group chats) ─────────────────────────────────── */
-.senderName {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: #22A88A;
-  margin-bottom: 3px;
-}
+/* ─── Sender name ───────────────────────────────────────────────── */
+.senderName { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 3px; }
 
 /* ─── Reply quote ───────────────────────────────────────────────── */
 .replyContainer {
@@ -186,74 +119,35 @@
   &:hover { background-color: rgba(0,0,0,0.16); }
 }
 
-.replyLine {
-  width: 3px;
-  background-color: rgba(255,255,255,0.80);
-  border-radius: 2px;
-  flex-shrink: 0;
-}
+.othersMessage .replyContainer { background-color: var(--msg-others-reply-bg); }
 
-.othersMessage .replyLine {
-  background-color: #22A88A;
-}
+.replyLine { width: 3px; background-color: rgba(255,255,255,0.70); border-radius: 2px; flex-shrink: 0; }
+.othersMessage .replyLine { background-color: var(--accent); }
 
-.replyContent {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
+.replyContent { display: flex; flex-direction: column; min-width: 0; }
 
-.replyUserName {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.90);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
+.replyUserName { font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.90); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.othersMessage .replyUserName { color: var(--accent); }
 
-.othersMessage .replyUserName {
-  color: #22A88A;
-}
+.replyText { font-size: 12px; color: rgba(255,255,255,0.65); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 240px; }
+.othersMessage .replyText { color: var(--msg-others-time); }
 
-.replyText {
-  font-size: 12px;
-  color: rgba(255,255,255,0.70);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 240px;
-}
-
-.othersMessage .replyText {
-  color: #6B7280;
-}
-
-/* ─── Forwarded header ──────────────────────────────────────────── */
+/* ─── Forwarded ─────────────────────────────────────────────────── */
 .forwardedHeader {
   display: flex;
   align-items: center;
   gap: 4px;
   font-size: 12px;
   font-style: italic;
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.60);
   margin-bottom: 5px;
   padding-bottom: 5px;
   border-bottom: 1px solid rgba(255,255,255,0.15);
 }
-
-.othersMessage .forwardedHeader {
-  color: #8696A0;
-  border-bottom-color: rgba(0,0,0,0.06);
-}
+.othersMessage .forwardedHeader { color: var(--msg-others-time); border-bottom-color: var(--header-border); }
 
 /* ─── Attachments ───────────────────────────────────────────────── */
-.attachmentsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 6px;
-}
+.attachmentsContainer { display: flex; flex-direction: column; gap: 6px; margin-bottom: 6px; }
 
 .attachmentImage {
   max-width: 280px;
@@ -261,10 +155,9 @@
   border-radius: 10px;
   cursor: pointer;
   object-fit: cover;
-  transition: opacity 0.15s, transform 0.15s;
   display: block;
-
-  &:hover { opacity: 0.90; transform: scale(1.01); }
+  transition: opacity 0.15s;
+  &:hover { opacity: 0.88; }
 }
 
 .attachmentFile {
@@ -278,37 +171,23 @@
   color: #FFFFFF;
   font-size: 13px;
   transition: background-color 0.15s;
-
-  &:hover { background-color: rgba(0,0,0,0.18); }
+  &:hover { background-color: rgba(0,0,0,0.16); }
 }
 
 .othersMessage .attachmentFile {
-  background-color: rgba(0,0,0,0.05);
-  color: #374151;
-  &:hover { background-color: rgba(0,0,0,0.09); }
+  background-color: var(--msg-others-attachment-bg);
+  color: var(--msg-others-attachment-text);
+  &:hover { filter: brightness(0.95); }
 }
 
-.fileSize {
-  opacity: 0.55;
-  font-size: 12px;
-}
+.fileSize { opacity: 0.55; font-size: 12px; }
 
 /* ─── Audio ─────────────────────────────────────────────────────── */
 .audioContainer { margin: 4px 0; }
-.audioPlayer {
-  width: 100%;
-  max-width: 260px;
-  height: 36px;
-  border-radius: 18px;
-}
+.audioPlayer { width: 100%; max-width: 260px; height: 36px; border-radius: 18px; }
 
 /* ─── Reactions ─────────────────────────────────────────────────── */
-.reactionsContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 6px;
-}
+.reactionsContainer { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
 
 .reactionBadge {
   display: flex;
@@ -316,42 +195,32 @@
   gap: 4px;
   padding: 3px 8px;
   border-radius: 999px;
-  background-color: rgba(255,255,255,0.90);
-  border: 1px solid rgba(255,255,255,0.40);
+  background-color: var(--header-bg);
+  border: 1px solid var(--header-border);
   cursor: pointer;
   transition: all 0.15s ease;
   font-size: 13px;
-  backdrop-filter: blur(4px);
-
-  &:hover {
-    background-color: #FFFFFF;
-    transform: scale(1.08);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
-  }
+  &:hover { transform: scale(1.08); }
 }
 
 .reactionBadgeActive {
-  background-color: #FFB020;
-  border-color: #E09800;
-  box-shadow: 0 2px 6px rgba(255,176,32,0.35);
+  background-color: var(--accent);
+  border-color: var(--accent-hover);
+  .reactionCount { color: #FFFFFF; }
 }
 
 .reactionEmoji { font-size: 14px; line-height: 1; }
-
-.reactionCount {
-  font-size: 12px;
-  color: #374151;
-  font-weight: 600;
-}
+.reactionCount { font-size: 12px; color: var(--header-text); font-weight: 600; }
 
 /* ─── Reaction picker ───────────────────────────────────────────── */
 .reactionPicker {
   display: flex;
   padding: 8px;
   gap: 4px;
-  background: #FFFFFF;
-  border-radius: 16px;
-  box-shadow: 0 6px 24px rgba(34,168,138,0.18);
+  background: var(--header-bg);
+  border-radius: 14px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.14);
+  border: 1px solid var(--header-border);
 }
 
 .reactionPickerButton {
@@ -366,17 +235,13 @@
   cursor: pointer;
   font-size: 20px;
   transition: all 0.15s ease;
-
-  &:hover {
-    background-color: #E8F7F3;
-    transform: scale(1.25);
-  }
+  &:hover { background-color: var(--sidebar-hover); transform: scale(1.25); }
 }
 
 /* ─── Search highlight ──────────────────────────────────────────── */
 .highlightedText {
-  background-color: #FFB020;
-  color: #1A2E28;
+  background-color: #F5A623;
+  color: #FFFFFF;
   padding: 1px 3px;
   border-radius: 3px;
   font-weight: 600;

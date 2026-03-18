@@ -99,7 +99,7 @@ class UserControllerTest extends AbstractIntegrationTest {
         LoginResponseDTO response = authController.login(loginRequest).getBody();
         assert response != null;
         String authorization = JwtConstants.TOKEN_PREFIX + response.token();
-        UpdateUserRequestDTO request = new UpdateUserRequestDTO(mail, password, name);
+        UpdateUserRequestDTO request = new UpdateUserRequestDTO(mail, password, name, null);
         ResponseEntity<ApiResponseDTO> user = userController.updateUser(request, authorization);
         ResponseEntity<UserDTO> repositoryUser = userController.getUserProfile(authorization);
         assertThat(user.getStatusCode()).isEqualTo(HttpStatus.OK);

@@ -1,0 +1,189 @@
+.outerContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: #0F1117;
+  padding: 20px;
+}
+
+// Subtle dark glow decorations
+.outerContainer::before,
+.outerContainer::after {
+  content: '';
+  position: absolute;
+  border-radius: 999px;
+  opacity: 0.12;
+  z-index: 0;
+  filter: blur(60px);
+}
+
+.outerContainer::before {
+  width: 500px;
+  height: 500px;
+  left: -200px;
+  top: -150px;
+  background: radial-gradient(circle, #00C985 0%, transparent 70%);
+}
+
+.outerContainer::after {
+  width: 400px;
+  height: 400px;
+  right: -150px;
+  bottom: -100px;
+  background: radial-gradient(circle, #FFD700 0%, transparent 70%);
+}
+
+.innerContainer {
+  width: 100%;
+  max-width: 420px;
+  padding: 48px 40px;
+  background-color: #16181D;
+  border: 1px solid #2A2D35;
+  border-radius: 16px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logoText {
+  font-size: 32px;
+  font-weight: 700;
+  color: #E8E8EC;
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.logoAccent {
+  color: #00C985;
+}
+
+.subtitle {
+  text-align: center;
+  color: #8A8D94;
+  font-size: 14px;
+  margin: 8px 0 32px 0;
+}
+
+.title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #E8E8EC;
+  margin: 0 0 24px 0;
+  text-align: center;
+}
+
+.text {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #C8CDD8;
+}
+
+.inputGroup {
+  margin-bottom: 18px;
+}
+
+.textInput {
+  width: 100%;
+
+  :global(.MuiOutlinedInput-root) {
+    border-radius: 10px;
+    background-color: #1E2128;
+    color: #C8CDD8;
+    transition: all 0.2s ease;
+
+    :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: #2A2D35;
+    }
+
+    &:hover {
+      :global(.MuiOutlinedInput-notchedOutline) {
+        border-color: #00C985;
+      }
+    }
+
+    &:global(.Mui-focused) {
+      :global(.MuiOutlinedInput-notchedOutline) {
+        border-color: #00C985;
+        border-width: 2px;
+      }
+    }
+  }
+
+  :global(.MuiInputLabel-root) {
+    color: #555860;
+
+    &:global(.Mui-focused) {
+      color: #00C985;
+    }
+  }
+
+  input {
+    color: #C8CDD8;
+  }
+}
+
+.forgotPassword {
+  text-align: right;
+  margin-top: -8px;
+  margin-bottom: 8px;
+}
+
+.button {
+  margin-top: 16px;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  margin: 24px 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #2A2D35;
+  }
+
+  span {
+    padding: 0 16px;
+    color: #555860;
+    font-size: 13px;
+  }
+}
+
+.bottomContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16px;
+  gap: 4px;
+
+  p {
+    margin: 0;
+    color: #8A8D94;
+    font-size: 14px;
+  }
+}
+
+.errorMessage {
+  background-color: rgba(255, 82, 82, 0.12);
+  color: #FF5252;
+  border: 1px solid rgba(255, 82, 82, 0.25);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 20px;
+  text-align: center;
+}

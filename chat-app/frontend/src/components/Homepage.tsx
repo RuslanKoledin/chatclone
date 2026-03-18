@@ -8,7 +8,12 @@ import EditGroupChat from "./editChat/EditGroupChat";
 import Profile from "./profile/Profile";
 import {Avatar, Divider, IconButton, InputAdornment, Menu, MenuItem, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, List, ListItem, ListItemButton, ListItemAvatar, ListItemText, Checkbox} from "@mui/material";
 import ChatIcon from '@mui/icons-material/Chat';
+import MBankLogo from "./common/MBankLogo";
+import ColorAvatar from "./common/ColorAvatar";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import LightModeIcon from '@mui/icons-material/LightMode';
+import DarkModeIcon from '@mui/icons-material/DarkMode';
+import {useTheme} from "../theme/ThemeContext";
 import {currentUser, logoutUser} from "../redux/auth/AuthAction";
 import SearchIcon from '@mui/icons-material/Search';
 import {getUserChats, markChatAsRead, pinMessage, unpinMessage} from "../redux/chat/ChatAction";
@@ -39,6 +44,7 @@ import {
 
 const Homepage = () => {
 
+    const { theme, toggleTheme } = useTheme();
     const authState = useSelector((state: RootState) => state.auth);
     const chatState = useSelector((state: RootState) => state.chat);
     const messageState = useSelector((state: RootState) => state.message);
@@ -511,40 +517,46 @@ const Homepage = () => {
                             <div className={styles.sideBarInnerContainer}>
                                 <div className={styles.navContainer}>
                                     <div onClick={onOpenProfile} className={styles.userInfoContainer}>
-                                        <Avatar sx={{
-                                            width: '2.5rem',
-                                            height: '2.5rem',
-                                            fontSize: '1rem',
-                                            mr: '0.75rem'
-                                        }}>
-                                            {initials}
-                                        </Avatar>
-                                        <p>{authState.reqUser?.fullName}</p>
+                                        <MBankLogo size={36} />
+                                        <span className={styles.navBrandText}>MChat</span>
                                     </div>
-                                    <div>
-                                        <IconButton onClick={onCreateSingleChat}>
-                                            <ChatIcon/>
+                                    <div className={styles.navRightSection}>
+                                        <IconButton onClick={toggleTheme} size="small" title={theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}>
+                                            {theme === 'light' ? <DarkModeIcon fontSize="small"/> : <LightModeIcon fontSize="small"/>}
                                         </IconButton>
-                                        <IconButton onClick={onOpenMenu}>
-                                            <MoreVertIcon/>
-                                        </IconButton>
-                                        <Menu
-                                            id="basic-menu"
-                                            anchorEl={anchor}
-                                            open={open}
-                                            onClose={onCloseMenu}
-                                            MenuListProps={{'aria-labelledby': 'basic-button'}}>
-                                            <MenuItem onClick={onOpenProfile}>Profile</MenuItem>
-                                            <MenuItem onClick={onCreateGroupChat}>Create Group</MenuItem>
-                                            <MenuItem onClick={onLogout}>Logout</MenuItem>
-                                        </Menu>
+                                        <div onClick={onOpenProfile} className={styles.navUserInfo}>
+                                            <ColorAvatar
+                                                name={authState.reqUser?.fullName || ''}
+                                                src={authState.reqUser?.profilePhoto ?? undefined}
+                                                size={32}
+                                                sx={{ cursor: 'pointer' }}
+                                            />
+                                        </div>
+                                        <div>
+                                            <IconButton onClick={onCreateSingleChat}>
+                                                <ChatIcon/>
+                                            </IconButton>
+                                            <IconButton onClick={onOpenMenu}>
+                                                <MoreVertIcon/>
+                                            </IconButton>
+                                            <Menu
+                                                id="basic-menu"
+                                                anchorEl={anchor}
+                                                open={open}
+                                                onClose={onCloseMenu}
+                                                MenuListProps={{'aria-labelledby': 'basic-button'}}>
+                                                <MenuItem onClick={onOpenProfile}>Профиль</MenuItem>
+                                                <MenuItem onClick={onCreateGroupChat}>Создать группу</MenuItem>
+                                                <MenuItem onClick={onLogout}>Выйти</MenuItem>
+                                            </Menu>
+                                        </div>
                                     </div>
                                 </div>
                                 <div className={styles.searchContainer}>
                                     <TextField
                                         id='search'
                                         type='text'
-                                        label='Search your chats ...'
+                                        placeholder='Поиск чатов...'
                                         size='small'
                                         fullWidth
                                         value={query}
@@ -552,14 +564,10 @@ const Homepage = () => {
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position='start'>
-                                                    <SearchIcon/>
+                                                    <SearchIcon sx={{ fontSize: '18px', color: '#9CA3AF' }}/>
                                                 </InputAdornment>
                                             ),
                                             endAdornment: getSearchEndAdornment(),
-                                        }}
-                                        InputLabelProps={{
-                                            shrink: focused || query.length > 0,
-                                            style: {marginLeft: focused || query.length > 0 ? 0 : 30}
                                         }}
                                         onFocus={() => setFocused(true)}
                                         onBlur={() => setFocused(false)}/>
@@ -571,7 +579,6 @@ const Homepage = () => {
                                                 x.users[0].fullName.toLowerCase().includes(query))
                                         .map((chat: ChatDTO) => (
                                             <div key={chat.id} onClick={() => onClickChat(chat)}>
-                                                <Divider/>
                                                 <ChatCard chat={chat}/>
                                             </div>
                                         ))}
@@ -583,15 +590,36 @@ const Homepage = () => {
                                             const bIsPinned = pinnedChatIds.includes(b.id.toString());
                                             if (aIsPinned && !bIsPinned) return -1;
                                             if (!aIsPinned && bIsPinned) return 1;
-                                            return 0; // Сохраняем исходный порядок (по времени последнего сообщения)
+                                            return 0;
                                         })
                                         .map((chat: ChatDTO) => (
                                         <div key={chat.id} onClick={() => onClickChat(chat)}>
-                                            <Divider/>
                                             <ChatCard chat={chat}/>
                                         </div>
                                     ))}
-                                    {chatState.chats?.length > 0 ? <Divider/> : null}
+                                    {(!chatState.chats || chatState.chats.length === 0) && (
+                                        <div style={{
+                                            display: 'flex', flexDirection: 'column',
+                                            alignItems: 'center', justifyContent: 'center',
+                                            height: '60%', padding: '40px 24px', textAlign: 'center',
+                                        }}>
+                                            <div style={{
+                                                width: 68, height: 68, borderRadius: '50%',
+                                                backgroundColor: '#E6F4EE', display: 'flex',
+                                                alignItems: 'center', justifyContent: 'center',
+                                                marginBottom: 18,
+                                                boxShadow: '0 2px 10px rgba(0,135,90,0.12)',
+                                            }}>
+                                                <span style={{ fontSize: 30 }}>💬</span>
+                                            </div>
+                                            <p style={{ margin: '0 0 6px', fontSize: 15, fontWeight: 600, color: '#111827', letterSpacing: '-0.2px' }}>
+                                                Нет чатов
+                                            </p>
+                                            <p style={{ margin: 0, fontSize: 13, color: '#9CA3AF', lineHeight: 1.6 }}>
+                                                Нажмите на иконку чата чтобы начать новую беседу
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>}
                     </div>

@@ -71,11 +71,11 @@ const EditGroupChat = (props: CreateGroupProps) => {
                 <IconButton onClick={handleBack}>
                     <WestIcon fontSize='medium'/>
                 </IconButton>
-                <h2>Edit Group Chat</h2>
+                <h2>Редактировать группу</h2>
             </div>
             <div>
                 <div className={styles.editGroupChatTextContainer}>
-                    <p className={styles.editGroupChatText}>Remove user</p>
+                    <p className={styles.editGroupChatText}>Участники</p>
                 </div>
                 <div className={styles.editGroupChatUserContainer}>
                     {props.currentChat?.users.map(user =>
@@ -83,18 +83,18 @@ const EditGroupChat = (props: CreateGroupProps) => {
                     }
                 </div>
                 <div className={styles.editGroupChatTextContainer}>
-                    <p className={styles.editGroupChatText}>Add user</p>
+                    <p className={styles.editGroupChatText}>Добавить участника</p>
                 </div>
                 <div className={styles.editGroupChatTextField}>
                     <TextField
                         id='searchUser'
                         type='text'
-                        label='Search user ...'
+                        label='Поиск пользователя...'
                         size='small'
                         fullWidth
                         value={userQuery}
                         onChange={onChangeQuery}
-                        sx={{backgroundColor: 'white'}}
+                        sx={{}}
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position='start'>

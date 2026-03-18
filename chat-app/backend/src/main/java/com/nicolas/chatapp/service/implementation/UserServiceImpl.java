@@ -59,6 +59,10 @@ public class UserServiceImpl implements UserService {
             user.setFullName(request.fullName());
         }
 
+        if (Objects.nonNull(request.profilePhoto())) {
+            user.setProfilePhoto(request.profilePhoto());
+        }
+
         return userRepository.save(user);
     }
 

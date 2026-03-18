@@ -1,0 +1,260 @@
+.outerMessagePageContainer {
+  width: 100%;
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+// Clean white header, no gradient
+.messagePageHeaderContainer {
+  width: 100%;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E5E7EB;
+  height: 60px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.messagePageInnerHeaderContainer {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #111827;
+}
+
+.messagePageHeaderNameContainer {
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  color: #111827;
+
+  h3, p {
+    color: #111827;
+    margin: 0;
+  }
+}
+
+.avatarWrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.onlineIndicator {
+  position: absolute;
+  bottom: 2px;
+  right: 14px;
+  width: 9px;
+  height: 9px;
+  background-color: #10B981;
+  border: 2px solid #FFFFFF;
+  border-radius: 50%;
+}
+
+.chatInfoContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.chatName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  color: #111827;
+}
+
+.statusText {
+  font-size: 0.72rem;
+  color: #9CA3AF;
+  margin-top: 1px;
+}
+
+// Pinned message — very clean
+.pinnedMessageContainer {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  background-color: #F9FAFB;
+  border-bottom: 1px solid #E5E7EB;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:hover {
+    background-color: #F3F4F6;
+  }
+}
+
+.pinnedMessageContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.pinnedMessageLabel {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #00875A;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.pinnedMessageText {
+  font-size: 0.83rem;
+  color: #6B7280;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Messages area
+.messageContentContainer {
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
+  background-color: #F9FAFB;
+  flex: 1;
+}
+
+.messageContentInnerContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+// Footer
+.footerContainer {
+  background-color: #FFFFFF;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 0;
+  border-top: 1px solid #E5E7EB;
+  flex-shrink: 0;
+}
+
+.replyPreviewContainer {
+  display: flex;
+  align-items: center;
+  width: 85%;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background-color: #F3F4F6;
+  border-radius: 10px;
+  border-left: 3px solid #00875A;
+}
+
+.replyPreviewLine { display: none; }
+
+.replyPreviewContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.replyPreviewUserName {
+  font-size: 0.73rem;
+  font-weight: 600;
+  color: #00875A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.replyPreviewText {
+  font-size: 0.78rem;
+  color: #9CA3AF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inputRowContainer {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.innerFooterContainer { flex: 1; }
+
+.filesPreviewContainer {
+  display: flex;
+  align-items: center;
+  width: 85%;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background-color: #ECFDF5;
+  border-radius: 10px;
+  border-left: 3px solid #00875A;
+}
+
+.filesPreviewContent {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.filesPreviewText {
+  font-size: 0.83rem;
+  color: #374151;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.attachButton { margin-right: 0.5rem; }
+.emojiButton { margin-right: 1rem; }
+.emojiOuterContainer { position: relative; }
+
+.emojiContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-105%, -95.5%);
+  z-index: 1;
+}
+
+.dropZoneOverlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0, 135, 90, 0.06);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #00875A;
+  border-radius: 8px;
+  margin: 8px;
+  pointer-events: none;
+}
+
+.dropZoneContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-color: rgba(255, 255, 255, 0.97);
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.dropZoneText {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #00875A;
+  margin: 1rem 0 0.5rem;
+}
+
+.dropZoneSubtext {
+  font-size: 0.87rem;
+  color: #9CA3AF;
+}

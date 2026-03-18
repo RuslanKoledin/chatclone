@@ -96,20 +96,20 @@ const CreateGroupChat = (props: CreateGroupChatProps) => {
                 <IconButton onClick={handleBack}>
                     <WestIcon fontSize='medium'/>
                 </IconButton>
-                <h2>Create New Group Chat</h2>
+                <h2>Новая группа</h2>
             </div>
             <div className={styles.createGroupChatTextField}>
                 <TextField
                     id='chatName'
                     type='text'
-                    label='Enter name ...'
+                    label='Название группы...'
                     size='small'
                     fullWidth
                     value={name}
                     onChange={onChangeName}
-                    sx={{backgroundColor: 'white'}}/>
+                    sx={{}}/>
             </div>
-            <p className={styles.createGroupChatText}>User</p>
+            <p className={styles.createGroupChatText}>Участники</p>
             <div className={styles.createGroupChatUserContainer}>
                 {groupMember.size > 0 && Array.from(groupMember)
                     .map(member =>
@@ -120,12 +120,12 @@ const CreateGroupChat = (props: CreateGroupChatProps) => {
                 <TextField
                     id='searchUser'
                     type='text'
-                    label='Search user to add ...'
+                    label='Добавить участника...'
                     size='small'
                     fullWidth
                     value={userQuery}
                     onChange={onChangeQuery}
-                    sx={{backgroundColor: 'white'}}
+                    sx={{}}
                     InputProps={{
                         startAdornment: (
                             <InputAdornment position='start'>
@@ -147,7 +147,7 @@ const CreateGroupChat = (props: CreateGroupChatProps) => {
                     .map(user => <GroupMember member={user} onAddMember={onAddMember} key={user.id}/>)}
             </div>
             <div className={styles.createGroupChatButton}>
-                <Button variant={"contained"} onClick={onCreate}>Create Group Chat</Button>
+                <Button variant={"contained"} onClick={onCreate}>Создать группу</Button>
             </div>
         </div>
     );

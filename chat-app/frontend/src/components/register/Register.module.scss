@@ -3,90 +3,107 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1A7A6B 0%, #22A88A 40%, #2EBE96 75%, #3DCBA3 100%);
+  background-color: #F3F4F6;
   padding: 20px;
-  position: relative;
-  overflow: hidden;
-}
-
-// Decorative blurred shapes for depth
-.outerContainer::before {
-  content: '';
-  position: absolute;
-  width: 600px;
-  height: 600px;
-  top: -260px;
-  right: -200px;
-  background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 65%);
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.outerContainer::after {
-  content: '';
-  position: absolute;
-  width: 420px;
-  height: 420px;
-  bottom: -160px;
-  left: -140px;
-  background: radial-gradient(circle, rgba(255,176,32,0.12) 0%, transparent 65%);
-  border-radius: 50%;
-  pointer-events: none;
 }
 
 .innerContainer {
   width: 100%;
-  max-width: 440px;
-  padding: 52px 48px;
+  max-width: 420px;
+  padding: 40px 40px 28px;
   background-color: #FFFFFF;
-  border-radius: 28px;
-  box-shadow:
-    0 40px 90px rgba(26,122,107,0.30),
-    0 8px 24px rgba(0,0,0,0.10);
-  position: relative;
-  z-index: 1;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }
 
+// Логотип
 .logo {
-  text-align: center;
-  margin-bottom: 36px;
-}
-
-.logoEmblem {
   display: flex;
-  justify-content: center;
-  margin-bottom: 14px;
+  align-items: center;
+  gap: 0px;
+  margin-bottom: 28px;
+  line-height: 1;
 }
 
-.logoText {
-  font-size: 30px;
-  font-weight: 800;
-  color: #111827;
-  margin: 0;
-  letter-spacing: -0.8px;
+.logoImg {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
 }
 
-.logoAccent {
-  color: #22A88A;
+
+.logoWord {
+  display: inline-block;
+  font-size: 40px;
+  font-weight: 900;
+  color: #2EB67D;
+  font-family: 'Inter', Arial, sans-serif;
+  font-style: normal;
+  line-height: 1;
 }
 
-.subtitle {
-  text-align: center;
-  color: #9CA3AF;
-  font-size: 13.5px;
-  margin: 8px 0 0;
-  line-height: 1.55;
-}
-
-.title {
-  font-size: 20px;
+.heading {
+  font-size: 26px;
   font-weight: 700;
   color: #111827;
-  margin: 0 0 28px;
-  text-align: center;
+  margin: 0 0 6px;
   letter-spacing: -0.3px;
 }
 
+.subtitle {
+  font-size: 14px;
+  color: #2EB67D;
+  margin: 0 0 24px;
+  line-height: 1.4;
+}
+
+.textInput {
+  margin-bottom: 12px !important;
+
+  :global(.MuiOutlinedInput-root) {
+    border-radius: 10px;
+    background-color: #FAFAFA;
+    font-size: 14px;
+    color: #374151;
+
+    :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: #E5E7EB;
+    }
+
+    &:hover :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: #C4C4C4;
+    }
+
+    &:global(.Mui-focused) :global(.MuiOutlinedInput-notchedOutline) {
+      border-color: #2EB67D;
+      border-width: 1.5px;
+    }
+  }
+
+  :global(.MuiInputBase-input::placeholder) {
+    color: #9CA3AF;
+    opacity: 1;
+  }
+}
+
+.forgotPassword {
+  text-align: center;
+  margin-top: 8px;
+}
+
+.errorMessage {
+  background-color: #FEF2F2;
+  color: #EF4444;
+  border: 1px solid #FECACA;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin-bottom: 16px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+// ---- SignUp (регистрация) — оставляем базовые стили ----
 .text {
   margin: 0 0 6px;
   font-size: 13px;
@@ -96,48 +113,6 @@
 
 .inputGroup {
   margin-bottom: 16px;
-}
-
-.textInput {
-  width: 100%;
-
-  :global(.MuiOutlinedInput-root) {
-    border-radius: 12px;
-    background-color: #F0F9F6;
-    font-size: 14px;
-    transition: all 0.2s ease;
-
-    :global(.MuiOutlinedInput-notchedOutline) {
-      border-color: #C8E8E0;
-    }
-
-    &:hover {
-      background-color: #FFFFFF;
-      :global(.MuiOutlinedInput-notchedOutline) {
-        border-color: #22A88A;
-      }
-    }
-
-    &:global(.Mui-focused) {
-      background-color: #FFFFFF;
-      :global(.MuiOutlinedInput-notchedOutline) {
-        border-color: #22A88A;
-        border-width: 2px;
-      }
-    }
-  }
-
-  :global(.MuiInputLabel-root) {
-    color: #9CA3AF;
-    font-size: 14px;
-    &:global(.Mui-focused) { color: #22A88A; }
-  }
-}
-
-.forgotPassword {
-  text-align: right;
-  margin-top: -8px;
-  margin-bottom: 8px;
 }
 
 .button {
@@ -178,16 +153,4 @@
     color: #9CA3AF;
     font-size: 14px;
   }
-}
-
-.errorMessage {
-  background-color: #FEF2F2;
-  color: #EF4444;
-  border: 1px solid #FECACA;
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-size: 13px;
-  margin-bottom: 16px;
-  text-align: center;
-  line-height: 1.5;
 }

@@ -1,4 +1,5 @@
 import styles from './Register.module.scss'
+import MBankLogo from "../common/MBankLogo";
 import {useNavigate} from "react-router-dom";
 import React, {Dispatch, useEffect, useState} from "react";
 import {useDispatch, useSelector} from "react-redux";
@@ -98,8 +99,11 @@ const SignUp = () => {
         <div className={styles.outerContainer}>
             <div className={styles.innerContainer}>
                 <div className={styles.logo}>
+                    <div className={styles.logoEmblem}>
+                        <MBankLogo size={64} />
+                    </div>
                     <h1 className={styles.logoText}>
-                        M<span className={styles.logoAccent}>Chat</span>
+                        M<span className={styles.logoAccent}>Bank</span> Chat
                     </h1>
                     <p className={styles.subtitle}>Создание аккаунта</p>
                 </div>
@@ -191,21 +195,22 @@ const SignUp = () => {
                             type="submit"
                             disabled={isButtonDisabled}
                             sx={{
-                                backgroundColor: '#FFD700',
-                                color: '#18191C',
+                                backgroundColor: '#00875A',
+                                color: '#FFFFFF',
                                 fontWeight: 600,
-                                fontSize: '16px',
+                                fontSize: '15px',
                                 textTransform: 'none',
                                 borderRadius: '10px',
                                 padding: '14px 24px',
                                 boxShadow: 'none',
+                                letterSpacing: 0,
                                 '&:hover': {
-                                    backgroundColor: '#E6C200',
-                                    boxShadow: '0 8px 20px rgba(255, 215, 0, 0.35)',
+                                    backgroundColor: '#006644',
+                                    boxShadow: '0 6px 20px rgba(0, 135, 90, 0.35)',
                                 },
                                 '&:disabled': {
-                                    backgroundColor: '#E0E0E0',
-                                    color: '#999',
+                                    backgroundColor: '#E5E7EB',
+                                    color: '#9CA3AF',
                                 },
                             }}
                         >

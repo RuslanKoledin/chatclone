@@ -1,39 +1,56 @@
 .typingContainer {
   display: flex;
   align-items: center;
-  padding: 8px 16px;
+  padding: 4px 0 8px;
   margin-bottom: 4px;
+  align-self: flex-start;
 }
 
 .typingContent {
   display: flex;
   align-items: center;
-  background-color: rgba(0, 135, 90, 0.1);
+  background-color: #FFFFFF;
   padding: 8px 14px;
-  border-radius: 16px;
-  font-size: 0.85rem;
+  border-radius: 7.5px 7.5px 7.5px 0;
+  font-size: 0.84rem;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.13);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -8px;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 0 10px 10px 0;
+    border-color: transparent #FFFFFF transparent transparent;
+  }
 }
 
 .userName {
   color: #00875A;
-  font-weight: 500;
+  font-weight: 600;
+  font-size: 12.5px;
 }
 
 .typingText {
-  color: #666666;
+  color: #8696A0;
+  font-size: 12.5px;
 }
 
 .dotsContainer {
   display: flex;
   align-items: center;
-  margin-left: 4px;
+  margin-left: 6px;
   gap: 3px;
 }
 
 .dot {
   width: 5px;
   height: 5px;
-  background-color: #00875A;
+  background-color: #8696A0;
   border-radius: 50%;
   animation: bounce 1.4s infinite ease-in-out;
 }
@@ -53,7 +70,7 @@
 @keyframes bounce {
   0%, 60%, 100% {
     transform: translateY(0);
-    opacity: 0.5;
+    opacity: 0.45;
   }
   30% {
     transform: translateY(-4px);

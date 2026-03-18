@@ -1,0 +1,78 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --mbank-gold: #FFD700;
+  --mbank-gold-hover: #FFC800;
+  --mbank-green: #00C985;
+  --mbank-green-dark: #00A36C;
+  --mbank-green-light: #00E5A0;
+  --mbank-dark: #E8E8EC;
+  --mbank-text: #C8CDD8;
+  --mbank-text-light: #8A8D94;
+  --mbank-bg: #0F1117;
+  --mbank-white: #16181D;
+  --mbank-border: #2A2D35;
+  --mbank-error: #FF5252;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  max-width: 100vw;
+  background-color: var(--mbank-bg);
+  color: var(--mbank-text);
+  color-scheme: dark;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2A2D35; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #3A3D45; }
+
+/* MUI overrides for dark theme */
+.MuiPaper-root { background-color: #1E2128 !important; color: #C8CDD8 !important; }
+.MuiDialog-paper { background-color: #1E2128 !important; }
+.MuiListItem-root:hover { background-color: rgba(255,255,255,0.05) !important; }
+.MuiIconButton-root { color: #8A8D94 !important; }
+.MuiIconButton-root:hover { background-color: rgba(255,255,255,0.07) !important; }
+.MuiDivider-root { border-color: #2A2D35 !important; }
+
+/* Button styles */
+.mbank-btn-primary {
+  background-color: var(--mbank-green) !important;
+  color: #0F1117 !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  border-radius: 8px !important;
+  padding: 12px 24px !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease !important;
+}
+.mbank-btn-primary:hover {
+  background-color: var(--mbank-green-light) !important;
+  box-shadow: 0 4px 16px rgba(0, 201, 133, 0.35) !important;
+}
+
+/* Input styles */
+.mbank-input .MuiOutlinedInput-root {
+  border-radius: 8px;
+  background-color: #1E2128;
+  color: #C8CDD8;
+}
+.mbank-input .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--mbank-green);
+}
+.mbank-input .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--mbank-green);
+  border-width: 2px;
+}
+.mbank-input .MuiInputLabel-root { color: #8A8D94; }
+.mbank-input .MuiInputLabel-root.Mui-focused { color: var(--mbank-green); }
+.mbank-input input { color: #C8CDD8; }

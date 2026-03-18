@@ -17,8 +17,9 @@ import {
     DialogContentText,
     DialogActions
 } from "@mui/material";
-import {Visibility, VisibilityOff, Person, Lock} from "@mui/icons-material";
+import {VisibilityOff, Visibility} from "@mui/icons-material";
 import styles from "./Register.module.scss";
+import mchatLogo from "../../assets/mchat-logo.png";
 
 const SignIn = () => {
     const [signInData, setSignInData] = useState<LoginRequestDTO>({username: "", password: ""});
@@ -50,9 +51,7 @@ const SignIn = () => {
     const onSubmit = (e: React.ChangeEvent<HTMLFormElement>) => {
         e.preventDefault();
         const trimmedUsername = signInData.username.trim();
-        if (!trimmedUsername || !signInData.password) {
-            return;
-        }
+        if (!trimmedUsername || !signInData.password) return;
         dispatch(loginUser({...signInData, username: trimmedUsername}));
     };
 
@@ -66,83 +65,89 @@ const SignIn = () => {
         if (error) dispatch(clearAuthError());
     };
 
-    const handleTogglePassword = () => {
-        setShowPassword(!showPassword);
-    };
-
     const isFormValid = signInData.username.trim() !== "" && signInData.password !== "";
-    const isButtonDisabled = !isFormValid || loading;
 
     return (
         <div className={styles.outerContainer}>
             <div className={styles.innerContainer}>
+
+                {/* Логотип */}
                 <div className={styles.logo}>
-                    <h1 className={styles.logoText}>
-                        M<span className={styles.logoAccent}>Chat</span>
-                    </h1>
-                    <p className={styles.subtitle}>Корпоративный мессенджер</p>
+                    <img src={mchatLogo} alt="Mchat" className={styles.logoImg} />
+                    <span className={styles.logoWord}>Chat</span>
                 </div>
 
+                {/* Заголовок */}
+                <h1 className={styles.heading}>Вход</h1>
+                <p className={styles.subtitle}>Введите логин и пароль от Windows</p>
+
                 {error && (
-                    <div className={styles.errorMessage}>
-                        {error}
-                    </div>
+                    <div className={styles.errorMessage}>{error}</div>
                 )}
 
                 <form onSubmit={onSubmit}>
-                    <div className={styles.inputGroup}>
-                        <p className={styles.text}>Логин</p>
-                        <TextField
-                            className={styles.textInput}
-                            id="username"
-                            type="text"
-                            placeholder="r_koledin"
-                            helperText="Введите ваш username"
-                            variant="outlined"
-                            onChange={onChangeUsername}
-                            value={signInData.username}
-                            disabled={loading}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <Person sx={{ color: '#999' }} />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    </div>
-                    <div className={styles.inputGroup}>
-                        <p className={styles.text}>Пароль</p>
-                        <TextField
-                            className={styles.textInput}
-                            id="password"
-                            type={showPassword ? "text" : "password"}
-                            placeholder="Введите пароль"
-                            variant="outlined"
-                            onChange={onChangePassword}
-                            value={signInData.password}
-                            disabled={loading}
-                            InputProps={{
-                                startAdornment: (
-                                    <InputAdornment position="start">
-                                        <Lock sx={{ color: '#999' }} />
-                                    </InputAdornment>
-                                ),
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={handleTogglePassword}
-                                            edge="end"
-                                            size="small"
-                                            disabled={loading}
-                                        >
-                                            {showPassword ? <VisibilityOff /> : <Visibility />}
-                                        </IconButton>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    </div>
+                    <TextField
+                        className={styles.textInput}
+                        fullWidth
+                        id="username"
+                        type="text"
+                        placeholder="Учетная запись (a_asanov)"
+                        variant="outlined"
+                        onChange={onChangeUsername}
+                        value={signInData.username}
+                        disabled={loading}
+                    />
+
+                    <TextField
+                        className={styles.textInput}
+                        fullWidth
+                        id="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Пароль"
+                        variant="outlined"
+                        onChange={onChangePassword}
+                        value={signInData.password}
+                        disabled={loading}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        edge="end"
+                                        size="small"
+                                        disabled={loading}
+                                        sx={{ color: '#999' }}
+                                    >
+                                        {showPassword ? <Visibility /> : <VisibilityOff />}
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+
+                    <Button
+                        fullWidth
+                        variant="contained"
+                        size="large"
+                        type="submit"
+                        disabled={!isFormValid || loading}
+                        className={styles.submitBtn}
+                        sx={{
+                            backgroundColor: '#2EB67D',
+                            color: '#FFFFFF',
+                            fontWeight: 600,
+                            fontSize: '15px',
+                            textTransform: 'none',
+                            borderRadius: '10px',
+                            padding: '14px 24px',
+                            boxShadow: 'none',
+                            marginTop: '20px',
+                            '&:hover': { backgroundColor: '#239e67', boxShadow: 'none' },
+                            '&:disabled': { backgroundColor: '#E5E7EB', color: '#9CA3AF' },
+                        }}
+                    >
+                        {loading ? <CircularProgress size={22} sx={{ color: '#fff' }} /> : 'Войти'}
+                    </Button>
 
                     <div className={styles.forgotPassword}>
                         <Button
@@ -150,70 +155,24 @@ const SignIn = () => {
                             size="small"
                             onClick={() => setForgotPasswordOpen(true)}
                             sx={{
-                                color: '#666',
+                                color: '#999',
                                 textTransform: 'none',
                                 fontSize: '13px',
-                                padding: '4px 8px',
-                                '&:hover': {
-                                    backgroundColor: 'transparent',
-                                    color: '#18191C',
-                                },
+                                '&:hover': { backgroundColor: 'transparent', color: '#555' },
                             }}
                         >
                             Забыли пароль?
                         </Button>
                     </div>
-
-                    <div className={styles.button}>
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            size="large"
-                            type="submit"
-                            disabled={isButtonDisabled}
-                            sx={{
-                                backgroundColor: '#FFD700',
-                                color: '#18191C',
-                                fontWeight: 600,
-                                fontSize: '16px',
-                                textTransform: 'none',
-                                borderRadius: '10px',
-                                padding: '14px 24px',
-                                boxShadow: 'none',
-                                '&:hover': {
-                                    backgroundColor: '#E6C200',
-                                    boxShadow: '0 8px 20px rgba(255, 215, 0, 0.35)',
-                                },
-                                '&:disabled': {
-                                    backgroundColor: '#E0E0E0',
-                                    color: '#999',
-                                },
-                            }}
-                        >
-                            {loading ? (
-                                <CircularProgress size={24} sx={{ color: '#18191C' }} />
-                            ) : (
-                                'Войти'
-                            )}
-                        </Button>
-                    </div>
                 </form>
-
             </div>
 
             <Dialog
                 open={forgotPasswordOpen}
                 onClose={() => setForgotPasswordOpen(false)}
-                PaperProps={{
-                    sx: {
-                        borderRadius: '12px',
-                        padding: '8px',
-                    }
-                }}
+                PaperProps={{ sx: { borderRadius: '12px', padding: '8px' } }}
             >
-                <DialogTitle sx={{ fontWeight: 600 }}>
-                    Восстановление пароля
-                </DialogTitle>
+                <DialogTitle sx={{ fontWeight: 600 }}>Восстановление пароля</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
                         Для восстановления пароля обратитесь к системному администратору ОПО.
@@ -222,11 +181,7 @@ const SignIn = () => {
                 <DialogActions>
                     <Button
                         onClick={() => setForgotPasswordOpen(false)}
-                        sx={{
-                            color: '#18191C',
-                            fontWeight: 600,
-                            textTransform: 'none',
-                        }}
+                        sx={{ color: '#18191C', fontWeight: 600, textTransform: 'none' }}
                     >
                         Понятно
                     </Button>

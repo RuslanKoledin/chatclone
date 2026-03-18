@@ -9,3 +9,7 @@ import java.util.UUID;
 public interface AttachmentRepository extends JpaRepository<Attachment, UUID> {
     Optional<Attachment> findByStoredName(String storedName);
 }
+
+
+
+

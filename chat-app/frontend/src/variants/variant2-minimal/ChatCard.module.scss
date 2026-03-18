@@ -1,0 +1,65 @@
+.chatCardOuterContainer {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 10px 16px;
+  transition: background-color 0.15s ease;
+  border-bottom: none;
+  border-radius: 0;
+
+  &:hover {
+    background-color: #F3F4F6;
+  }
+
+  &:active {
+    background-color: #E5E7EB;
+  }
+}
+
+.chatCardAvatarContainer {
+  flex-shrink: 0;
+  margin-right: 12px;
+}
+
+.chatCardContentContainer {
+  flex: 1;
+  min-width: 0;
+}
+
+.chatCardContentInnerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatNameRow {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.chatCardLargeTextContainer {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chatCardSmallTextContainer {
+  font-size: 13px;
+  color: #9CA3AF;
+  margin: 3px 0 0 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chatCardTimeContainer {
+  font-size: 11px;
+  color: #D1D5DB;
+  flex-shrink: 0;
+  margin-left: 8px;
+}

@@ -10,6 +10,7 @@ export interface UpdateUserRequestDTO {
     email?: string,
     password?: string,
     fullName: string,
+    profilePhoto?: string,
 }
 
 export interface LoginResponseDTO {
@@ -31,6 +32,7 @@ export interface UserDTO {
     isOnline?: boolean,
     pinnedChatIds?: string[],
     mutedChatIds?: string[],
+    profilePhoto?: string,
 }
 
 export interface AuthenticationErrorDTO {

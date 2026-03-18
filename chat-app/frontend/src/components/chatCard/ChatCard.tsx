@@ -1,6 +1,7 @@
-import {Avatar, Badge, Menu, MenuItem} from "@mui/material";
+import {Badge, Menu, MenuItem} from "@mui/material";
 import React, {useState} from "react";
 import {getChatName, getInitialsFromName, transformDateToString} from "../utils/Utils";
+import ColorAvatar from "../common/ColorAvatar";
 import styles from './ChatCard.module.scss';
 import {ChatDTO} from "../../redux/chat/ChatModel";
 import {useSelector, useDispatch} from "react-redux";
@@ -79,27 +80,26 @@ const ChatCard = (props: ChatCardProps) => {
     return (
         <div className={styles.chatCardOuterContainer} onContextMenu={handleContextMenu}>
             <div className={styles.chatCardAvatarContainer}>
-                <Avatar sx={{
-                    width: '2.5rem',
-                    height: '2.5rem',
-                    fontSize: '1rem',
-                    mr: '0.75rem'
-                }}>
-                    {initials}
-                </Avatar>
+                <ColorAvatar name={name} size={44} />
             </div>
             <div className={styles.chatCardContentContainer}>
                 <div className={styles.chatCardContentInnerContainer}>
                     <div className={styles.chatNameRow}>
-                        {isPinned && <PushPinIcon sx={{ fontSize: '0.9rem', color: '#00875A', mr: 0.5 }} />}
-                        {isMuted && <VolumeOffIcon sx={{ fontSize: '0.9rem', color: '#999', mr: 0.5 }} />}
+                        {isPinned && <PushPinIcon sx={{ fontSize: '0.85rem', color: '#00875A' }} />}
+                        {isMuted && <VolumeOffIcon sx={{ fontSize: '0.85rem', color: '#9CA3AF' }} />}
                         <p className={styles.chatCardLargeTextContainer}>{name}</p>
                     </div>
-                    <p className={styles.chatCardSmallTextContainer}>{lastDate}</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+                        {numberOfUnreadMessages > 0 && (
+                            <span className={styles.unreadBadge}>{numberOfUnreadMessages}</span>
+                        )}
+                        <span className={`${styles.chatCardTimeContainer} ${numberOfUnreadMessages > 0 ? styles.chatCardTimeUnread : ''}`}>
+                            {lastDate}
+                        </span>
+                    </div>
                 </div>
                 <div className={styles.chatCardContentInnerContainer}>
                     <p className={styles.chatCardSmallTextContainer}>{lastMessageString}</p>
-                    {<Badge badgeContent={numberOfUnreadMessages} color='primary' sx={{mr: '0.75rem'}}/>}
                 </div>
             </div>
 

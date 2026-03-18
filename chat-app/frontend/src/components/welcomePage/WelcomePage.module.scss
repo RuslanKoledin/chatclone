@@ -3,23 +3,34 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  background: linear-gradient(180deg, #F5F5F5 0%, #E8E8E8 100%);
+  background-color: var(--welcome-bg);
+  transition: background-color 0.2s ease;
 }
 
 .innerWelcomeContainer {
   text-align: center;
-  padding: 40px;
+  padding: 48px 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--welcome-card-bg);
+  border-radius: 20px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+  transition: background-color 0.2s ease;
 
   h1 {
-    color: #18191C;
-    font-size: 24px;
+    color: var(--welcome-title);
+    font-size: 20px;
     font-weight: 600;
-    margin: 20px 0 8px 0;
+    margin: 18px 0 8px;
+    letter-spacing: -0.3px;
   }
 
   p {
-    color: #666666;
+    color: var(--welcome-text);
     font-size: 14px;
     margin: 0;
+    line-height: 1.6;
+    max-width: 260px;
   }
 }

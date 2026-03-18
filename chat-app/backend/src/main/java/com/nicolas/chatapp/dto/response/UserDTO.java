@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Builder
-public record UserDTO(UUID id, String username, String email, String fullName, String department, String title, LocalDateTime lastSeen, Boolean isOnline, Set<UUID> pinnedChatIds, Set<UUID> mutedChatIds) {
+public record UserDTO(UUID id, String username, String email, String fullName, LocalDateTime lastSeen, Boolean isOnline, Set<UUID> pinnedChatIds, Set<UUID> mutedChatIds, String profilePhoto) {
 
     public static UserDTO fromUser(User user) {
         if (Objects.isNull(user)) return null;
@@ -23,6 +23,7 @@ public record UserDTO(UUID id, String username, String email, String fullName, S
                 .isOnline(user.getIsOnline())
                 .pinnedChatIds(user.getPinnedChatIds() != null ? new HashSet<>(user.getPinnedChatIds()) : new HashSet<>())
                 .mutedChatIds(user.getMutedChatIds() != null ? new HashSet<>(user.getMutedChatIds()) : new HashSet<>())
+                .profilePhoto(user.getProfilePhoto())
                 .build();
     }
 

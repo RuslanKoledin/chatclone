@@ -2,11 +2,38 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-left: 3rem;
-  padding-right: 3rem;
+  padding: 10px 16px;
+  transition: background-color 0.15s;
+  cursor: default;
+
+  &:hover {
+    background-color: var(--sidebar-hover);
+  }
+
+  & + & {
+    border-top: 1px solid var(--sidebar-border);
+  }
 }
 
 .groupMemberAvatarContainer {
   display: flex;
   align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.groupMemberName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--header-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.groupMemberRole {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: 500;
 }

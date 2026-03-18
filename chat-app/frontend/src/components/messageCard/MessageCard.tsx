@@ -47,7 +47,7 @@ const MessageCard = (props: MessageCardProps) => {
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [editContent, setEditContent] = useState(props.message.content);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-    const [reactionAnchor, setReactionAnchor] = useState<HTMLElement | null>(null);
+    const [reactionPosition, setReactionPosition] = useState<{top: number; left: number} | null>(null);
 
     const isOwnMessage = props.message.user.id === props.reqUser?.id;
     const date: Date = new Date(props.message.timeStamp);
@@ -129,13 +129,16 @@ const MessageCard = (props: MessageCardProps) => {
         }
     };
 
-    const handleOpenReactionPicker = (event: React.MouseEvent<HTMLElement>) => {
+    const handleOpenReactionPicker = () => {
+        // Сохраняем координаты контекстного меню до его закрытия
+        if (contextMenu) {
+            setReactionPosition({ top: contextMenu.mouseY, left: contextMenu.mouseX });
+        }
         handleCloseContextMenu();
-        setReactionAnchor(event.currentTarget);
     };
 
     const handleCloseReactionPicker = () => {
-        setReactionAnchor(null);
+        setReactionPosition(null);
     };
 
     const handleAddReaction = (emoji: string) => {
@@ -385,7 +388,7 @@ const MessageCard = (props: MessageCardProps) => {
                         </MenuItem>
                     )}
                     {!props.message.isDeleted && props.onAddReaction && (
-                        <MenuItem onClick={handleOpenReactionPicker}>
+                        <MenuItem onClick={() => handleOpenReactionPicker()}>
                             <AddReactionIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
                             Реакция
                         </MenuItem>
@@ -437,16 +440,13 @@ const MessageCard = (props: MessageCardProps) => {
 
                 {/* Popover для выбора реакции */}
                 <Popover
-                    open={Boolean(reactionAnchor)}
-                    anchorEl={reactionAnchor}
+                    open={Boolean(reactionPosition)}
+                    anchorReference="anchorPosition"
+                    anchorPosition={reactionPosition ?? undefined}
                     onClose={handleCloseReactionPicker}
-                    anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'center',
-                    }}
                     transformOrigin={{
                         vertical: 'bottom',
-                        horizontal: 'center',
+                        horizontal: 'left',
                     }}
                 >
                     <div className={styles.reactionPicker}>
