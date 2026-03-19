@@ -4,6 +4,7 @@ import {getChatName, getInitialsFromName, transformDateToString} from "../utils/
 import ColorAvatar from "../common/ColorAvatar";
 import styles from './ChatCard.module.scss';
 import {ChatDTO} from "../../redux/chat/ChatModel";
+import {UserDTO} from "../../redux/auth/AuthModel";
 import {useSelector, useDispatch} from "react-redux";
 import {RootState, AppDispatch} from "../../redux/Store";
 import {MessageDTO} from "../../redux/message/MessageModel";
