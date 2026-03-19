@@ -16,6 +16,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import {useTheme} from "../theme/ThemeContext";
 import {currentUser, logoutUser} from "../redux/auth/AuthAction";
 import SearchIcon from '@mui/icons-material/Search';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import {getUserChats, markChatAsRead, pinMessage, unpinMessage} from "../redux/chat/ChatAction";
 import {ChatDTO} from "../redux/chat/ChatModel";
 import ChatCard from "./chatCard/ChatCard";
@@ -32,6 +33,7 @@ import {Client, over, Subscription} from "stompjs";
 import {AUTHORIZATION_PREFIX} from "../redux/Constants";
 import CreateGroupChat from "./editChat/CreateGroupChat";
 import CreateSingleChat from "./editChat/CreateSingleChat";
+import GlobalSearch from "./globalSearch/GlobalSearch";
 import {getRemainingSessionMs, isSessionExpired} from "../utils/session";
 import {
     requestNotificationPermission,
@@ -55,6 +57,7 @@ const Homepage = () => {
     const [isShowCreateGroupChat, setIsShowCreateGroupChat] = useState<boolean>(false);
     const [isShowCreateSingleChat, setIsShowCreateSingleChat] = useState<boolean>(false);
     const [isShowProfile, setIsShowProfile] = useState<boolean>(false);
+    const [isShowGlobalSearch, setIsShowGlobalSearch] = useState<boolean>(false);
     const [anchor, setAnchor] = useState(null);
     const [initials, setInitials] = useState<string>("");
     const [query, setQuery] = useState<string>("");
@@ -183,6 +186,17 @@ const Homepage = () => {
             window.removeEventListener('blur', updateAppActivity);
         };
     }, []);
+
+    // Обновляем заголовок вкладки с суммарным числом непрочитанных
+    useEffect(() => {
+        if (isAppActive) return;
+        const totalUnread = chatState.chats.reduce((sum, chat) => {
+            const read = chat.messages.filter(msg =>
+                msg.user.id === authState.reqUser?.id || msg.readBy.includes(authState.reqUser!.id)).length;
+            return sum + (chat.messages.length - read);
+        }, 0);
+        updatePageTitle(totalUnread);
+    }, [chatState.chats, isAppActive, authState.reqUser]);
 
     useEffect(() => {
         if (isAppActive && currentChat?.id && token) {
@@ -513,7 +527,12 @@ const Homepage = () => {
                             <div className={styles.profileContainer}>
                                 <Profile onCloseProfile={onCloseProfile} initials={initials}/>
                             </div>}
-                        {!isShowCreateSingleChat && !isShowEditGroupChat && !isShowCreateGroupChat && !isShowProfile &&
+                        {isShowGlobalSearch &&
+                            <GlobalSearch
+                                onClose={() => setIsShowGlobalSearch(false)}
+                                onSelectChat={(chat) => { setCurrentChat(chat); dispatch(getAllMessages(chat.id, token!)); }}
+                            />}
+                        {!isShowCreateSingleChat && !isShowEditGroupChat && !isShowCreateGroupChat && !isShowProfile && !isShowGlobalSearch &&
                             <div className={styles.sideBarInnerContainer}>
                                 <div className={styles.navContainer}>
                                     <div onClick={onOpenProfile} className={styles.userInfoContainer}>
@@ -533,6 +552,9 @@ const Homepage = () => {
                                             />
                                         </div>
                                         <div>
+                                            <IconButton onClick={() => setIsShowGlobalSearch(true)} title="Глобальный поиск">
+                                                <ManageSearchIcon/>
+                                            </IconButton>
                                             <IconButton onClick={onCreateSingleChat}>
                                                 <ChatIcon/>
                                             </IconButton>

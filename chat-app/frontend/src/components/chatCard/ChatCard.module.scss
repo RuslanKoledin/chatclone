@@ -76,6 +76,17 @@
   font-weight: 600;
 }
 
+.onlineDot {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 11px;
+  height: 11px;
+  background-color: var(--accent);
+  border: 2px solid var(--sidebar-bg);
+  border-radius: 50%;
+}
+
 .unreadBadge {
   display: inline-flex;
   align-items: center;

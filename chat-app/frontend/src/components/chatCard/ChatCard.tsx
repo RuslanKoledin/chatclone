@@ -70,7 +70,11 @@ const ChatCard = (props: ChatCardProps) => {
     const sortedMessages: MessageDTO[] = props.chat.messages.sort((a, b) => +new Date(a.timeStamp) - +new Date(b.timeStamp));
     const lastMessage: MessageDTO | undefined = sortedMessages.length > 0 ? sortedMessages[sortedMessages.length - 1] : undefined;
     const lastMessageContent: string = lastMessage ? lastMessage.content.length > 25 ? lastMessage.content.slice(0, 25) + "..." : lastMessage.content : "";
-    const lastMessageName: string = lastMessage ? lastMessage.user.fullName === authState.reqUser?.fullName ? "You" : lastMessage.user.fullName : "";
+    const lastMessageName: string = lastMessage ? lastMessage.user.fullName === authState.reqUser?.fullName ? "Вы" : lastMessage.user.fullName : "";
+    const otherUser: UserDTO | undefined = !props.chat.isGroup
+        ? props.chat.users.find(u => u.id !== authState.reqUser?.id)
+        : undefined;
+    const isOnline: boolean = !!otherUser?.isOnline;
     const lastMessageString: string = lastMessage ? lastMessageName + ": " + lastMessageContent : "";
     const lastDate: string = lastMessage ? transformDateToString(new Date(lastMessage.timeStamp)) : "";
     const numberOfReadMessages: number = props.chat.messages.filter(msg =>
@@ -81,6 +85,7 @@ const ChatCard = (props: ChatCardProps) => {
         <div className={styles.chatCardOuterContainer} onContextMenu={handleContextMenu}>
             <div className={styles.chatCardAvatarContainer}>
                 <ColorAvatar name={name} size={44} />
+                {isOnline && <span className={styles.onlineDot}/>}
             </div>
             <div className={styles.chatCardContentContainer}>
                 <div className={styles.chatCardContentInnerContainer}>

@@ -1,7 +1,8 @@
 import {MessageDTO, ReactionDTO} from "../../redux/message/MessageModel";
 import {UserDTO} from "../../redux/auth/AuthModel";
 import styles from './MessageCard.module.scss';
-import {Chip, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Popover} from "@mui/material";
+import {Chip, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Popover, IconButton} from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
 import React, {useState} from "react";
 import {getDateFormat} from "../utils/Utils";
 import DoneIcon from '@mui/icons-material/Done';
@@ -48,6 +49,7 @@ const MessageCard = (props: MessageCardProps) => {
     const [editContent, setEditContent] = useState(props.message.content);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [reactionPosition, setReactionPosition] = useState<{top: number; left: number} | null>(null);
+    const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
     const isOwnMessage = props.message.user.id === props.reqUser?.id;
     const date: Date = new Date(props.message.timeStamp);
@@ -265,13 +267,13 @@ const MessageCard = (props: MessageCardProps) => {
 
                         if (isImage) {
                             return (
-                                <a key={attachment.id} href={fileUrl} target="_blank" rel="noopener noreferrer">
-                                    <img
-                                        src={fileUrl}
-                                        alt={attachment.fileName}
-                                        className={styles.attachmentImage}
-                                    />
-                                </a>
+                                <img
+                                    key={attachment.id}
+                                    src={fileUrl}
+                                    alt={attachment.fileName}
+                                    className={styles.attachmentImage}
+                                    onClick={() => setLightboxUrl(fileUrl)}
+                                />
                             );
                         } else if (isAudio) {
                             return (
@@ -436,6 +438,28 @@ const MessageCard = (props: MessageCardProps) => {
                             Удалить
                         </Button>
                     </DialogActions>
+                </Dialog>
+
+                {/* Лайтбокс для просмотра изображений */}
+                <Dialog
+                    open={!!lightboxUrl}
+                    onClose={() => setLightboxUrl(null)}
+                    maxWidth={false}
+                    PaperProps={{ sx: { background: 'rgba(0,0,0,0.92)', boxShadow: 'none', position: 'relative' } }}
+                >
+                    <IconButton
+                        onClick={() => setLightboxUrl(null)}
+                        sx={{ position: 'absolute', top: 8, right: 8, color: '#fff', zIndex: 1 }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                    {lightboxUrl && (
+                        <img
+                            src={lightboxUrl}
+                            alt="просмотр"
+                            style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', display: 'block' }}
+                        />
+                    )}
                 </Dialog>
 
                 {/* Popover для выбора реакции */}

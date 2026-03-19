@@ -23,6 +23,8 @@ import CloseIcon from '@mui/icons-material/Close';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {EmojiClickData} from "emoji-picker-react/dist/types/exposedTypes";
 import TypingIndicator from "../typingIndicator/TypingIndicator";
+import PermMediaIcon from '@mui/icons-material/PermMedia';
+import MediaGallery from "../mediaGallery/MediaGallery";
 
 interface MessagePageProps {
     chat: ChatDTO;
@@ -53,6 +55,7 @@ const MessagePage = (props: MessagePageProps) => {
     const [messageQuery, setMessageQuery] = useState<string>("");
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [isSearch, setIsSearch] = useState<boolean>(false);
+    const [isMediaGallery, setIsMediaGallery] = useState<boolean>(false);
     const [anchor, setAnchor] = useState(null);
     const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState<boolean>(false);
     const [replyToMessage, setReplyToMessage] = useState<MessageDTO | null>(null);
@@ -364,6 +367,10 @@ const MessagePage = (props: MessagePageProps) => {
         return getStatusText();
     };
 
+    if (isMediaGallery) {
+        return <MediaGallery chat={props.chat} onClose={() => setIsMediaGallery(false)} />;
+    }
+
     return (
         <div
             className={styles.outerMessagePageContainer}
@@ -404,6 +411,10 @@ const MessagePage = (props: MessagePageProps) => {
                         </div>
                     </div>
                     <div className={styles.messagePageHeaderNameContainer}>
+                        {!isSearch &&
+                            <IconButton onClick={() => setIsMediaGallery(true)} title="Медиафайлы">
+                                <PermMediaIcon/>
+                            </IconButton>}
                         {!isSearch &&
                             <IconButton onClick={onChangeSearch} sx={{ color: '#6B7280 !important' }}>
                                 <SearchIcon/>
