@@ -19,16 +19,16 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Origins: localhost для разработки + серверный URL из env
         String serverOrigin = System.getenv("MCHAT_FRONTEND_URL");
-        String[] origins;
         if (serverOrigin != null && !serverOrigin.isBlank()) {
-            origins = new String[]{"http://localhost:3000", serverOrigin};
+            registry.addEndpoint("/ws")
+                    .setAllowedOrigins("http://localhost:3000", serverOrigin)
+                    .withSockJS();
         } else {
-            origins = new String[]{"http://localhost:3000"};
+            // Если фронт встроен в JAR — разрешаем все origins
+            registry.addEndpoint("/ws")
+                    .setAllowedOriginPatterns("*")
+                    .withSockJS();
         }
-
-        registry.addEndpoint("/ws")
-                .setAllowedOrigins(origins)
-                .withSockJS();
     }
 
     @Override

@@ -24,7 +24,9 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
             "/auth/**", "/ws/**",
-            "/", "/index.html", "/static/**", "/favicon.ico", "/manifest.json", "/robots.txt", "/asset-manifest.json"
+            "/", "/index.html", "/static/**",
+            "/favicon.ico", "/manifest.json", "/robots.txt", "/asset-manifest.json",
+            "/*.js", "/*.css", "/*.png", "/*.ico", "/*.json"
     };
 
     private final JwtAuthorizationFilter jwtAuthorizationFilter;
@@ -41,10 +43,11 @@ public class SecurityConfig {
                     CorsConfiguration cfg = new CorsConfiguration();
                     // Разрешённые origins: localhost для разработки + серверный из env
                     String serverOrigin = System.getenv("MCHAT_FRONTEND_URL");
-                    if (serverOrigin != null) {
+                    if (serverOrigin != null && !serverOrigin.isBlank()) {
                         cfg.setAllowedOrigins(List.of("http://localhost:3000", serverOrigin));
                     } else {
-                        cfg.setAllowedOrigins(List.of("http://localhost:3000"));
+                        // Если фронт встроен в JAR — разрешаем все (same-origin)
+                        cfg.setAllowedOriginPatterns(List.of("*"));
                     }
                     cfg.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                     cfg.setAllowCredentials(true);
