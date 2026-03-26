@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {NavigateFunction, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../redux/Store";
-import {TOKEN} from "../config/Config";
+import {TOKEN, WS_URL} from "../config/Config";
 import EditGroupChat from "./editChat/EditGroupChat";
 import Profile from "./profile/Profile";
 import {Avatar, Divider, IconButton, InputAdornment, Menu, MenuItem, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, List, ListItem, ListItemButton, ListItemAvatar, ListItemText, Checkbox} from "@mui/material";
@@ -23,8 +23,8 @@ import {getInitialsFromName} from "./utils/Utils";
 import ClearIcon from '@mui/icons-material/Clear';
 import WelcomePage from "./welcomePage/WelcomePage";
 import MessagePage from "./messagePage/MessagePage";
-import {MessageDTO, WebSocketMessageDTO, TypingEventDTO} from "../redux/message/MessageModel";
-import {createMessage, getAllMessages, editMessage, deleteMessageForMe, deleteMessageForAll, forwardMessage, uploadFiles, addReaction, removeReaction} from "../redux/message/MessageAction";
+import {MessageDTO, WebSocketMessageDTO, TypingEventDTO, DeliveryReceiptDTO} from "../redux/message/MessageModel";
+import {createMessage, getAllMessages, loadOlderMessages, editMessage, deleteMessageForMe, deleteMessageForAll, forwardMessage, uploadFiles, addReaction, removeReaction} from "../redux/message/MessageAction";
 import * as messageActionTypes from "../redux/message/MessageActionType";
 import {getChatName} from "./utils/Utils";
 import SockJS from 'sockjs-client';
@@ -41,6 +41,7 @@ import {
     updatePageTitle,
     getNotificationSettings
 } from "../utils/notifications";
+import {logger} from "../utils/logger";
 
 const Homepage = () => {
 
@@ -71,6 +72,7 @@ const Homepage = () => {
     const [forwardDialogOpen, setForwardDialogOpen] = useState<boolean>(false);
     const [messageToForward, setMessageToForward] = useState<MessageDTO | null>(null);
     const [selectedChatsForForward, setSelectedChatsForForward] = useState<string[]>([]);
+    const [sendDeliveryOnConnect, setSendDeliveryOnConnect] = useState<boolean>(false);
     const open = Boolean(anchor);
 
     useEffect(() => {
@@ -147,7 +149,7 @@ const Homepage = () => {
     }, [messageState.newMessage]);
 
     useEffect(() => {
-        console.log("Attempting to subscribe to ws: ", subscribeTry);
+        logger.log("Attempting to subscribe to ws: ", subscribeTry);
         const reqUser = authState.reqUser;
         if (isConnected && stompClient && stompClient.connected && reqUser && reqUser.id) {
             const subscription: Subscription = stompClient.subscribe("/topic/" + reqUser.id.toString(), onMessageReceive);
@@ -193,84 +195,131 @@ const Homepage = () => {
         }
     }, [isAppActive, currentChat?.id, token, isConnected, authState.reqUser?.id]);
 
+    // При подключении к WebSocket — отправляем delivery receipt для всех чатов
+    useEffect(() => {
+        if (sendDeliveryOnConnect && isConnected && stompClient && chatState.chats) {
+            chatState.chats.forEach((chat: ChatDTO) => {
+                sendDeliveryReceipt(chat.id.toString());
+            });
+            setSendDeliveryOnConnect(false);
+        }
+    }, [sendDeliveryOnConnect, isConnected, stompClient, chatState.chats]);
+
     const connect = () => {
         const headers = {
             Authorization: `${AUTHORIZATION_PREFIX}${token}`
         };
 
-        const socket: WebSocket = new SockJS("http://localhost:8080/ws");
+        const socket: WebSocket = new SockJS(WS_URL);
         const client: Client = over(socket);
         client.connect(headers, onConnect, onError);
         setStompClient(client);
     };
 
     const onConnect = async () => {
-        console.log("WebSocket connected successfully!");
-        setTimeout(() => setIsConnected(true), 1000);
+        logger.log("WebSocket connected successfully!");
+        setTimeout(() => {
+            setIsConnected(true);
+            // При подключении — отправляем delivery receipt для всех чатов
+            // (сервер пометит все недоставленные сообщения как delivered)
+            setSendDeliveryOnConnect(true);
+        }, 1000);
     };
 
     const onError = (error: any) => {
-        console.error("WebSocket connection error", error);
+        logger.error("WebSocket connection error", error);
     };
 
     const onMessageReceive = (payload: any) => {
         try {
             const data = JSON.parse(payload.body);
-            console.log('WebSocket message received:', data);
-            // Проверяем тип события
+            logger.log('WebSocket message received:', data);
+
+            // === Typing событие ===
             if (data.isTyping !== undefined) {
-                // Это typing событие
-                console.log('Typing event:', data);
                 const typingEvent: TypingEventDTO = data;
                 handleTypingEvent(typingEvent);
-            } else if (data.type === 'READ_RECEIPT') {
-                // Это событие прочтения - обновляем сообщения в текущем чате
-                console.log('Read receipt received:', data);
+                return;
+            }
+
+            // === Read receipt — обновляем галочки на синие ===
+            if (data.type === 'READ_RECEIPT') {
+                logger.log('Read receipt received:', data);
                 if (currentChat?.id && token && data.chatId === currentChat.id.toString()) {
                     dispatch(getAllMessages(currentChat.id, token));
                     dispatch(getUserChats(token));
                 }
-            } else {
-                // Это обычное сообщение - добавляем его напрямую в store для мгновенного отображения
-                const wsMessage: WebSocketMessageDTO = data;
+                return;
+            }
 
-                // Проверяем, относится ли сообщение к текущему чату
-                if (currentChat && wsMessage.chat?.id?.toString() === currentChat.id.toString()) {
-                    // Преобразуем WebSocketMessageDTO в MessageDTO для добавления в store
-                    const message: MessageDTO = {
-                        id: wsMessage.id,
-                        content: wsMessage.content,
-                        timeStamp: wsMessage.timeStamp,
-                        user: wsMessage.user,
-                        readBy: []
-                    };
-                    dispatch({type: messageActionTypes.RECEIVE_MESSAGE, payload: message});
+            // === Delivery receipt — обновляем галочки на 2 серые ===
+            if (data.type === 'DELIVERY_RECEIPT') {
+                logger.log('Delivery receipt received:', data);
+                if (currentChat?.id && token && data.chatId === currentChat.id.toString()) {
+                    dispatch(getAllMessages(currentChat.id, token));
+                }
+                return;
+            }
 
-                    // Если это входящее сообщение в открытом чате, помечаем его прочитанным сразу
-                    const senderId = wsMessage.user?.id?.toString();
-                    const reqUserId = authState.reqUser?.id?.toString();
-                    if (token && senderId && reqUserId && senderId !== reqUserId && isAppActive) {
+            // === Обычное сообщение ===
+            const wsMessage: WebSocketMessageDTO = data;
+            const senderId = wsMessage.user?.id?.toString();
+            const reqUserId = authState.reqUser?.id?.toString();
+            const isOwnMessage = senderId === reqUserId;
+            const msgChatId = wsMessage.chat?.id?.toString();
+
+            // Определяем: открыт ли чат этого сообщения и активна ли вкладка
+            const isChatOpen = currentChat && msgChatId === currentChat.id.toString();
+            const isWindowActive = document.visibilityState === 'visible' && document.hasFocus();
+
+            if (isChatOpen) {
+                // Сообщение в текущем открытом чате
+                const message: MessageDTO = {
+                    id: wsMessage.id,
+                    content: wsMessage.content,
+                    timeStamp: wsMessage.timeStamp,
+                    user: wsMessage.user,
+                    readBy: [],
+                    deliveredTo: []
+                };
+                dispatch({type: messageActionTypes.RECEIVE_MESSAGE, payload: message});
+
+                if (!isOwnMessage && token) {
+                    if (isWindowActive) {
+                        // Сценарий А: чат открыт + окно активно → сразу READ (синие галочки)
                         dispatch(markChatAsRead(currentChat.id, token));
                         sendReadReceipt(currentChat.id.toString());
+                    } else {
+                        // Чат открыт, но окно не в фокусе → DELIVERED (2 серые)
+                        sendDeliveryReceipt(msgChatId!);
                     }
                 }
-
-                // Обновляем список чатов для отображения последнего сообщения
-                if (token) {
-                    dispatch(getUserChats(token));
+            } else {
+                // Сообщение в другом чате → DELIVERED (2 серые галочки)
+                if (!isOwnMessage && msgChatId) {
+                    sendDeliveryReceipt(msgChatId);
                 }
+            }
 
-                // Уведомления о новом сообщении
+            // Обновляем список чатов
+            if (token) {
+                dispatch(getUserChats(token));
+            }
+
+            // === Уведомления ===
+            if (!isOwnMessage) {
                 const settings = getNotificationSettings();
+                const chatMuted = authState.reqUser?.mutedChatIds?.includes(msgChatId || '');
 
-                // Если вкладка не в фокусе - показываем уведомления
-                if (!isTabFocused()) {
-                    // Звуковое уведомление
+                // Звук и уведомление только если:
+                // 1) Чат не открыт ИЛИ окно не в фокусе
+                // 2) Чат не замьючен
+                const shouldNotify = (!isChatOpen || !isWindowActive) && !chatMuted;
+
+                if (shouldNotify) {
                     if (settings.soundEnabled) {
                         playNotificationSound();
                     }
-
-                    // Браузерное уведомление
                     if (settings.browserNotificationsEnabled && data.user && data.content) {
                         const senderName = data.user.fullName || 'Новое сообщение';
                         const messagePreview = data.content.length > 50
@@ -278,13 +327,11 @@ const Homepage = () => {
                             : data.content;
                         showBrowserNotification(senderName, messagePreview);
                     }
-
-                    // Обновляем title страницы
                     updatePageTitle(1);
                 }
             }
         } catch (e) {
-            console.error('Error parsing WebSocket message:', e);
+            logger.error('Error parsing WebSocket message:', e);
         }
     };
 
@@ -337,12 +384,12 @@ const Homepage = () => {
                 userName: authState.reqUser.fullName || 'Пользователь',
                 isTyping
             };
-            console.log('Sending typing event:', typingEvent);
+            logger.log('Sending typing event:', typingEvent);
             stompClient.send("/app/typing", {}, JSON.stringify(typingEvent));
         }
     };
 
-    // Отправляем событие о прочтении сообщений
+    // Отправляем событие о прочтении сообщений (→ 2 синие галочки)
     const sendReadReceipt = (chatId: string) => {
         if (stompClient && authState.reqUser && isConnected) {
             const readReceipt = {
@@ -351,6 +398,25 @@ const Homepage = () => {
                 type: 'READ_RECEIPT'
             };
             stompClient.send("/app/read", {}, JSON.stringify(readReceipt));
+        }
+    };
+
+    // Отправляем событие о доставке (→ 2 серые галочки)
+    const sendDeliveryReceipt = (chatId: string) => {
+        if (stompClient && authState.reqUser && isConnected) {
+            const deliveryReceipt: DeliveryReceiptDTO = {
+                chatId: chatId,
+                userId: authState.reqUser.id.toString(),
+                type: 'DELIVERY_RECEIPT'
+            };
+            stompClient.send("/app/delivered", {}, JSON.stringify(deliveryReceipt));
+        }
+    };
+
+    const onLoadOlderMessages = () => {
+        if (currentChat?.id && token && messageState.hasMoreMessages && !messageState.isLoadingOlder) {
+            const nextPage = messageState.currentPage + 1;
+            dispatch(loadOlderMessages(currentChat.id, nextPage, token));
         }
     };
 
@@ -644,7 +710,10 @@ const Homepage = () => {
                             onPinMessage={onPinMessage}
                             onUnpinMessage={onUnpinMessage}
                             onAddReaction={onAddReaction}
-                            onRemoveReaction={onRemoveReaction}/>}
+                            onRemoveReaction={onRemoveReaction}
+                            hasMoreMessages={messageState.hasMoreMessages}
+                            onLoadOlderMessages={onLoadOlderMessages}
+                            isLoadingOlder={messageState.isLoadingOlder}/>}
                     </div>
                 </div>
             </div>

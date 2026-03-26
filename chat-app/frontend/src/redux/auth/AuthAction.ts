@@ -1,3 +1,4 @@
+import {logger} from "../../utils/logger";
 import {
     ApiResponseDTO, AuthenticationErrorDTO,
     LoginRequestDTO,
@@ -38,12 +39,12 @@ export const register = (data: SignUpRequestDTO) => async (dispatch: AppDispatch
         if (resData.token) {
             localStorage.setItem(TOKEN, resData.token);
             setSessionExpiry();
-            console.log('Stored token');
+            logger.log('Stored token');
         }
-        console.log('User registered: ', resData);
+        logger.log('User registered: ', resData);
         dispatch({type: actionTypes.REGISTER, payload: resData});
     } catch (error: any) {
-        console.error('Register failed: ', error);
+        logger.error('Register failed: ', error);
         dispatch({type: actionTypes.AUTH_ERROR, payload: 'Сервер временно недоступен. Попробуйте позже.'});
     }
 };
@@ -71,12 +72,12 @@ export const loginUser = (data: LoginRequestDTO) => async (dispatch: AppDispatch
         if (resData.token) {
             localStorage.setItem(TOKEN, resData.token);
             setSessionExpiry();
-            console.log('Stored token');
+            logger.log('Stored token');
         }
-        console.log('User logged in: ', resData);
+        logger.log('User logged in: ', resData);
         dispatch({type: actionTypes.LOGIN_USER, payload: resData});
     } catch (error: any) {
-        console.error('Login failed: ', error);
+        logger.error('Login failed: ', error);
         dispatch({type: actionTypes.AUTH_ERROR, payload: 'Сервер авторизации временно недоступен. Попробуйте позже.'});
     }
 };
@@ -104,13 +105,13 @@ export const currentUser = (token: string) => async (dispatch: AppDispatch): Pro
         const resData: UserDTO | AuthenticationErrorDTO = await res.json();
         if ('message' in resData && resData.message === 'Authentication Error') {
             clearSession();
-            console.log('Removed invalid token from local storage');
+            logger.log('Removed invalid token from local storage');
             return;
         }
-        console.log('Fetched current user: ', resData);
+        logger.log('Fetched current user: ', resData);
         dispatch({type: actionTypes.REQ_USER, payload: resData});
     } catch (error: any) {
-        console.error('Fetching current user failed: ', error);
+        logger.error('Fetching current user failed: ', error);
     }
 };
 
@@ -125,10 +126,10 @@ export const searchUser = (data: string, token: string) => async (dispatch: AppD
         });
 
         const resData: UserDTO[] = await res.json();
-        console.log('Searched user data: ', resData);
+        logger.log('Searched user data: ', resData);
         dispatch({type: actionTypes.SEARCH_USER, payload: resData});
     } catch (error: any) {
-        console.error('Searching user failed: ', error);
+        logger.error('Searching user failed: ', error);
     }
 };
 
@@ -144,10 +145,10 @@ export const updateUser = (data: UpdateUserRequestDTO, token: string) => async (
         });
 
         const resData: ApiResponseDTO = await res.json();
-        console.log('User updated: ', resData);
+        logger.log('User updated: ', resData);
         dispatch({type: actionTypes.UPDATE_USER, payload: resData});
     } catch (error: any) {
-        console.error('User update failed: ', error);
+        logger.error('User update failed: ', error);
     }
 };
 
@@ -155,7 +156,7 @@ export const logoutUser = () => async (dispatch: AppDispatch): Promise<void> => 
     clearSession();
     dispatch({type: actionTypes.LOGOUT_USER, payload: null});
     dispatch({type: actionTypes.REQ_USER, payload: null});
-    console.log('User logged out');
+    logger.log('User logged out');
 };
 
 export const pinChat = (chatId: string, token: string) => async (dispatch: AppDispatch): Promise<void> => {
@@ -169,11 +170,11 @@ export const pinChat = (chatId: string, token: string) => async (dispatch: AppDi
         });
 
         if (res.ok) {
-            console.log('Chat pinned: ', chatId);
+            logger.log('Chat pinned: ', chatId);
             dispatch({type: actionTypes.PIN_CHAT, payload: chatId});
         }
     } catch (error: any) {
-        console.error('Pin chat failed: ', error);
+        logger.error('Pin chat failed: ', error);
     }
 };
 
@@ -188,11 +189,11 @@ export const unpinChat = (chatId: string, token: string) => async (dispatch: App
         });
 
         if (res.ok) {
-            console.log('Chat unpinned: ', chatId);
+            logger.log('Chat unpinned: ', chatId);
             dispatch({type: actionTypes.UNPIN_CHAT, payload: chatId});
         }
     } catch (error: any) {
-        console.error('Unpin chat failed: ', error);
+        logger.error('Unpin chat failed: ', error);
     }
 };
 
@@ -207,11 +208,11 @@ export const muteChat = (chatId: string, token: string) => async (dispatch: AppD
         });
 
         if (res.ok) {
-            console.log('Chat muted: ', chatId);
+            logger.log('Chat muted: ', chatId);
             dispatch({type: actionTypes.MUTE_CHAT, payload: chatId});
         }
     } catch (error: any) {
-        console.error('Mute chat failed: ', error);
+        logger.error('Mute chat failed: ', error);
     }
 };
 
@@ -226,10 +227,10 @@ export const unmuteChat = (chatId: string, token: string) => async (dispatch: Ap
         });
 
         if (res.ok) {
-            console.log('Chat unmuted: ', chatId);
+            logger.log('Chat unmuted: ', chatId);
             dispatch({type: actionTypes.UNMUTE_CHAT, payload: chatId});
         }
     } catch (error: any) {
-        console.error('Unmute chat failed: ', error);
+        logger.error('Unmute chat failed: ', error);
     }
 };

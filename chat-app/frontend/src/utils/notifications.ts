@@ -1,9 +1,10 @@
 // Сервис уведомлений для чата
+import {logger} from "./logger";
 
 // Запрос разрешения на уведомления
 export const requestNotificationPermission = async (): Promise<boolean> => {
     if (!('Notification' in window)) {
-        console.log('Браузер не поддерживает уведомления');
+        logger.log('Браузер не поддерживает уведомления');
         return false;
     }
 
@@ -78,7 +79,7 @@ export const playNotificationSound = () => {
         oscillator.start(context.currentTime);
         oscillator.stop(context.currentTime + 0.3);
     } catch (error) {
-        console.warn('Не удалось воспроизвести звук:', error);
+        logger.warn('Не удалось воспроизвести звук:', error);
     }
 };
 

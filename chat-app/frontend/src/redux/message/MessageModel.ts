@@ -29,6 +29,7 @@ export interface MessageDTO {
     timeStamp: string;
     user: UserDTO;
     readBy: UUID[];
+    deliveredTo?: UUID[];
     editedAt?: string;
     isDeleted?: boolean;
     replyTo?: ReplyInfoDTO;
@@ -56,6 +57,9 @@ export type MessageReducerState = {
     newMessage: MessageDTO | null;
     searchResults: MessageDTO[];
     isSearching: boolean;
+    hasMoreMessages: boolean;
+    currentPage: number;
+    isLoadingOlder: boolean;
 }
 
 // Typing indicator event model
@@ -64,4 +68,11 @@ export interface TypingEventDTO {
     userId: string;
     userName: string;
     isTyping: boolean;
+}
+
+// Delivery receipt event model
+export interface DeliveryReceiptDTO {
+    chatId: string;
+    userId: string;
+    type: string; // "DELIVERY_RECEIPT"
 }

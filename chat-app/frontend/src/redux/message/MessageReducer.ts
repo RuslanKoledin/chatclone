@@ -7,6 +7,9 @@ const initialState: MessageReducerState = {
     newMessage: null,
     searchResults: [],
     isSearching: false,
+    hasMoreMessages: true,
+    currentPage: 0,
+    isLoadingOlder: false,
 };
 
 const messageReducer = (state: MessageReducerState = initialState, action: Action): MessageReducerState => {
@@ -19,7 +22,19 @@ const messageReducer = (state: MessageReducerState = initialState, action: Actio
                 messages: [...state.messages, action.payload]
             };
         case actionTypes.GET_ALL_MESSAGES:
-            return {...state, messages: action.payload};
+            return {...state, messages: action.payload, currentPage: 0};
+        case actionTypes.LOAD_OLDER_MESSAGES:
+            // Добавляем старые сообщения В НАЧАЛО массива (они старше)
+            return {
+                ...state,
+                messages: [...action.payload, ...state.messages],
+                currentPage: state.currentPage + 1,
+                isLoadingOlder: false,
+            };
+        case actionTypes.LOADING_OLDER_MESSAGES:
+            return {...state, isLoadingOlder: true};
+        case actionTypes.SET_HAS_MORE_MESSAGES:
+            return {...state, hasMoreMessages: action.payload};
         case actionTypes.EDIT_MESSAGE:
             return {
                 ...state,

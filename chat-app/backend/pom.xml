@@ -8,11 +8,11 @@
 		<version>3.2.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.nicolas</groupId>
-	<artifactId>chatapp</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>chatapp</name>
-	<description>Backend for chat application</description>
+	<groupId>com.chat</groupId>
+	<artifactId>app</artifactId>
+	<version>1.0.0</version>
+	<name>mchat</name>
+	<description>Internal corporate messenger for Call Center</description>
 	<properties>
 		<java.version>17</java.version>
 	</properties>

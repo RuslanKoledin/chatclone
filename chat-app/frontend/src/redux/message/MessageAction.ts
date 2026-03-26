@@ -1,3 +1,4 @@
+import {logger} from "../../utils/logger";
 import {MessageDTO, SendMessageRequestDTO} from "./MessageModel";
 import {AppDispatch} from "../Store";
 import {BASE_API_URL} from "../../config/Config";
@@ -19,16 +20,16 @@ export const createMessage = (data: SendMessageRequestDTO, token: string) => asy
         });
 
         const resData: MessageDTO = await res.json();
-        console.log('Send message: ', resData);
+        logger.log('Send message: ', resData);
         dispatch({type: actionTypes.CREATE_NEW_MESSAGE, payload: resData});
     } catch (error: any) {
-        console.error('Sending message failed', error);
+        logger.error('Sending message failed', error);
     }
 };
 
-export const getAllMessages = (chatId: UUID, token: string) => async (dispatch: AppDispatch): Promise<void> => {
+export const getAllMessages = (chatId: UUID, token: string, page: number = 0, size: number = 50) => async (dispatch: AppDispatch): Promise<void> => {
     try {
-        const res: Response = await fetch(`${BASE_API_URL}/${MESSAGE_PATH}/chat/${chatId}`, {
+        const res: Response = await fetch(`${BASE_API_URL}/${MESSAGE_PATH}/chat/${chatId}?page=${page}&size=${size}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -37,10 +38,32 @@ export const getAllMessages = (chatId: UUID, token: string) => async (dispatch: 
         });
 
         const resData: MessageDTO[] = await res.json();
-        console.log('Getting messages: ', resData);
+        logger.log('Getting messages (page', page, '):', resData);
         dispatch({type: actionTypes.GET_ALL_MESSAGES, payload: resData});
+        dispatch({type: actionTypes.SET_HAS_MORE_MESSAGES, payload: resData.length >= size});
     } catch (error: any) {
-        console.error('Getting messages failed: ', error);
+        logger.error('Getting messages failed: ', error);
+    }
+};
+
+// Подгрузка старых сообщений при скролле вверх
+export const loadOlderMessages = (chatId: UUID, page: number, token: string, size: number = 50) => async (dispatch: AppDispatch): Promise<void> => {
+    try {
+        dispatch({type: actionTypes.LOADING_OLDER_MESSAGES});
+        const res: Response = await fetch(`${BASE_API_URL}/${MESSAGE_PATH}/chat/${chatId}?page=${page}&size=${size}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `${AUTHORIZATION_PREFIX}${token}`,
+            }
+        });
+
+        const resData: MessageDTO[] = await res.json();
+        logger.log('Loading older messages (page', page, '):', resData);
+        dispatch({type: actionTypes.LOAD_OLDER_MESSAGES, payload: resData});
+        dispatch({type: actionTypes.SET_HAS_MORE_MESSAGES, payload: resData.length >= size});
+    } catch (error: any) {
+        logger.error('Loading older messages failed: ', error);
     }
 };
 
@@ -57,10 +80,10 @@ export const editMessage = (messageId: UUID, content: string, token: string) => 
         });
 
         const resData: MessageDTO = await res.json();
-        console.log('Edit message: ', resData);
+        logger.log('Edit message: ', resData);
         dispatch({type: actionTypes.EDIT_MESSAGE, payload: resData});
     } catch (error: any) {
-        console.error('Editing message failed', error);
+        logger.error('Editing message failed', error);
     }
 };
 
@@ -75,10 +98,10 @@ export const deleteMessageForMe = (messageId: UUID, token: string) => async (dis
             },
         });
 
-        console.log('Delete message for me: ', messageId);
+        logger.log('Delete message for me: ', messageId);
         dispatch({type: actionTypes.DELETE_MESSAGE_FOR_ME, payload: messageId});
     } catch (error: any) {
-        console.error('Deleting message for me failed', error);
+        logger.error('Deleting message for me failed', error);
     }
 };
 
@@ -94,10 +117,10 @@ export const deleteMessageForAll = (messageId: UUID, token: string) => async (di
         });
 
         const resData: MessageDTO = await res.json();
-        console.log('Delete message for all: ', resData);
+        logger.log('Delete message for all: ', resData);
         dispatch({type: actionTypes.DELETE_MESSAGE_FOR_ALL, payload: resData});
     } catch (error: any) {
-        console.error('Deleting message for all failed', error);
+        logger.error('Deleting message for all failed', error);
     }
 };
 
@@ -114,10 +137,10 @@ export const forwardMessage = (messageId: UUID, targetChatIds: UUID[], token: st
         });
 
         const resData: MessageDTO[] = await res.json();
-        console.log('Forward message: ', resData);
+        logger.log('Forward message: ', resData);
         dispatch({type: actionTypes.FORWARD_MESSAGE, payload: resData});
     } catch (error: any) {
-        console.error('Forwarding message failed', error);
+        logger.error('Forwarding message failed', error);
     }
 };
 
@@ -141,10 +164,10 @@ export const uploadFiles = (chatId: UUID, files: FileList, content: string, toke
         });
 
         const resData: MessageDTO = await res.json();
-        console.log('Upload files: ', resData);
+        logger.log('Upload files: ', resData);
         dispatch({type: actionTypes.UPLOAD_FILES, payload: resData});
     } catch (error: any) {
-        console.error('Uploading files failed', error);
+        logger.error('Uploading files failed', error);
     }
 };
 
@@ -160,10 +183,10 @@ export const searchMessages = (chatId: UUID, query: string, token: string) => as
         });
 
         const resData: MessageDTO[] = await res.json();
-        console.log('Search messages: ', resData);
+        logger.log('Search messages: ', resData);
         dispatch({type: actionTypes.SEARCH_MESSAGES, payload: resData});
     } catch (error: any) {
-        console.error('Searching messages failed', error);
+        logger.error('Searching messages failed', error);
     }
 };
 
@@ -184,10 +207,10 @@ export const addReaction = (messageId: UUID, emoji: string, token: string) => as
         });
 
         const resData: MessageDTO = await res.json();
-        console.log('Add reaction: ', resData);
+        logger.log('Add reaction: ', resData);
         dispatch({type: actionTypes.ADD_REACTION, payload: resData});
     } catch (error: any) {
-        console.error('Adding reaction failed', error);
+        logger.error('Adding reaction failed', error);
     }
 };
 
@@ -203,9 +226,9 @@ export const removeReaction = (messageId: UUID, emoji: string, token: string) =>
         });
 
         const resData: MessageDTO = await res.json();
-        console.log('Remove reaction: ', resData);
+        logger.log('Remove reaction: ', resData);
         dispatch({type: actionTypes.REMOVE_REACTION, payload: resData});
     } catch (error: any) {
-        console.error('Removing reaction failed', error);
+        logger.error('Removing reaction failed', error);
     }
 };

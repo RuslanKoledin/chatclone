@@ -171,21 +171,24 @@ const MessageCard = (props: MessageCardProps) => {
     }, [props.message.reactions]);
 
     // Определяем статус сообщения
-    // sent = отправлено (1 серая галочка)
-    // delivered = доставлено (2 серые галочки) - пока не используем
-    // read = прочитано (2 зелёные галочки)
+    // sent = отправлено (1 серая галочка) — сохранено на сервере
+    // delivered = доставлено (2 серые галочки) — WebSocket получателя активен
+    // read = прочитано (2 синие галочки) — получатель открыл чат
     const getMessageStatus = (): MessageStatus => {
         const readBy = props.message.readBy || [];
-
-        // ID отправителя сообщения (как строка для сравнения)
+        const deliveredTo = props.message.deliveredTo || [];
         const senderIdStr = props.message.user?.id?.toString();
 
-        // Проверяем, есть ли в readBy кто-то кроме отправителя
-        // (сравниваем как строки, т.к. UUID может приходить в разном формате)
+        // Проверяем, прочитал ли кто-то кроме отправителя
         const othersRead = readBy.some(id => id?.toString() !== senderIdStr);
-
         if (othersRead) {
             return 'read';
+        }
+
+        // Проверяем, доставлено ли кому-то кроме отправителя
+        const othersDelivered = deliveredTo.some(id => id?.toString() !== senderIdStr);
+        if (othersDelivered) {
+            return 'delivered';
         }
 
         return 'sent';
@@ -204,12 +207,12 @@ const MessageCard = (props: MessageCardProps) => {
 
         switch (status) {
             case 'read':
-                return <DoneAllIcon style={{ ...baseStyle, color: '#4CAF50' }} />;
+                return <DoneAllIcon style={{ ...baseStyle, color: '#53BDEB' }} />;  // Синие галочки
             case 'delivered':
-                return <DoneAllIcon style={{ ...baseStyle, color: 'rgba(255,255,255,0.8)' }} />;
+                return <DoneAllIcon style={{ ...baseStyle, color: 'rgba(255,255,255,0.7)' }} />;  // Две серые
             case 'sent':
             default:
-                return <DoneIcon style={{ ...baseStyle, color: 'rgba(255,255,255,0.8)' }} />;
+                return <DoneIcon style={{ ...baseStyle, color: 'rgba(255,255,255,0.7)' }} />;  // Одна серая
         }
     };
 

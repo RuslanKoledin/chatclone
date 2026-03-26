@@ -1,7 +1,7 @@
 import {IconButton, InputAdornment, Menu, MenuItem, TextField} from "@mui/material";
 import ColorAvatar from "../common/ColorAvatar";
 import {getChatName, getInitialsFromName} from "../utils/Utils";
-import React, {useEffect, useRef, useState} from "react";
+import React, {useCallback, useEffect, useRef, useState} from "react";
 import {ChatDTO} from "../../redux/chat/ChatModel";
 import {UserDTO} from "../../redux/auth/AuthModel";
 import styles from './MesaggePage.module.scss';
@@ -44,6 +44,9 @@ interface MessagePageProps {
     onUnpinMessage: () => void;
     onAddReaction: (messageId: string, emoji: string) => void;
     onRemoveReaction: (messageId: string, emoji: string) => void;
+    hasMoreMessages?: boolean;
+    onLoadOlderMessages?: () => void;
+    isLoadingOlder?: boolean;
 }
 
 const MessagePage = (props: MessagePageProps) => {
@@ -59,7 +62,9 @@ const MessagePage = (props: MessagePageProps) => {
     const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
     const [isDragOver, setIsDragOver] = useState<boolean>(false);
     const lastMessageRef = useRef<null | HTMLDivElement>(null);
+    const messageContainerRef = useRef<null | HTMLDivElement>(null);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [shouldScrollToBottom, setShouldScrollToBottom] = useState<boolean>(true);
     const isTypingRef = useRef<boolean>(false);
     const lastTypingSignalAtRef = useRef<number>(0);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -69,8 +74,16 @@ const MessagePage = (props: MessagePageProps) => {
     const token: string | null = localStorage.getItem(TOKEN);
 
     useEffect(() => {
+        if (shouldScrollToBottom) {
+            scrollToBottom();
+        }
+    }, [props.messages]);
+
+    // При смене чата — всегда скроллим вниз
+    useEffect(() => {
+        setShouldScrollToBottom(true);
         scrollToBottom();
-    }, [props]);
+    }, [props.chat.id]);
 
     useEffect(() => {
         return () => {
@@ -82,6 +95,36 @@ const MessagePage = (props: MessagePageProps) => {
             }
         };
     }, []);
+
+    // Обработчик скролла — подгрузка при скролле вверх
+    const handleScroll = useCallback(() => {
+        const container = messageContainerRef.current;
+        if (!container) return;
+
+        // Если доскроллили до верха (< 100px) — подгружаем старые
+        if (container.scrollTop < 100 && props.hasMoreMessages && !props.isLoadingOlder) {
+            const prevScrollHeight = container.scrollHeight;
+            setShouldScrollToBottom(false);
+
+            if (props.onLoadOlderMessages) {
+                props.onLoadOlderMessages();
+            }
+
+            // Сохраняем позицию скролла после подгрузки
+            requestAnimationFrame(() => {
+                if (container) {
+                    const newScrollHeight = container.scrollHeight;
+                    container.scrollTop = newScrollHeight - prevScrollHeight;
+                }
+            });
+        }
+
+        // Проверяем, находимся ли мы внизу (для auto-scroll при новых сообщениях)
+        const isAtBottom = container.scrollHeight - container.scrollTop - container.clientHeight < 50;
+        if (isAtBottom) {
+            setShouldScrollToBottom(true);
+        }
+    }, [props.hasMoreMessages, props.isLoadingOlder, props.onLoadOlderMessages]);
 
     const sendTypingStartIfNeeded = () => {
         const now = Date.now();
@@ -468,7 +511,18 @@ const MessagePage = (props: MessagePageProps) => {
             )}
 
             {/*Message Page Content*/}
-            <div className={styles.messageContentContainer} onClick={onCloseEmojiPicker}>
+            <div
+                className={styles.messageContentContainer}
+                onClick={onCloseEmojiPicker}
+                ref={messageContainerRef}
+                onScroll={handleScroll}
+            >
+                {/* Индикатор загрузки старых сообщений */}
+                {props.isLoadingOlder && (
+                    <div style={{ textAlign: 'center', padding: '8px 0', color: '#9CA3AF', fontSize: '13px' }}>
+                        Загрузка сообщений...
+                    </div>
+                )}
                 {messageQuery.length > 0 &&
                     props.messages.filter(x => x.content.toLowerCase().includes(messageQuery))
                         .map(message => getMessageCard(message))}

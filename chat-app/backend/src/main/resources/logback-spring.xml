@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Spring Boot color converter -->
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+
+    <!-- ═══════════════════════════════════════════════════
+         Свойства
+         ═══════════════════════════════════════════════════ -->
+    <property name="LOG_DIR" value="logs"/>
+    <property name="APP_NAME" value="mchat"/>
+
+    <!-- Паттерн для консоли (с цветами) -->
+    <property name="CONSOLE_PATTERN"
+              value="%d{HH:mm:ss.SSS} %clr(%-5level) %clr([%15.15thread]){faint} %clr(%-40.40logger{39}){cyan} : %msg%n"/>
+
+    <!-- Паттерн для файлов -->
+    <property name="FILE_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} : %msg%n"/>
+
+    <!-- ═══════════════════════════════════════════════════
+         Консольный аппендер
+         ═══════════════════════════════════════════════════ -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${CONSOLE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ═══════════════════════════════════════════════════
+         Общий лог файл (ротация по дню и размеру)
+         ═══════════════════════════════════════════════════ -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${APP_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/archived/${APP_NAME}-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ═══════════════════════════════════════════════════
+         Лог аутентификации (AD/LDAP) — отдельный файл
+         ═══════════════════════════════════════════════════ -->
+    <appender name="AUTH_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${APP_NAME}-auth.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/archived/${APP_NAME}-auth-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>20MB</maxFileSize>
+            <maxHistory>90</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} : %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ═══════════════════════════════════════════════════
+         Лог ошибок — отдельный файл (только WARN+)
+         ═══════════════════════════════════════════════════ -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_DIR}/${APP_NAME}-error.log</file>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>WARN</level>
+        </filter>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/archived/${APP_NAME}-error-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>20MB</maxFileSize>
+            <maxHistory>90</maxHistory>
+            <totalSizeCap>500MB</totalSizeCap>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} : %msg%n%ex</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ═══════════════════════════════════════════════════
+         Логгеры по пакетам
+         ═══════════════════════════════════════════════════ -->
+
+    <!-- Приложение — DEBUG -->
+    <logger name="com.chat.app" level="DEBUG"/>
+
+    <!-- AD/Auth — INFO в отдельный файл -->
+    <logger name="com.chat.app.service.implementation.LdapADAuthService" level="DEBUG" additivity="true">
+        <appender-ref ref="AUTH_FILE"/>
+    </logger>
+    <logger name="com.chat.app.service.implementation.TestADAuthService" level="DEBUG" additivity="true">
+        <appender-ref ref="AUTH_FILE"/>
+    </logger>
+    <logger name="com.chat.app.controllers.AuthController" level="DEBUG" additivity="true">
+        <appender-ref ref="AUTH_FILE"/>
+    </logger>
+    <logger name="com.chat.app.config.ADConfig" level="INFO" additivity="true">
+        <appender-ref ref="AUTH_FILE"/>
+    </logger>
+
+    <!-- WebSocket — INFO (не спамить DEBUG) -->
+    <logger name="com.chat.app.controllers.RealtimeChatController" level="INFO"/>
+    <logger name="com.chat.app.config.WebSocketConfig" level="INFO"/>
+
+    <!-- Spring Framework — подавляем лишний шум -->
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.springframework.web" level="INFO"/>
+    <logger name="org.springframework.security" level="INFO"/>
+    <logger name="org.springframework.messaging" level="WARN"/>
+
+    <!-- Hibernate — только WARN -->
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.hibernate.SQL" level="WARN"/>
+
+    <!-- H2 Database -->
+    <logger name="org.h2" level="WARN"/>
+
+    <!-- ═══════════════════════════════════════════════════
+         Root логгер
+         ═══════════════════════════════════════════════════ -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+        <appender-ref ref="ERROR_FILE"/>
+    </root>
+
+</configuration>

@@ -1,3 +1,4 @@
+import {logger} from "../../utils/logger";
 import {BASE_API_URL} from "../../config/Config";
 import * as actionTypes from './ChatActionType';
 import {UUID} from "node:crypto";
@@ -20,10 +21,10 @@ export const createChat = (userId: UUID, token: string) => async (dispatch: AppD
         });
 
         const resData: ChatDTO = await res.json();
-        console.log('Created single chat: ', resData);
+        logger.log('Created single chat: ', resData);
         dispatch({type: actionTypes.CREATE_CHAT, payload: resData});
     } catch (error: any) {
-        console.error('Creating single chat failed: ', error);
+        logger.error('Creating single chat failed: ', error);
     }
 };
 
@@ -39,10 +40,10 @@ export const createGroupChat = (data: GroupChatRequestDTO, token: string) => asy
         });
 
         const resData: ChatDTO = await res.json();
-        console.log('Created group chat: ', resData);
+        logger.log('Created group chat: ', resData);
         dispatch({type: actionTypes.CREATE_GROUP, payload: resData});
     } catch (error: any) {
-        console.error('Creating group chat failed: ', error);
+        logger.error('Creating group chat failed: ', error);
     }
 };
 
@@ -57,10 +58,10 @@ export const getUserChats = (token: string) => async (dispatch: AppDispatch): Pr
         });
 
         const resData: ChatDTO[] = await res.json();
-        console.log('Getting user chats: ', resData);
+        logger.log('Getting user chats: ', resData);
         dispatch({type: actionTypes.GET_ALL_CHATS, payload: resData});
     } catch (error: any) {
-        console.error('Getting user chats failed: ', error);
+        logger.error('Getting user chats failed: ', error);
     }
 };
 
@@ -75,10 +76,10 @@ export const deleteChat = (id: UUID, token: string) => async (dispatch: AppDispa
         });
 
         const resData: ApiResponseDTO = await res.json();
-        console.log('Deleted chat: ', resData);
+        logger.log('Deleted chat: ', resData);
         dispatch({type: actionTypes.DELETE_CHAT, payload: resData});
     } catch (error: any) {
-        console.error('Deleting chat failed: ', error);
+        logger.error('Deleting chat failed: ', error);
     }
 };
 
@@ -93,10 +94,10 @@ export const addUserToGroupChat = (chatId: UUID, userId: UUID, token: string) =>
         });
 
         const resData: ChatDTO = await res.json();
-        console.log('Added user to group chat: ', resData);
+        logger.log('Added user to group chat: ', resData);
         dispatch({type: actionTypes.ADD_MEMBER_TO_GROUP, payload: resData});
     } catch (error: any) {
-        console.error('Adding user to group chat failed: ', error);
+        logger.error('Adding user to group chat failed: ', error);
     }
 };
 
@@ -111,10 +112,10 @@ export const removeUserFromGroupChat = (chatId: UUID, userId: UUID, token: strin
         });
 
         const resData: ChatDTO = await res.json();
-        console.log('Removed user from group chat: ', resData);
+        logger.log('Removed user from group chat: ', resData);
         dispatch({type: actionTypes.ADD_MEMBER_TO_GROUP, payload: resData});
     } catch (error: any) {
-        console.error('Removing user from group chat failed: ', error);
+        logger.error('Removing user from group chat failed: ', error);
     }
 };
 
@@ -129,10 +130,10 @@ export const markChatAsRead = (chatId: UUID, token: string) => async (dispatch: 
         });
 
         const resData: ChatDTO = await res.json();
-        console.log('Marked chat as read: ', resData);
+        logger.log('Marked chat as read: ', resData);
         dispatch({type: actionTypes.MARK_CHAT_AS_READ, payload: resData});
     } catch (error: any) {
-        console.error('Marking chat as read failed, ', error);
+        logger.error('Marking chat as read failed, ', error);
     }
 };
 
@@ -148,10 +149,10 @@ export const pinMessage = (chatId: UUID, messageId: UUID, token: string) => asyn
         });
 
         const resData: ChatDTO = await res.json();
-        console.log('Pinned message: ', resData);
+        logger.log('Pinned message: ', resData);
         dispatch({type: actionTypes.PIN_MESSAGE, payload: resData});
     } catch (error: any) {
-        console.error('Pinning message failed: ', error);
+        logger.error('Pinning message failed: ', error);
     }
 };
 
@@ -167,9 +168,9 @@ export const unpinMessage = (chatId: UUID, token: string) => async (dispatch: Ap
         });
 
         const resData: ChatDTO = await res.json();
-        console.log('Unpinned message: ', resData);
+        logger.log('Unpinned message: ', resData);
         dispatch({type: actionTypes.UNPIN_MESSAGE, payload: resData});
     } catch (error: any) {
-        console.error('Unpinning message failed: ', error);
+        logger.error('Unpinning message failed: ', error);
     }
 };
