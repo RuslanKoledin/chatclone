@@ -46,6 +46,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             List<GrantedAuthority> auths = AuthorityUtils.commaSeparatedStringToAuthorityList(authorities);
             Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, auths);
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
         } catch (Exception e) {
             Map<String, Object> errorDetails = new HashMap<>();
             errorDetails.put("message", "Authentication Error");
@@ -53,9 +54,23 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter {
             response.setStatus(HttpStatus.FORBIDDEN.value());
             response.setContentType(MediaType.APPLICATION_JSON_VALUE);
             objectMapper.writeValue(response.getWriter(), errorDetails);
+            return;
         }
+    }
 
-        filterChain.doFilter(request, response);
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getRequestURI();
+        // Не фильтруем статику, auth и WebSocket
+        return path.equals("/") ||
+               path.equals("/index.html") ||
+               path.startsWith("/static/") ||
+               path.equals("/favicon.ico") ||
+               path.equals("/manifest.json") ||
+               path.equals("/robots.txt") ||
+               path.equals("/asset-manifest.json") ||
+               path.startsWith("/auth/") ||
+               path.startsWith("/ws");
     }
 
 }
