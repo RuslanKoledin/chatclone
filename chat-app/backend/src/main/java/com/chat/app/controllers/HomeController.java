@@ -1,20 +1,14 @@
 package com.chat.app.controllers;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
-@RestController
+@Controller
 public class HomeController {
 
-    @GetMapping("/")
-    public ResponseEntity<String> home() {
-        log.info("Welcome to my chat app");
-        return new ResponseEntity<>("Welcome to my chat app", HttpStatus.OK);
+    // Все пути, не начинающиеся с /api, /auth, /ws, /files — отдаём index.html (React Router)
+    @GetMapping(value = {"/", "/{path:^(?!api|auth|ws).*}/**"})
+    public String forward() {
+        return "forward:/index.html";
     }
-
 }

@@ -1,0 +1,14 @@
+{
+  "files": {
+    "main.css": "/static/css/main.39c50d13.css",
+    "main.js": "/static/js/main.b0496750.js",
+    "static/media/mchat-logo.png": "/static/media/mchat-logo.56da1484864b83b353b2.png",
+    "index.html": "/index.html",
+    "main.39c50d13.css.map": "/static/css/main.39c50d13.css.map",
+    "main.b0496750.js.map": "/static/js/main.b0496750.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.39c50d13.css",
+    "static/js/main.b0496750.js"
+  ]
+}
