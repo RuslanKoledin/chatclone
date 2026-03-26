@@ -23,7 +23,7 @@ import java.util.List;
 public class SecurityConfig {
 
     private static final String[] WHITE_LIST_URL = {
-            "/auth/**", "/ws/**",
+            "/auth/**", "/ws/**", "/error",
             "/", "/index.html", "/static/**",
             "/favicon.ico", "/manifest.json", "/robots.txt", "/asset-manifest.json",
             "/*.js", "/*.css", "/*.png", "/*.ico", "/*.json"

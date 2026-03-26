@@ -1,14 +1,21 @@
 package com.chat.app.controllers;
 
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
 @Controller
-public class HomeController {
+public class HomeController implements ErrorController {
 
-    // Все пути, не начинающиеся с /api, /auth, /ws, /static — отдаём index.html (React Router)
-    @GetMapping(value = {"/", "/{path:^(?!api|auth|ws|static).*}/**"})
-    public String forward() {
+    // Корневой путь → index.html
+    @GetMapping("/")
+    public String index() {
+        return "forward:/index.html";
+    }
+
+    // Для SPA: все 404 (несуществующие пути) → index.html (React Router разберётся)
+    @GetMapping("/error")
+    public String handleError() {
         return "forward:/index.html";
     }
 }
