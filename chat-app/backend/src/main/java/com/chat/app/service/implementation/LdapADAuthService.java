@@ -146,6 +146,8 @@ public class LdapADAuthService implements ADAuthService {
 
         if (adServer.startsWith("ldaps://")) {
             env.put(Context.SECURITY_PROTOCOL, "ssl");
+            // Игнорировать проверку SSL-сертификата (аналог CERT_NONE в Python)
+            env.put("java.naming.ldap.factory.socket", "com.chat.app.config.TrustAllSSLSocketFactory");
         }
 
         return env;
