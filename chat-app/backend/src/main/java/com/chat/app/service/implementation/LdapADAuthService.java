@@ -112,12 +112,36 @@ public class LdapADAuthService implements ADAuthService {
         return null;
     }
 
+    /**
+     * Формирует UPN (user@domain) из логина и baseDn.
+     * Например: svc_apo + DC=cbk,DC=kg -> svc_apo@cbk.kg
+     */
+    private String toUpn(String username) {
+        // Если уже содержит @ или \ — не трогаем
+        if (username.contains("@") || username.contains("\\")) {
+            return username;
+        }
+        // Если это полный DN (CN=...) — не трогаем
+        if (username.toUpperCase().startsWith("CN=")) {
+            return username;
+        }
+        // DC=cbk,DC=kg -> cbk.kg
+        StringBuilder domain = new StringBuilder();
+        for (String part : baseDn.split(",")) {
+            if (part.trim().toUpperCase().startsWith("DC=")) {
+                if (domain.length() > 0) domain.append(".");
+                domain.append(part.trim().substring(3));
+            }
+        }
+        return username + "@" + domain;
+    }
+
     private Hashtable<String, String> buildLdapEnv(String principal, String credentials) {
         Hashtable<String, String> env = new Hashtable<>();
         env.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
         env.put(Context.PROVIDER_URL, adServer);
         env.put(Context.SECURITY_AUTHENTICATION, "simple");
-        env.put(Context.SECURITY_PRINCIPAL, principal);
+        env.put(Context.SECURITY_PRINCIPAL, toUpn(principal));
         env.put(Context.SECURITY_CREDENTIALS, credentials);
 
         if (adServer.startsWith("ldaps://")) {
