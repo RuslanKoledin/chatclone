@@ -32,11 +32,11 @@ public class Message {
     @ManyToOne
     private Chat chat;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<UUID> readBy = new HashSet<>();
 
     // Кому доставлено (WebSocket-соединение активно, но чат не открыт)
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<UUID> deliveredTo = new HashSet<>();
 
     // Время редактирования (null если не редактировалось)
@@ -46,7 +46,7 @@ public class Message {
     private Boolean isDeleted = false;
 
     // Для кого удалено (если удалено "только у меня")
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private Set<UUID> deletedFor = new HashSet<>();
 
     // Цитируемое (Reply) сообщение

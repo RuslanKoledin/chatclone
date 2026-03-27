@@ -14,10 +14,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @RestController
@@ -27,6 +27,7 @@ public class ChatController {
 
     private final UserService userService;
     private final ChatService chatService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/single")
     public ResponseEntity<ChatDTO> createSingleChat(@RequestBody UUID userId,
@@ -120,8 +121,24 @@ public class ChatController {
             throws UserException, ChatException {
 
         User user = userService.findUserByProfile(jwt);
+
+        // Запоминаем участников чата ДО удаления
+        Chat chat = chatService.findChatById(id);
+        Set<User> chatUsers = new HashSet<>(chat.getUsers());
+
         chatService.deleteChat(id, user.getId());
         log.info("User {} deleted chat: {}", user.getEmail(), id);
+
+        // Уведомляем всех участников чата об удалении
+        java.util.Map<String, Object> deleteEvent = java.util.Map.of(
+                "type", "CHAT_DELETED",
+                "chatId", id.toString()
+        );
+        for (User chatUser : chatUsers) {
+            if (!chatUser.getId().equals(user.getId())) {
+                messagingTemplate.convertAndSend("/topic/" + chatUser.getId(), deleteEvent);
+            }
+        }
 
         ApiResponseDTO res = ApiResponseDTO.builder()
                 .message("Chat deleted successfully")

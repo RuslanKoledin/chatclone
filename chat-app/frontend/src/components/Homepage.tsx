@@ -252,6 +252,19 @@ const Homepage = () => {
                 return;
             }
 
+            // === Чат удалён ===
+            if (data.type === 'CHAT_DELETED') {
+                logger.log('Chat deleted event received:', data);
+                if (currentChat?.id && data.chatId === currentChat.id.toString()) {
+                    // Если удалённый чат открыт — сбрасываем на главную
+                    setCurrentChat(null);
+                }
+                if (token) {
+                    dispatch(getUserChats(token));
+                }
+                return;
+            }
+
             // === Delivery receipt — обновляем галочки на 2 серые ===
             if (data.type === 'DELIVERY_RECEIPT') {
                 logger.log('Delivery receipt received:', data);
