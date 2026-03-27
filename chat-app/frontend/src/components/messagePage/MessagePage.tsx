@@ -15,7 +15,7 @@ import {AppDispatch} from "../../redux/Store";
 import {useDispatch} from "react-redux";
 import {deleteChat} from "../../redux/chat/ChatAction";
 import {TOKEN} from "../../config/Config";
-import EmojiPicker from "emoji-picker-react";
+import EmojiPicker, { EmojiStyle } from "emoji-picker-react";
 import MoodIcon from '@mui/icons-material/Mood';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import PushPinIcon from '@mui/icons-material/PushPin';
@@ -586,7 +586,7 @@ const MessagePage = (props: MessagePageProps) => {
                     {isEmojiPickerOpen ?
                         <div className={styles.emojiOuterContainer}>
                             <div className={styles.emojiContainer}>
-                                <EmojiPicker onEmojiClick={onEmojiClick} searchDisabled={true} skinTonesDisabled={true}/>
+                                <EmojiPicker onEmojiClick={onEmojiClick} searchDisabled={true} skinTonesDisabled={true} emojiStyle={EmojiStyle.NATIVE}/>
                             </div>
                         </div> :
                         <div className={styles.emojiButton}>
