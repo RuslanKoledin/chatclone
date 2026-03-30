@@ -552,7 +552,7 @@ const Homepage = () => {
                                 <div className={styles.navContainer}>
                                     <div onClick={onOpenProfile} className={styles.userInfoContainer}>
                                         <MBankLogo size={36} />
-                                        <span className={styles.navBrandText}>MChat</span>
+                                        <span className={styles.navBrandText}>MyChat</span>
                                     </div>
                                     <div className={styles.navRightSection}>
                                         <IconButton onClick={toggleTheme} size="small" title={theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}>

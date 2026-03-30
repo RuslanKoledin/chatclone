@@ -29,7 +29,7 @@ const MBankLogo: React.FC<MBankLogoProps> = ({ size = 48 }) => {
         >
             <img
                 src={mchatLogo}
-                alt="MChat"
+                alt="MyChat"
                 style={{
                     width: '100%',
                     height: '100%',

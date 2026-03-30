@@ -89,7 +89,7 @@ export const isTabFocused = (): boolean => {
 
 // Обновить title страницы с количеством непрочитанных
 export const updatePageTitle = (unreadCount: number) => {
-    const baseTitle = 'MChat';
+    const baseTitle = 'MyChat';
     if (unreadCount > 0) {
         document.title = `(${unreadCount}) ${baseTitle}`;
     } else {
