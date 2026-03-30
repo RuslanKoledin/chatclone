@@ -1,16 +1,17 @@
 import React from 'react';
-import mchatLogo from '../../assets/mchat-logo.png';
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 
 interface MBankLogoProps {
     size?: number;
-    showText?: boolean;  // не используется, оставлен для совместимости
+    showText?: boolean;
     textSize?: number;
     textColor?: string;
     variant?: 'light' | 'dark';
 }
 
 const MBankLogo: React.FC<MBankLogoProps> = ({ size = 48 }) => {
-    const radius = Math.round(size * 0.24); // ~24% — как у WhatsApp
+    const radius = Math.round(size * 0.28);
+    const iconSize = Math.round(size * 0.55);
 
     return (
         <div
@@ -23,20 +24,11 @@ const MBankLogo: React.FC<MBankLogoProps> = ({ size = 48 }) => {
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0,
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                background: '#FFFFFF',
+                backgroundColor: '#00875A',
+                boxShadow: '0 2px 8px rgba(0,135,90,0.35)',
             }}
         >
-            <img
-                src={mchatLogo}
-                alt="MyChat"
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block',
-                }}
-            />
+            <ChatBubbleIcon style={{ fontSize: iconSize, color: '#FFFFFF' }} />
         </div>
     );
 };
