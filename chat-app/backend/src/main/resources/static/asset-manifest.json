@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/static/css/main.39c50d13.css",
-    "main.js": "/static/js/main.01c9491d.js",
+    "main.js": "/static/js/main.c4899354.js",
     "static/media/mchat-logo.png": "/static/media/mchat-logo.56da1484864b83b353b2.png",
     "index.html": "/index.html",
     "main.39c50d13.css.map": "/static/css/main.39c50d13.css.map",
-    "main.01c9491d.js.map": "/static/js/main.01c9491d.js.map"
+    "main.c4899354.js.map": "/static/js/main.c4899354.js.map"
   },
   "entrypoints": [
     "static/css/main.39c50d13.css",
-    "static/js/main.01c9491d.js"
+    "static/js/main.c4899354.js"
   ]
 }

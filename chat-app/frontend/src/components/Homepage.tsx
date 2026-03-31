@@ -139,12 +139,14 @@ const Homepage = () => {
         }
     }, [chatState.chats]);
 
+    // Загружаем историю ТОЛЬКО при смене чата
     useEffect(() => {
         if (currentChat?.id && token) {
             dispatch(getAllMessages(currentChat.id, token));
         }
-    }, [currentChat?.id, dispatch, token]);
+    }, [currentChat?.id]);
 
+    // Redux → local state: только при GET_ALL_MESSAGES (загрузка/смена чата)
     useEffect(() => {
         setMessages(messageState.messages);
     }, [messageState.messages]);
@@ -165,10 +167,9 @@ const Homepage = () => {
                 return;
             }
 
-            // === Read receipt ===
+            // === Read receipt — НЕ перезагружаем messages, только обновляем список чатов ===
             if (data.type === 'READ_RECEIPT') {
-                if (chat?.id && tk && data.chatId === chat.id.toString()) {
-                    dispatch(getAllMessages(chat.id, tk));
+                if (tk) {
                     dispatch(getUserChats(tk));
                 }
                 return;
@@ -185,11 +186,8 @@ const Homepage = () => {
                 return;
             }
 
-            // === Delivery receipt ===
+            // === Delivery receipt — НЕ перезагружаем messages ===
             if (data.type === 'DELIVERY_RECEIPT') {
-                if (chat?.id && tk && data.chatId === chat.id.toString()) {
-                    dispatch(getAllMessages(chat.id, tk));
-                }
                 return;
             }
 
@@ -212,28 +210,14 @@ const Homepage = () => {
                     readBy: [],
                     deliveredTo: []
                 };
-                // Добавляем сообщение напрямую в state, без лишних REST-запросов
+                // Добавляем сообщение напрямую в local state — единственный источник правды
                 setMessages(prev => {
-                    const exists = prev.some(m => m.id === message.id);
-                    if (exists) return prev;
+                    if (prev.some(m => m.id === message.id)) return prev;
                     return [...prev, message];
                 });
-
-                if (!isOwnMessage && tk) {
-                    if (isWindowActive) {
-                        dispatch(markChatAsRead(chat.id, tk));
-                        sendReadReceipt(chat.id.toString());
-                    } else {
-                        sendDeliveryReceipt(msgChatId!);
-                    }
-                }
-            } else {
-                if (!isOwnMessage && msgChatId) {
-                    sendDeliveryReceipt(msgChatId);
-                }
             }
 
-            // Обновляем список чатов (последнее сообщение, счётчик)
+            // Обновляем список чатов в сайдбаре (последнее сообщение)
             if (tk) {
                 dispatch(getUserChats(tk));
             }
@@ -334,14 +318,12 @@ const Homepage = () => {
         };
     }, [token, authState.reqUser?.id]);
 
+    // При возвращении на вкладку — обновляем только список чатов
     useEffect(() => {
         if (isAppActive && currentChat?.id && token) {
-            dispatch(markChatAsRead(currentChat.id, token));
-            sendReadReceipt(currentChat.id.toString());
-            dispatch(getAllMessages(currentChat.id, token));
             dispatch(getUserChats(token));
         }
-    }, [isAppActive, currentChat?.id, token]);
+    }, [isAppActive]);
 
     const handleTypingEvent = (event: TypingEventDTO) => {
         if (event.userId === authState.reqUser?.id?.toString()) return;
