@@ -442,7 +442,7 @@ const MessagePage = (props: MessagePageProps) => {
                             )}
                         </div>
                     </div>
-                    <div className={styles.messagePageHeaderNameContainer}>
+                    <div className={styles.messagePageHeaderActions}>
                         {!isSearch &&
                             <IconButton onClick={() => setIsMediaGallery(true)} title="Медиафайлы">
                                 <PermMediaIcon/>

@@ -45,6 +45,13 @@
   flex: 1;
 }
 
+.messagePageHeaderActions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 0;
+}
+
 .avatarWrapper {
   position: relative;
   display: inline-block;
