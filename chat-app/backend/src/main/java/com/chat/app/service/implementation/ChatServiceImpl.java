@@ -12,12 +12,14 @@ import com.chat.app.service.ChatService;
 import com.chat.app.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class ChatServiceImpl implements ChatService {
 
     private final UserService userService;
@@ -45,6 +47,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Chat findChatById(UUID id) throws ChatException {
 
         Optional<Chat> chatOptional = chatRepository.findById(id);
@@ -57,6 +60,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Chat> findAllByUserId(UUID userId) throws UserException {
 
         User user = userService.findUserById(userId);
