@@ -3,7 +3,7 @@ import React, {useEffect, useState, useRef, useCallback} from "react";
 import {NavigateFunction, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch, RootState} from "../redux/Store";
-import {TOKEN, WS_URL} from "../config/Config";
+import {TOKEN, WS_URL, BASE_API_URL} from "../config/Config";
 import EditGroupChat from "./editChat/EditGroupChat";
 import Profile from "./profile/Profile";
 import {Avatar, Divider, IconButton, InputAdornment, Menu, MenuItem, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, List, ListItem, ListItemButton, ListItemAvatar, ListItemText, Checkbox} from "@mui/material";
@@ -24,8 +24,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import WelcomePage from "./welcomePage/WelcomePage";
 import MessagePage from "./messagePage/MessagePage";
 import {MessageDTO, WebSocketMessageDTO, TypingEventDTO, DeliveryReceiptDTO} from "../redux/message/MessageModel";
-import {createMessage, getAllMessages, loadOlderMessages, editMessage, deleteMessageForMe, deleteMessageForAll, forwardMessage, uploadFiles, addReaction, removeReaction} from "../redux/message/MessageAction";
-import * as messageActionTypes from "../redux/message/MessageActionType";
+import {createMessage, loadOlderMessages, editMessage, deleteMessageForMe, deleteMessageForAll, forwardMessage, uploadFiles, addReaction, removeReaction} from "../redux/message/MessageAction";
 import {getChatName} from "./utils/Utils";
 import SockJS from 'sockjs-client';
 import {Client, over, Subscription} from "stompjs";
@@ -37,7 +36,6 @@ import {
     requestNotificationPermission,
     showBrowserNotification,
     playNotificationSound,
-    isTabFocused,
     updatePageTitle,
     getNotificationSettings
 } from "../utils/notifications";
@@ -139,17 +137,25 @@ const Homepage = () => {
         }
     }, [chatState.chats]);
 
-    // Загружаем историю ТОЛЬКО при смене чата
+    // Загружаем историю ТОЛЬКО при смене чата — напрямую в local state, минуя redux
     useEffect(() => {
-        if (currentChat?.id && token) {
-            dispatch(getAllMessages(currentChat.id, token));
+        if (!currentChat?.id || !token) {
+            setMessages([]);
+            return;
         }
+        const loadMessages = async () => {
+            try {
+                const res = await fetch(`${BASE_API_URL}/api/messages/chat/${currentChat.id}?page=0&size=50`, {
+                    headers: { 'Content-Type': 'application/json', Authorization: `${AUTHORIZATION_PREFIX}${token}` }
+                });
+                const data: MessageDTO[] = await res.json();
+                setMessages(data);
+            } catch (e) {
+                logger.error('Loading messages failed:', e);
+            }
+        };
+        loadMessages();
     }, [currentChat?.id]);
-
-    // Redux → local state: только при GET_ALL_MESSAGES (загрузка/смена чата)
-    useEffect(() => {
-        setMessages(messageState.messages);
-    }, [messageState.messages]);
 
     // === Обработчик входящих WS сообщений (стабильная ссылка через useCallback) ===
     const onMessageReceive = useCallback((payload: any) => {
@@ -197,9 +203,7 @@ const Homepage = () => {
             const reqUserId = authState.reqUser?.id?.toString();
             const isOwnMessage = senderId === reqUserId;
             const msgChatId = wsMessage.chat?.id?.toString();
-
             const isChatOpen = chat && msgChatId === chat.id.toString();
-            const isWindowActive = document.visibilityState === 'visible' && document.hasFocus();
 
             if (isChatOpen) {
                 const message: MessageDTO = {
@@ -210,37 +214,31 @@ const Homepage = () => {
                     readBy: [],
                     deliveredTo: []
                 };
-                // Добавляем сообщение напрямую в local state — единственный источник правды
+                // Единственный источник правды — local state
                 setMessages(prev => {
                     if (prev.some(m => m.id === message.id)) return prev;
                     return [...prev, message];
                 });
             }
 
-            // Обновляем список чатов в сайдбаре (последнее сообщение)
+            // Обновляем список чатов в сайдбаре
             if (tk) {
                 dispatch(getUserChats(tk));
             }
 
-            // === Уведомления ===
-            if (!isOwnMessage) {
+            // Уведомления — только для чужих сообщений не в открытом чате
+            if (!isOwnMessage && !isChatOpen) {
                 const settings = getNotificationSettings();
-                const chatMuted = authState.reqUser?.mutedChatIds?.includes(msgChatId || '');
-                const shouldNotify = (!isChatOpen || !isWindowActive) && !chatMuted;
-
-                if (shouldNotify) {
-                    if (settings.soundEnabled) {
-                        playNotificationSound();
-                    }
-                    if (settings.browserNotificationsEnabled && data.user && data.content) {
-                        const senderName = data.user.fullName || 'Новое сообщение';
-                        const messagePreview = data.content.length > 50
-                            ? data.content.substring(0, 50) + '...'
-                            : data.content;
-                        showBrowserNotification(senderName, messagePreview);
-                    }
-                    updatePageTitle(1);
+                if (settings.soundEnabled) {
+                    playNotificationSound();
                 }
+                if (settings.browserNotificationsEnabled && data.user && data.content) {
+                    const senderName = data.user.fullName || 'Новое сообщение';
+                    const messagePreview = data.content.length > 50
+                        ? data.content.substring(0, 50) + '...' : data.content;
+                    showBrowserNotification(senderName, messagePreview);
+                }
+                updatePageTitle(1);
             }
         } catch (e) {
             logger.error('Error parsing WebSocket message:', e);
@@ -318,9 +316,9 @@ const Homepage = () => {
         };
     }, [token, authState.reqUser?.id]);
 
-    // При возвращении на вкладку — обновляем только список чатов
+    // При возвращении на вкладку — только обновляем список чатов в сайдбаре
     useEffect(() => {
-        if (isAppActive && currentChat?.id && token) {
+        if (isAppActive && token) {
             dispatch(getUserChats(token));
         }
     }, [isAppActive]);
