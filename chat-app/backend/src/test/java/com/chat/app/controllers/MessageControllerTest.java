@@ -91,13 +91,13 @@ class MessageControllerTest extends AbstractIntegrationTest {
         String authorization = JwtConstants.TOKEN_PREFIX + response.token();
         Message message1 = messageService.findMessageById(lukeAndLeiaMessage1Id);
         Message message2 = messageService.findMessageById(lukeAndLeiaMessage2Id);
-        ResponseEntity<List<MessageDTO>> result = messageController.getChatMessages(lukeAndLeiaChatId, authorization);
+        ResponseEntity<List<MessageDTO>> result = messageController.getChatMessages(lukeAndLeiaChatId, 0, 50, authorization);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).containsExactlyElementsOf(List.of(Objects.requireNonNull(MessageDTO.fromMessage(message1)), Objects.requireNonNull(MessageDTO.fromMessage(message2))));
 
         // Get messages for non-existing chat
         String finalAuthorization = authorization;
-        assertThrows(ChatException.class, () -> messageController.getChatMessages(notExistingId, finalAuthorization));
+        assertThrows(ChatException.class, () -> messageController.getChatMessages(notExistingId, 0, 50, finalAuthorization));
 
         // Get messages for user not related to chat
         mail = "darth.vader@test.com";
@@ -106,7 +106,7 @@ class MessageControllerTest extends AbstractIntegrationTest {
         assert response != null;
         authorization = JwtConstants.TOKEN_PREFIX + response.token();
         String finalAuthorization1 = authorization;
-        assertThrows(UserException.class, () -> messageController.getChatMessages(lukeAndLeiaChatId, finalAuthorization1));
+        assertThrows(UserException.class, () -> messageController.getChatMessages(lukeAndLeiaChatId, 0, 50, finalAuthorization1));
     }
 
     @Test
