@@ -9,6 +9,7 @@ import com.chat.app.model.Message;
 import com.chat.app.model.User;
 import com.chat.app.repository.MessageRepository;
 import com.chat.app.service.ChatService;
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -30,21 +31,23 @@ public class RealtimeChatController {
     private final MessageRepository messageRepository;
 
     @MessageMapping("/messages")
-    public void receiveMessage(@Payload Message message) {
-        if (message.getChat() == null || message.getChat().getId() == null) {
+    public void receiveMessage(@Payload JsonNode messageJson) {
+        JsonNode chatNode = messageJson.get("chat");
+        if (chatNode == null || chatNode.get("id") == null) {
             log.error("Message chat is null!");
             return;
         }
         try {
-            Chat chat = chatService.findChatById(message.getChat().getId());
+            UUID chatId = UUID.fromString(chatNode.get("id").asText());
+            Chat chat = chatService.findChatById(chatId);
             log.debug("Delivering message to {} users in chat {}", chat.getUsers().size(), chat.getId());
 
             for (User user : chat.getUsers()) {
                 final String destination = "/topic/" + user.getId();
-                messagingTemplate.convertAndSend(destination, message);
+                messagingTemplate.convertAndSend(destination, messageJson);
             }
         } catch (ChatException e) {
-            log.error("Chat not found for message: {}", message.getChat().getId());
+            log.error("Chat not found for message: {}", chatNode.get("id"));
         }
     }
 
