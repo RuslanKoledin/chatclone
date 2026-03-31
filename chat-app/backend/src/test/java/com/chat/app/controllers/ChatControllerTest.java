@@ -11,10 +11,8 @@ import com.chat.app.dto.response.UserDTO;
 import com.chat.app.exception.ChatException;
 import com.chat.app.exception.MessageException;
 import com.chat.app.exception.UserException;
-import com.chat.app.model.Chat;
 import com.chat.app.model.Message;
 import com.chat.app.model.User;
-import com.chat.app.service.ChatService;
 import com.chat.app.service.MessageService;
 import com.chat.app.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -58,19 +56,22 @@ class ChatControllerTest extends AbstractIntegrationTest {
     private final UUID messageLukeLeia1Id = UUID.fromString("620d606a-9033-4210-b9c0-982e0f3800ef");
     private final UUID messageLukeLeia2Id = UUID.fromString("15733d9e-939d-497b-b042-fd2fe54d7430");
 
+    private String getAuthorization(String mail, String password) {
+        LoginRequestDTO request = new LoginRequestDTO(mail, password);
+        LoginResponseDTO response = authController.login(request).getBody();
+        assert response != null;
+        return JwtConstants.TOKEN_PREFIX + response.token();
+    }
+
     @Test
     void createSingleChat() throws UserException, ChatException {
 
         // Create new chat
-        String mail = "leia.organa@test.com";
-        LoginRequestDTO request = new LoginRequestDTO(mail, "4567");
-        LoginResponseDTO response = authController.login(request).getBody();
-        assert response != null;
-        String authorization = JwtConstants.TOKEN_PREFIX + response.token();
+        String authorization = getAuthorization("leia.organa@test.com", "4567");
         User leia = userService.findUserById(leiasId);
         User han = userService.findUserById(hansId);
         ResponseEntity<ChatDTO> result = chatController.createSingleChat(hansId, authorization);
-        ResponseEntity<ChatDTO> repositoryChat = chatController.findChatById(Objects.requireNonNull(result.getBody()).id());
+        ResponseEntity<ChatDTO> repositoryChat = chatController.findChatById(Objects.requireNonNull(result.getBody()).id(), authorization);
         assertThat(result.getBody().id()).isNotNull();
         assertThat(result.getBody().createdBy()).isEqualTo(UserDTO.fromUser(leia));
         assertThat(result.getBody().isGroup()).isFalse();
@@ -90,16 +91,12 @@ class ChatControllerTest extends AbstractIntegrationTest {
     void createGroupChat() throws UserException, ChatException {
 
         // Create new chat
-        String mail = "leia.organa@test.com";
-        LoginRequestDTO request = new LoginRequestDTO(mail, "4567");
-        LoginResponseDTO response = authController.login(request).getBody();
-        assert response != null;
-        String authorization = JwtConstants.TOKEN_PREFIX + response.token();
+        String authorization = getAuthorization("leia.organa@test.com", "4567");
         User leia = userService.findUserById(leiasId);
         User han = userService.findUserById(hansId);
         GroupChatRequestDTO dto = new GroupChatRequestDTO(List.of(leiasId, hansId), "TestName");
         ResponseEntity<ChatDTO> result = chatController.createGroupChat(dto, authorization);
-        ResponseEntity<ChatDTO> repositoryChat = chatController.findChatById(Objects.requireNonNull(result.getBody()).id());
+        ResponseEntity<ChatDTO> repositoryChat = chatController.findChatById(Objects.requireNonNull(result.getBody()).id(), authorization);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody().id()).isNotNull();
         assertThat(result.getBody().createdBy()).isEqualTo(UserDTO.fromUser(leia));
@@ -113,12 +110,13 @@ class ChatControllerTest extends AbstractIntegrationTest {
     @Test
     void findChatById() throws UserException, MessageException, ChatException {
 
-        // Find existing chat
+        // Find existing chat (luke is a member of this chat)
+        String lukeAuth = getAuthorization("luke.skywalker@test.com", "1234");
         User luke = userService.findUserById(lukesId);
         User leia = userService.findUserById(leiasId);
         Message message1 = messageService.findMessageById(messageLukeLeia1Id);
         Message message2 = messageService.findMessageById(messageLukeLeia2Id);
-        ResponseEntity<ChatDTO> result = chatController.findChatById(lukesAndLeiasChatId);
+        ResponseEntity<ChatDTO> result = chatController.findChatById(lukesAndLeiasChatId, lukeAuth);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(Objects.requireNonNull(result.getBody()).id()).isEqualTo(lukesAndLeiasChatId);
         assertThat(result.getBody().isGroup()).isFalse();
@@ -130,23 +128,18 @@ class ChatControllerTest extends AbstractIntegrationTest {
                         Objects.requireNonNull(MessageDTO.fromMessage(message2))));
 
         // Find non-existing chat
-        assertThrows(ChatException.class, () -> chatController.findChatById(notExistingId));
+        assertThrows(ChatException.class, () -> chatController.findChatById(notExistingId, lukeAuth));
     }
 
     @Test
     void findAllChatsByUserId() throws UserException, ChatException {
 
         // Find all by existing user
-        // Get user
-        String mail = "luke.skywalker@test.com";
-        LoginRequestDTO request = new LoginRequestDTO(mail, "1234");
-        LoginResponseDTO response = authController.login(request).getBody();
-        assert response != null;
-        String authorization = JwtConstants.TOKEN_PREFIX + response.token();
+        String authorization = getAuthorization("luke.skywalker@test.com", "1234");
         ResponseEntity<List<ChatDTO>> result = chatController.findAllChatsByUserId(authorization);
-        ResponseEntity<ChatDTO> chat1 = chatController.findChatById(theGoodiesChatId);
-        ResponseEntity<ChatDTO> chat2 = chatController.findChatById(lukesAndLeiasChatId);
-        ResponseEntity<ChatDTO> chat3 = chatController.findChatById(vaderAndLukeChatId);
+        ResponseEntity<ChatDTO> chat1 = chatController.findChatById(theGoodiesChatId, authorization);
+        ResponseEntity<ChatDTO> chat2 = chatController.findChatById(lukesAndLeiasChatId, authorization);
+        ResponseEntity<ChatDTO> chat3 = chatController.findChatById(vaderAndLukeChatId, authorization);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).containsExactlyElementsOf(
                 List.of(Objects.requireNonNull(chat1.getBody()), Objects.requireNonNull(chat2.getBody()),
@@ -157,11 +150,7 @@ class ChatControllerTest extends AbstractIntegrationTest {
     void addUserToGroup() throws UserException, ChatException {
 
         // Add user to group
-        String mail = "luke.skywalker@test.com";
-        LoginRequestDTO request = new LoginRequestDTO(mail, "1234");
-        LoginResponseDTO response = authController.login(request).getBody();
-        assert response != null;
-        String authorization = JwtConstants.TOKEN_PREFIX + response.token();
+        String authorization = getAuthorization("luke.skywalker@test.com", "1234");
         User vader = userService.findUserById(vadersId);
         ResponseEntity<ChatDTO> result = chatController.addUserToGroup(theGoodiesChatId, vadersId, authorization);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -175,24 +164,15 @@ class ChatControllerTest extends AbstractIntegrationTest {
         assertThrows(UserException.class, () -> chatController.addUserToGroup(theGoodiesChatId, notExistingId, finalAuthorization));
 
         // Add as user that is not admin
-        mail = "leia.organa@test.com";
-        request = new LoginRequestDTO(mail, "4567");
-        response = authController.login(request).getBody();
-        assert response != null;
-        authorization = JwtConstants.TOKEN_PREFIX + response.token();
-        String finalAuthorization1 = authorization;
-        assertThrows(UserException.class, () -> chatController.addUserToGroup(theGoodiesChatId, vadersId, finalAuthorization1));
+        String leiaAuth = getAuthorization("leia.organa@test.com", "4567");
+        assertThrows(UserException.class, () -> chatController.addUserToGroup(theGoodiesChatId, vadersId, leiaAuth));
     }
 
     @Test
     void removeUserFromGroup() throws UserException, ChatException {
 
         // Remove from Chat
-        String mail = "luke.skywalker@test.com";
-        LoginRequestDTO request = new LoginRequestDTO(mail, "1234");
-        LoginResponseDTO response = authController.login(request).getBody();
-        assert response != null;
-        String authorization = JwtConstants.TOKEN_PREFIX + response.token();
+        String authorization = getAuthorization("luke.skywalker@test.com", "1234");
         User leia = userService.findUserById(leiasId);
         ResponseEntity<ChatDTO> result = chatController.removeUserFromGroup(theGoodiesChatId, leiasId, authorization);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -207,89 +187,54 @@ class ChatControllerTest extends AbstractIntegrationTest {
         assertThrows(UserException.class, () -> chatController.removeUserFromGroup(theGoodiesChatId, notExistingId, finalAuthorization1));
 
         // Remove self from chat as not admin
-        mail = "obiwan.kenobi@test.com";
-        request = new LoginRequestDTO(mail, "3456");
-        response = authController.login(request).getBody();
-        assert response != null;
-        authorization = JwtConstants.TOKEN_PREFIX + response.token();
+        String kenobiAuth = getAuthorization("obiwan.kenobi@test.com", "3456");
         User kenobi = userService.findUserById(kenobisId);
-        ResponseEntity<ChatDTO> result2 = chatController.removeUserFromGroup(theGoodiesChatId, kenobisId, authorization);
+        ResponseEntity<ChatDTO> result2 = chatController.removeUserFromGroup(theGoodiesChatId, kenobisId, kenobiAuth);
         assertThat(Objects.requireNonNull(result2.getBody()).users()).isNotEmpty();
         assertThat(result2.getBody().users()).doesNotContain(UserDTO.fromUser(kenobi));
 
         // Remove as not admin
-        mail = "han.solo@test.com";
-        request = new LoginRequestDTO(mail, "5678");
-        response = authController.login(request).getBody();
-        assert response != null;
-        authorization = JwtConstants.TOKEN_PREFIX + response.token();
-        String finalAuthorization = authorization;
-        assertThrows(UserException.class, () -> chatController.removeUserFromGroup(theGoodiesChatId, lukesId, finalAuthorization));
+        String hanAuth = getAuthorization("han.solo@test.com", "5678");
+        assertThrows(UserException.class, () -> chatController.removeUserFromGroup(theGoodiesChatId, lukesId, hanAuth));
     }
 
     @Test
     void markAsRead() throws UserException, ChatException {
 
         // Mark chat as read
-        String mail = "luke.skywalker@test.com";
-        LoginRequestDTO request = new LoginRequestDTO(mail, "1234");
-        LoginResponseDTO response = authController.login(request).getBody();
-        assert response != null;
-        String authorization = JwtConstants.TOKEN_PREFIX + response.token();
+        String authorization = getAuthorization("luke.skywalker@test.com", "1234");
         User luke = userService.findUserById(lukesId);
         ResponseEntity<ChatDTO> result = chatController.markAsRead(theGoodiesChatId, authorization);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         Objects.requireNonNull(result.getBody()).messages().forEach(msg -> assertThat(msg.readBy()).contains(luke.getId()));
 
         // Mark non-existing chat as read
-        String finalAuthorization = authorization;
-        assertThrows(ChatException.class, () -> chatController.markAsRead(notExistingId, finalAuthorization));
+        assertThrows(ChatException.class, () -> chatController.markAsRead(notExistingId, authorization));
 
         // Mark chat as read that user is not a part of
-        mail = "darth.vader@test.com";
-        request = new LoginRequestDTO(mail, "2345");
-        response = authController.login(request).getBody();
-        assert response != null;
-        authorization = JwtConstants.TOKEN_PREFIX + response.token();
-        String finalAuthorization1 = authorization;
-        assertThrows(UserException.class, () -> chatController.markAsRead(theGoodiesChatId, finalAuthorization1));
+        String vaderAuth = getAuthorization("darth.vader@test.com", "2345");
+        assertThrows(UserException.class, () -> chatController.markAsRead(theGoodiesChatId, vaderAuth));
     }
 
     @Test
     void deleteChat() throws ChatException, UserException {
 
         // Remove non-existing chat
-        String mail = "imperator.palpatine@test.com";
-        LoginRequestDTO request = new LoginRequestDTO(mail, "6789");
-        LoginResponseDTO response = authController.login(request).getBody();
-        assert response != null;
-        String authorization = JwtConstants.TOKEN_PREFIX + response.token();
-        String finalAuthorization = authorization;
-        assertThrows(ChatException.class, () -> chatController.deleteChat(notExistingId, finalAuthorization));
+        String palpatineAuth = getAuthorization("imperator.palpatine@test.com", "6789");
+        assertThrows(ChatException.class, () -> chatController.deleteChat(notExistingId, palpatineAuth));
 
         // Remove group chat as admin
-        chatController.deleteChat(theDarkSideChatId, authorization);
-        assertThrows(ChatException.class, () -> chatController.findChatById(theDarkSideChatId));
+        chatController.deleteChat(theDarkSideChatId, palpatineAuth);
+        assertThrows(ChatException.class, () -> chatController.findChatById(theDarkSideChatId, palpatineAuth));
 
         // Remove group chat as not admin
-        mail = "leia.organa@test.com";
-        request = new LoginRequestDTO(mail, "4567");
-        response = authController.login(request).getBody();
-        assert response != null;
-        authorization = JwtConstants.TOKEN_PREFIX + response.token();
-        String finalAuthorization1 = authorization;
-        assertThrows(UserException.class, () -> chatController.deleteChat(theGoodiesChatId, finalAuthorization1));
+        String leiaAuth = getAuthorization("leia.organa@test.com", "4567");
+        assertThrows(UserException.class, () -> chatController.deleteChat(theGoodiesChatId, leiaAuth));
 
         // Remove single chat
-        mail = "obiwan.kenobi@test.com";
-        request = new LoginRequestDTO(mail, "3456");
-        response = authController.login(request).getBody();
-        assert response != null;
-        authorization = JwtConstants.TOKEN_PREFIX + response.token();
-        chatController.deleteChat(leiaAndKenobisChatId, authorization);
-        assertThrows(ChatException.class, () -> chatController.findChatById(leiaAndKenobisChatId));
-
-
+        String kenobiAuth = getAuthorization("obiwan.kenobi@test.com", "3456");
+        chatController.deleteChat(leiaAndKenobisChatId, kenobiAuth);
+        assertThrows(ChatException.class, () -> chatController.findChatById(leiaAndKenobisChatId, kenobiAuth));
     }
 
 }
