@@ -135,18 +135,11 @@ const Homepage = () => {
         if (currentChat?.id && token) {
             dispatch(getAllMessages(currentChat.id, token));
         }
-    }, [currentChat, dispatch, token, messageState.newMessage]);
+    }, [currentChat, dispatch, token]);
 
     useEffect(() => {
         setMessages(messageState.messages);
     }, [messageState.messages]);
-
-    useEffect(() => {
-        if (messageState.newMessage && stompClient && currentChat && isConnected) {
-            const webSocketMessage: WebSocketMessageDTO = {...messageState.newMessage, chat: currentChat};
-            stompClient.send("/app/messages", {}, JSON.stringify(webSocketMessage));
-        }
-    }, [messageState.newMessage]);
 
     useEffect(() => {
         logger.log("Attempting to subscribe to ws: ", subscribeTry);
@@ -433,14 +426,20 @@ const Homepage = () => {
         }
     };
 
-    const onSendMessage = (replyToId?: string) => {
-        if (currentChat?.id && token) {
-            dispatch(createMessage({
+    const onSendMessage = async (replyToId?: string) => {
+        if (currentChat?.id && token && stompClient && isConnected) {
+            const msgContent = newMessage;
+            setNewMessage("");
+            const result: any = await dispatch(createMessage({
                 chatId: currentChat.id,
-                content: newMessage,
+                content: msgContent,
                 replyToId: replyToId as any
             }, token));
-            setNewMessage("");
+            // Отправляем через WebSocket для real-time доставки другим пользователям
+            if (result) {
+                const webSocketMessage: WebSocketMessageDTO = {...result, chat: currentChat};
+                stompClient.send("/app/messages", {}, JSON.stringify(webSocketMessage));
+            }
         }
     };
 

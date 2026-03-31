@@ -8,7 +8,7 @@ import {UUID} from "node:crypto";
 
 const MESSAGE_PATH = 'api/messages';
 
-export const createMessage = (data: SendMessageRequestDTO, token: string) => async (dispatch: AppDispatch): Promise<void> => {
+export const createMessage = (data: SendMessageRequestDTO, token: string) => async (dispatch: AppDispatch): Promise<MessageDTO | null> => {
     try {
         const res: Response = await fetch(`${BASE_API_URL}/${MESSAGE_PATH}/create`, {
             method: 'POST',
@@ -22,8 +22,10 @@ export const createMessage = (data: SendMessageRequestDTO, token: string) => asy
         const resData: MessageDTO = await res.json();
         logger.log('Send message: ', resData);
         dispatch({type: actionTypes.CREATE_NEW_MESSAGE, payload: resData});
+        return resData;
     } catch (error: any) {
         logger.error('Sending message failed', error);
+        return null;
     }
 };
 
