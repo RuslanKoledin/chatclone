@@ -1,4 +1,5 @@
 import React from 'react';
+import mchatLogo from '../../assets/mchat-logo.png';
 
 interface MBankLogoProps {
     size?: number;
@@ -9,8 +10,7 @@ interface MBankLogoProps {
 }
 
 const MBankLogo: React.FC<MBankLogoProps> = ({ size = 48 }) => {
-    const radius = Math.round(size * 0.28);
-    const fontSize = Math.round(size * 0.38);
+    const radius = Math.round(size * 0.24);
 
     return (
         <div
@@ -18,21 +18,20 @@ const MBankLogo: React.FC<MBankLogoProps> = ({ size = 48 }) => {
                 width: size,
                 height: size,
                 borderRadius: radius,
+                overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 flexShrink: 0,
-                backgroundColor: '#00875A',
-                boxShadow: '0 2px 8px rgba(0,135,90,0.35)',
-                color: '#FFFFFF',
-                fontWeight: 700,
-                fontSize: fontSize,
-                fontFamily: 'Inter, sans-serif',
-                letterSpacing: '-0.5px',
-                userSelect: 'none',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+                background: '#FFFFFF',
             }}
         >
-            My
+            <img
+                src={mchatLogo}
+                alt="MyChat"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+            />
         </div>
     );
 };
