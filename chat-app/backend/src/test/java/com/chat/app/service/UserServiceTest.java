@@ -70,7 +70,7 @@ class UserServiceTest extends AbstractIntegrationTest {
         String name = "Anakin Skywalker";
         String mail = "darth.vader@test.com";
         String password = "2345";
-        UpdateUserRequestDTO request = new UpdateUserRequestDTO(mail, password, name, null);
+        UpdateUserRequestDTO request = new UpdateUserRequestDTO(mail, password, name, null, null);
         User user = userService.updateUser(vadersId, request);
         User repositoryUser = userService.findUserById(vadersId);
         assertThat(user.getId()).isEqualTo(vadersId);

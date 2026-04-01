@@ -156,6 +156,25 @@ export const pinMessage = (chatId: UUID, messageId: UUID, token: string) => asyn
     }
 };
 
+// Обновление аватара группы
+export const updateGroupAvatar = (chatId: UUID, groupAvatar: string, token: string) => async (dispatch: AppDispatch): Promise<void> => {
+    try {
+        const res: Response = await fetch(`${BASE_API_URL}/${CHAT_PATH}/${chatId}/avatar`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `${AUTHORIZATION_PREFIX}${token}`,
+            },
+            body: JSON.stringify({ groupAvatar }),
+        });
+
+        const resData: ChatDTO = await res.json();
+        dispatch({type: actionTypes.UPDATE_GROUP_AVATAR, payload: resData});
+    } catch (error: any) {
+        console.error('Updating group avatar failed: ', error);
+    }
+};
+
 // Открепление сообщения в чате
 export const unpinMessage = (chatId: UUID, token: string) => async (dispatch: AppDispatch): Promise<void> => {
     try {

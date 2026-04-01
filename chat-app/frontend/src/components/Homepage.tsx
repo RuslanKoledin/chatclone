@@ -8,7 +8,7 @@ import EditGroupChat from "./editChat/EditGroupChat";
 import Profile from "./profile/Profile";
 import {Avatar, Divider, IconButton, InputAdornment, Menu, MenuItem, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Button, List, ListItem, ListItemButton, ListItemAvatar, ListItemText, Checkbox} from "@mui/material";
 import ChatIcon from '@mui/icons-material/Chat';
-import MBankLogo from "./common/MBankLogo";
+import ChatBubbleIcon from '@mui/icons-material/ChatBubble';
 import ColorAvatar from "./common/ColorAvatar";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import LightModeIcon from '@mui/icons-material/LightMode';
@@ -16,6 +16,7 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import {useTheme} from "../theme/ThemeContext";
 import {currentUser, logoutUser} from "../redux/auth/AuthAction";
 import SearchIcon from '@mui/icons-material/Search';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import {getUserChats, markChatAsRead, pinMessage, unpinMessage} from "../redux/chat/ChatAction";
 import {ChatDTO} from "../redux/chat/ChatModel";
 import ChatCard from "./chatCard/ChatCard";
@@ -31,15 +32,20 @@ import {Client, over, Subscription} from "stompjs";
 import {AUTHORIZATION_PREFIX} from "../redux/Constants";
 import CreateGroupChat from "./editChat/CreateGroupChat";
 import CreateSingleChat from "./editChat/CreateSingleChat";
+import GlobalSearch from "./globalSearch/GlobalSearch";
 import {getRemainingSessionMs, isSessionExpired} from "../utils/session";
 import {
     requestNotificationPermission,
     showBrowserNotification,
     playNotificationSound,
     updatePageTitle,
-    getNotificationSettings
+    getNotificationSettings,
+    saveNotificationSettings
 } from "../utils/notifications";
 import {logger} from "../utils/logger";
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import NotificationsOffIcon from '@mui/icons-material/NotificationsOff';
+import Switch from '@mui/material/Switch';
 
 const Homepage = () => {
 
@@ -54,6 +60,7 @@ const Homepage = () => {
     const [isShowCreateGroupChat, setIsShowCreateGroupChat] = useState<boolean>(false);
     const [isShowCreateSingleChat, setIsShowCreateSingleChat] = useState<boolean>(false);
     const [isShowProfile, setIsShowProfile] = useState<boolean>(false);
+    const [isShowGlobalSearch, setIsShowGlobalSearch] = useState<boolean>(false);
     const [anchor, setAnchor] = useState(null);
     const [initials, setInitials] = useState<string>("");
     const [query, setQuery] = useState<string>("");
@@ -68,6 +75,8 @@ const Homepage = () => {
     const [forwardDialogOpen, setForwardDialogOpen] = useState<boolean>(false);
     const [messageToForward, setMessageToForward] = useState<MessageDTO | null>(null);
     const [selectedChatsForForward, setSelectedChatsForForward] = useState<string[]>([]);
+    const [notifDialogOpen, setNotifDialogOpen] = useState<boolean>(false);
+    const [notifSettings, setNotifSettings] = useState(getNotificationSettings());
     // eslint-disable-next-line no-restricted-globals
     const isMenuOpen = Boolean(anchor);
 
@@ -316,6 +325,17 @@ const Homepage = () => {
         };
     }, [token, authState.reqUser?.id]);
 
+    // Обновляем заголовок вкладки с суммарным числом непрочитанных
+    useEffect(() => {
+        if (isAppActive) return;
+        const totalUnread = chatState.chats.reduce((sum, chat) => {
+            const read = chat.messages.filter(msg =>
+                msg.user.id === authState.reqUser?.id || msg.readBy.includes(authState.reqUser!.id)).length;
+            return sum + (chat.messages.length - read);
+        }, 0);
+        updatePageTitle(totalUnread);
+    }, [chatState.chats, isAppActive, authState.reqUser]);
+
     // При возвращении на вкладку — только обновляем список чатов в сайдбаре
     useEffect(() => {
         if (isAppActive && token) {
@@ -520,6 +540,15 @@ const Homepage = () => {
         setIsShowCreateGroupChat(true);
     };
 
+    const handleNotifToggle = (key: 'soundEnabled' | 'browserNotificationsEnabled') => {
+        const updated = { ...notifSettings, [key]: !notifSettings[key] };
+        setNotifSettings(updated);
+        saveNotificationSettings(updated);
+        if (key === 'browserNotificationsEnabled' && updated.browserNotificationsEnabled) {
+            requestNotificationPermission();
+        }
+    };
+
     const onCreateSingleChat = () => {
         setIsShowCreateSingleChat(true);
     };
@@ -569,12 +598,17 @@ const Homepage = () => {
                             <div className={styles.profileContainer}>
                                 <Profile onCloseProfile={onCloseProfile} initials={initials}/>
                             </div>}
-                        {!isShowCreateSingleChat && !isShowEditGroupChat && !isShowCreateGroupChat && !isShowProfile &&
+                        {isShowGlobalSearch &&
+                            <GlobalSearch
+                                onClose={() => setIsShowGlobalSearch(false)}
+                                onSelectChat={(chat) => { setCurrentChat(chat); }}
+                            />}
+                        {!isShowCreateSingleChat && !isShowEditGroupChat && !isShowCreateGroupChat && !isShowProfile && !isShowGlobalSearch &&
                             <div className={styles.sideBarInnerContainer}>
                                 <div className={styles.navContainer}>
                                     <div onClick={onOpenProfile} className={styles.userInfoContainer}>
-                                        <MBankLogo size={36} />
-                                        <span className={styles.navBrandText}>MChat</span>
+                                        <ChatBubbleIcon sx={{ fontSize: 24, color: '#00875A' }} />
+                                        <span className={styles.navBrandText}>MyChat</span>
                                     </div>
                                     <div className={styles.navRightSection}>
                                         <IconButton onClick={toggleTheme} size="small" title={theme === 'light' ? 'Тёмная тема' : 'Светлая тема'}>
@@ -589,6 +623,9 @@ const Homepage = () => {
                                             />
                                         </div>
                                         <div>
+                                            <IconButton onClick={() => setIsShowGlobalSearch(true)} title="Глобальный поиск">
+                                                <ManageSearchIcon/>
+                                            </IconButton>
                                             <IconButton onClick={onCreateSingleChat}>
                                                 <ChatIcon/>
                                             </IconButton>
@@ -603,6 +640,12 @@ const Homepage = () => {
                                                 MenuListProps={{'aria-labelledby': 'basic-button'}}>
                                                 <MenuItem onClick={onOpenProfile}>Профиль</MenuItem>
                                                 <MenuItem onClick={onCreateGroupChat}>Создать группу</MenuItem>
+                                                <MenuItem onClick={() => { onCloseMenu(); setNotifDialogOpen(true); }}>
+                                                    {notifSettings.soundEnabled && notifSettings.browserNotificationsEnabled
+                                                        ? <NotificationsIcon sx={{ mr: 1, fontSize: '1.2rem' }} />
+                                                        : <NotificationsOffIcon sx={{ mr: 1, fontSize: '1.2rem' }} />}
+                                                    Уведомления
+                                                </MenuItem>
                                                 <MenuItem onClick={onLogout}>Выйти</MenuItem>
                                             </Menu>
                                         </div>
@@ -741,6 +784,34 @@ const Homepage = () => {
                     >
                         Переслать ({selectedChatsForForward.length})
                     </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Диалог настроек уведомлений */}
+            <Dialog open={notifDialogOpen} onClose={() => setNotifDialogOpen(false)} maxWidth="xs" fullWidth>
+                <DialogTitle>Настройки уведомлений</DialogTitle>
+                <DialogContent>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span style={{ fontSize: 14 }}>Звук уведомлений</span>
+                            <Switch
+                                checked={notifSettings.soundEnabled}
+                                onChange={() => handleNotifToggle('soundEnabled')}
+                                color="success"
+                            />
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span style={{ fontSize: 14 }}>Браузерные уведомления</span>
+                            <Switch
+                                checked={notifSettings.browserNotificationsEnabled}
+                                onChange={() => handleNotifToggle('browserNotificationsEnabled')}
+                                color="success"
+                            />
+                        </div>
+                    </div>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setNotifDialogOpen(false)}>Закрыть</Button>
                 </DialogActions>
             </Dialog>
         </div>

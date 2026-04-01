@@ -5,16 +5,19 @@ import com.chat.app.config.TokenProvider;
 import com.chat.app.dto.request.UpdateUserRequestDTO;
 import com.chat.app.exception.UserException;
 import com.chat.app.model.User;
+import com.chat.app.model.UserStatus;
 import com.chat.app.repository.UserRepository;
 import com.chat.app.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -61,6 +64,12 @@ public class UserServiceImpl implements UserService {
 
         if (Objects.nonNull(request.profilePhoto())) {
             user.setProfilePhoto(request.profilePhoto());
+        }
+
+        if (Objects.nonNull(request.userStatus())) {
+            try {
+                user.setUserStatus(UserStatus.valueOf(request.userStatus()));
+            } catch (IllegalArgumentException ignored) {}
         }
 
         return userRepository.save(user);

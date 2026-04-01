@@ -4,6 +4,7 @@ import {getChatName, getInitialsFromName, transformDateToString} from "../utils/
 import ColorAvatar from "../common/ColorAvatar";
 import styles from './ChatCard.module.scss';
 import {ChatDTO} from "../../redux/chat/ChatModel";
+import {UserDTO} from "../../redux/auth/AuthModel";
 import {useSelector, useDispatch} from "react-redux";
 import {RootState, AppDispatch} from "../../redux/Store";
 import {MessageDTO} from "../../redux/message/MessageModel";
@@ -70,7 +71,21 @@ const ChatCard = (props: ChatCardProps) => {
     const sortedMessages: MessageDTO[] = props.chat.messages.sort((a, b) => +new Date(a.timeStamp) - +new Date(b.timeStamp));
     const lastMessage: MessageDTO | undefined = sortedMessages.length > 0 ? sortedMessages[sortedMessages.length - 1] : undefined;
     const lastMessageContent: string = lastMessage ? lastMessage.content.length > 25 ? lastMessage.content.slice(0, 25) + "..." : lastMessage.content : "";
-    const lastMessageName: string = lastMessage ? lastMessage.user.fullName === authState.reqUser?.fullName ? "You" : lastMessage.user.fullName : "";
+    const lastMessageName: string = lastMessage ? lastMessage.user.fullName === authState.reqUser?.fullName ? "Вы" : lastMessage.user.fullName : "";
+    const otherUser: UserDTO | undefined = !props.chat.isGroup
+        ? props.chat.users.find(u => u.id !== authState.reqUser?.id)
+        : undefined;
+    const isOnline: boolean = !!otherUser?.isOnline;
+
+    const getStatusDotColor = (): string | null => {
+        if (!isOnline) return null;
+        switch (otherUser?.userStatus) {
+            case 'AWAY': return '#f59e0b';
+            case 'DO_NOT_DISTURB': return '#ef4444';
+            default: return null; // использует CSS var(--accent)
+        }
+    };
+    const statusDotColor = getStatusDotColor();
     const lastMessageString: string = lastMessage ? lastMessageName + ": " + lastMessageContent : "";
     const lastDate: string = lastMessage ? transformDateToString(new Date(lastMessage.timeStamp)) : "";
     const numberOfReadMessages: number = props.chat.messages.filter(msg =>
@@ -81,6 +96,12 @@ const ChatCard = (props: ChatCardProps) => {
         <div className={styles.chatCardOuterContainer} onContextMenu={handleContextMenu}>
             <div className={styles.chatCardAvatarContainer}>
                 <ColorAvatar name={name} size={44} />
+                {isOnline && (
+                    <span
+                        className={styles.onlineDot}
+                        style={statusDotColor ? { backgroundColor: statusDotColor } : undefined}
+                    />
+                )}
             </div>
             <div className={styles.chatCardContentContainer}>
                 <div className={styles.chatCardContentInnerContainer}>

@@ -45,6 +45,13 @@
   flex: 1;
 }
 
+.messagePageHeaderActions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 0;
+}
+
 .avatarWrapper {
   position: relative;
   display: inline-block;
@@ -323,4 +330,48 @@
 .dropZoneSubtext {
   font-size: 13px;
   color: var(--sidebar-text-muted);
+}
+
+/* ─── Scroll to bottom button ───────────────────────────────────── */
+.scrollToBottomBtn {
+  position: absolute;
+  bottom: 80px;
+  right: 20px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background-color: var(--header-bg);
+  border: 1px solid var(--sidebar-border);
+  color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  transition: background-color 0.15s, transform 0.15s;
+  padding: 0;
+
+  &:hover {
+    background-color: var(--sidebar-hover);
+    transform: translateY(-2px);
+  }
+}
+
+.scrollBtnBadge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 9px;
+  background-color: var(--accent);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
 }

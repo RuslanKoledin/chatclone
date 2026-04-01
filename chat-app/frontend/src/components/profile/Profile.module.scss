@@ -112,3 +112,51 @@
   font-size: 14px;
   border-bottom: 1px solid var(--sidebar-border);
 }
+
+.statusContainer {
+  padding: 16px;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.statusLabel {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--sidebar-text-muted);
+  margin: 0 0 12px;
+}
+
+.statusOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.statusBtn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 2px solid transparent;
+  background-color: var(--sidebar-input-bg);
+  color: var(--header-text);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover { opacity: 0.85; }
+}
+
+.statusBtnActive {
+  color: #fff;
+}
+
+.statusDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}

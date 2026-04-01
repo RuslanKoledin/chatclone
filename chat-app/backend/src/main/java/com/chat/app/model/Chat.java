@@ -39,6 +39,10 @@ public class Chat {
     @JoinColumn(name = "pinned_message_id")
     private Message pinnedMessage;
 
+    // Аватар группы (base64)
+    @Column(columnDefinition = "TEXT")
+    private String groupAvatar;
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {

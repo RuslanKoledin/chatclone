@@ -16,6 +16,7 @@ export interface ChatDTO {
     createdBy: UserDTO;
     messages: MessageDTO[];
     pinnedMessage?: MessageDTO;
+    groupAvatar?: string;
 }
 
 export type ChatReducerState = {

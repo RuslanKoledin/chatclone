@@ -7,6 +7,33 @@
   overflow: hidden;
 }
 
+.avatarSection {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0 8px;
+  border-bottom: 1px solid var(--sidebar-border);
+}
+
+.avatarWrapper {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+
+  &:hover .cameraOverlay { opacity: 1; }
+}
+
+.cameraOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
 .editGroupChatNavContainer {
   height: 62px;
   display: flex;

@@ -73,8 +73,8 @@ const SignIn = () => {
 
                 {/* Логотип */}
                 <div className={styles.logo}>
-                    <img src={mchatLogo} alt="Mchat" className={styles.logoImg} />
-                    <span className={styles.logoWord}>Chat</span>
+                    <img src={mchatLogo} alt="MyChat" className={styles.logoImg} />
+                    <span className={styles.logoWord}>MyChat</span>
                 </div>
 
                 {/* Заголовок */}

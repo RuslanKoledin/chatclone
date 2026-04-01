@@ -1,7 +1,9 @@
 import {MessageDTO, ReactionDTO} from "../../redux/message/MessageModel";
 import {UserDTO} from "../../redux/auth/AuthModel";
 import styles from './MessageCard.module.scss';
-import {Chip, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Popover} from "@mui/material";
+import {Chip, Menu, MenuItem, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Popover, IconButton} from "@mui/material";
+import CloseIcon from '@mui/icons-material/Close';
+import DownloadIcon from '@mui/icons-material/Download';
 import React, {useState} from "react";
 import {getDateFormat} from "../utils/Utils";
 import DoneIcon from '@mui/icons-material/Done';
@@ -48,6 +50,7 @@ const MessageCard = (props: MessageCardProps) => {
     const [editContent, setEditContent] = useState(props.message.content);
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [reactionPosition, setReactionPosition] = useState<{top: number; left: number} | null>(null);
+    const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
     const isOwnMessage = props.message.user.id === props.reqUser?.id;
     const date: Date = new Date(props.message.timeStamp);
@@ -234,6 +237,34 @@ const MessageCard = (props: MessageCardProps) => {
         );
     };
 
+    const renderFormattedText = (text: string, query?: string): React.ReactNode => {
+        if (!text) return text;
+        const regex = /(\*\*[^*]+\*\*|_[^_]+_|`[^`]+`)/g;
+        const result: React.ReactNode[] = [];
+        let lastIndex = 0;
+        let match: RegExpExecArray | null;
+        while ((match = regex.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                const plain = text.slice(lastIndex, match.index);
+                result.push(query ? highlightText(plain, query) : plain);
+            }
+            const full = match[0];
+            if (full.startsWith('**')) {
+                result.push(<strong key={match.index}>{full.slice(2, -2)}</strong>);
+            } else if (full.startsWith('_')) {
+                result.push(<em key={match.index}>{full.slice(1, -1)}</em>);
+            } else {
+                result.push(<code key={match.index} className={styles.inlineCode}>{full.slice(1, -1)}</code>);
+            }
+            lastIndex = match.index + full.length;
+        }
+        if (lastIndex < text.length) {
+            const tail = text.slice(lastIndex);
+            result.push(query ? highlightText(tail, query) : tail);
+        }
+        return result.length === 1 ? result[0] : result;
+    };
+
     const messageContent = props.message.isDeleted
         ? "Сообщение удалено"
         : props.message.content;
@@ -268,13 +299,13 @@ const MessageCard = (props: MessageCardProps) => {
 
                         if (isImage) {
                             return (
-                                <a key={attachment.id} href={fileUrl} target="_blank" rel="noopener noreferrer">
-                                    <img
-                                        src={fileUrl}
-                                        alt={attachment.fileName}
-                                        className={styles.attachmentImage}
-                                    />
-                                </a>
+                                <img
+                                    key={attachment.id}
+                                    src={fileUrl}
+                                    alt={attachment.fileName}
+                                    className={styles.attachmentImage}
+                                    onClick={() => setLightboxUrl(fileUrl)}
+                                />
                             );
                         } else if (isAudio) {
                             return (
@@ -306,7 +337,7 @@ const MessageCard = (props: MessageCardProps) => {
                 </div>
             )}
             <p className={`${styles.contentContainer} ${props.message.isDeleted ? styles.deletedMessage : ''}`}>
-                {props.message.isDeleted ? messageContent : highlightText(messageContent, props.searchQuery)}
+                {props.message.isDeleted ? messageContent : renderFormattedText(messageContent, props.searchQuery)}
             </p>
             <div className={styles.timeStatusContainer}>
                 {props.message.editedAt && !props.message.isDeleted && (
@@ -439,6 +470,38 @@ const MessageCard = (props: MessageCardProps) => {
                             Удалить
                         </Button>
                     </DialogActions>
+                </Dialog>
+
+                {/* Лайтбокс для просмотра изображений */}
+                <Dialog
+                    open={!!lightboxUrl}
+                    onClose={() => setLightboxUrl(null)}
+                    maxWidth={false}
+                    PaperProps={{ sx: { background: 'rgba(0,0,0,0.92)', boxShadow: 'none', position: 'relative' } }}
+                >
+                    <IconButton
+                        onClick={() => setLightboxUrl(null)}
+                        sx={{ position: 'absolute', top: 8, right: 8, color: '#fff', zIndex: 1 }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                    {lightboxUrl && (
+                        <IconButton
+                            component="a"
+                            href={lightboxUrl}
+                            download
+                            sx={{ position: 'absolute', top: 8, right: 52, color: '#fff', zIndex: 1 }}
+                        >
+                            <DownloadIcon />
+                        </IconButton>
+                    )}
+                    {lightboxUrl && (
+                        <img
+                            src={lightboxUrl}
+                            alt="просмотр"
+                            style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', display: 'block' }}
+                        />
+                    )}
                 </Dialog>
 
                 {/* Popover для выбора реакции */}

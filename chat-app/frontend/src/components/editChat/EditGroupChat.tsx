@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {AppDispatch, RootState} from "../../redux/Store";
 import {useDispatch, useSelector} from "react-redux";
 import {TOKEN} from "../../config/Config";
@@ -6,12 +6,14 @@ import {UserDTO} from "../../redux/auth/AuthModel";
 import {searchUser} from "../../redux/auth/AuthAction";
 import {IconButton, InputAdornment, TextField} from "@mui/material";
 import WestIcon from "@mui/icons-material/West";
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import styles from './EditGroupChat.module.scss';
 import GroupMember from "./GroupMember";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import {ChatDTO} from "../../redux/chat/ChatModel";
-import {addUserToGroupChat, removeUserFromGroupChat} from "../../redux/chat/ChatAction";
+import {addUserToGroupChat, removeUserFromGroupChat, updateGroupAvatar} from "../../redux/chat/ChatAction";
+import ColorAvatar from "../common/ColorAvatar";
 
 interface CreateGroupProps {
     setIsShowEditGroupChat: (showCreateGroup: boolean) => void;
@@ -25,6 +27,7 @@ const EditGroupChat = (props: CreateGroupProps) => {
     const [focused, setFocused] = useState<boolean>(false);
     const dispatch: AppDispatch = useDispatch();
     const token = localStorage.getItem(TOKEN);
+    const avatarInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (token && userQuery.length > 0) {
@@ -46,6 +49,19 @@ const EditGroupChat = (props: CreateGroupProps) => {
 
     const handleBack = () => {
         props.setIsShowEditGroupChat(false);
+    };
+
+    const handleAvatarClick = () => avatarInputRef.current?.click();
+
+    const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file || !token || !props.currentChat) return;
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            dispatch(updateGroupAvatar(props.currentChat!.id, reader.result as string, token));
+        };
+        reader.readAsDataURL(file);
+        e.target.value = '';
     };
 
     const onChangeQuery = (e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>) => {
@@ -73,6 +89,28 @@ const EditGroupChat = (props: CreateGroupProps) => {
                 </IconButton>
                 <h2>Редактировать группу</h2>
             </div>
+
+            {/* Аватар группы */}
+            <div className={styles.avatarSection}>
+                <div className={styles.avatarWrapper} onClick={handleAvatarClick}>
+                    <ColorAvatar
+                        name={props.currentChat?.chatName ?? ''}
+                        size={72}
+                        src={props.currentChat?.groupAvatar ?? undefined}
+                    />
+                    <div className={styles.cameraOverlay}>
+                        <CameraAltIcon sx={{ fontSize: '1.2rem', color: '#fff' }} />
+                    </div>
+                </div>
+                <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    style={{ display: 'none' }}
+                    onChange={handleAvatarChange}
+                />
+            </div>
+
             <div>
                 <div className={styles.editGroupChatTextContainer}>
                     <p className={styles.editGroupChatText}>Участники</p>

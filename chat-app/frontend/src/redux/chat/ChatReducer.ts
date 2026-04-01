@@ -29,8 +29,10 @@ const chatReducer = (state: ChatReducerState = initialState, action: Action): Ch
             return {...state, markedAsReadChat: action.payload};
         case actionTypes.PIN_MESSAGE:
         case actionTypes.UNPIN_MESSAGE:
+        case actionTypes.UPDATE_GROUP_AVATAR:
             return {
                 ...state,
+                editedGroup: action.payload,
                 chats: state.chats.map(chat =>
                     chat.id === action.payload.id ? action.payload : chat
                 )

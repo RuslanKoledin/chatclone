@@ -14,7 +14,8 @@ public record ChatDTO(
         Set<UserDTO> users,
         UserDTO createdBy,
         List<MessageDTO> messages,
-        MessageDTO pinnedMessage) {
+        MessageDTO pinnedMessage,
+        String groupAvatar) {
 
     public static ChatDTO fromChat(Chat chat) {
         if (Objects.isNull(chat)) return null;
@@ -27,6 +28,7 @@ public record ChatDTO(
                 .createdBy(UserDTO.fromUser(chat.getCreatedBy()))
                 .messages(MessageDTO.fromMessages(chat.getMessages()))
                 .pinnedMessage(MessageDTO.fromMessage(chat.getPinnedMessage()))
+                .groupAvatar(chat.getGroupAvatar())
                 .build();
     }
 

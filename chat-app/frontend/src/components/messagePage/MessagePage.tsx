@@ -23,6 +23,9 @@ import CloseIcon from '@mui/icons-material/Close';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import {EmojiClickData} from "emoji-picker-react/dist/types/exposedTypes";
 import TypingIndicator from "../typingIndicator/TypingIndicator";
+import PermMediaIcon from '@mui/icons-material/PermMedia';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import MediaGallery from "../mediaGallery/MediaGallery";
 
 interface MessagePageProps {
     chat: ChatDTO;
@@ -56,6 +59,7 @@ const MessagePage = (props: MessagePageProps) => {
     const [messageQuery, setMessageQuery] = useState<string>("");
     const [isFocused, setIsFocused] = useState<boolean>(false);
     const [isSearch, setIsSearch] = useState<boolean>(false);
+    const [isMediaGallery, setIsMediaGallery] = useState<boolean>(false);
     const [anchor, setAnchor] = useState(null);
     const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState<boolean>(false);
     const [replyToMessage, setReplyToMessage] = useState<MessageDTO | null>(null);
@@ -63,6 +67,7 @@ const MessagePage = (props: MessagePageProps) => {
     const [isDragOver, setIsDragOver] = useState<boolean>(false);
     const lastMessageRef = useRef<null | HTMLDivElement>(null);
     const messageContainerRef = useRef<null | HTMLDivElement>(null);
+    const [showScrollButton, setShowScrollButton] = useState(false);
     const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [shouldScrollToBottom, setShouldScrollToBottom] = useState<boolean>(true);
     const isTypingRef = useRef<boolean>(false);
@@ -83,7 +88,14 @@ const MessagePage = (props: MessagePageProps) => {
     useEffect(() => {
         setShouldScrollToBottom(true);
         scrollToBottom();
+        setShowScrollButton(false);
     }, [props.chat.id]);
+
+    useEffect(() => {
+        if (!showScrollButton) {
+            scrollToBottom();
+        }
+    }, [props.messages.length]);
 
     useEffect(() => {
         return () => {
@@ -157,6 +169,17 @@ const MessagePage = (props: MessagePageProps) => {
         }
     };
 
+    const handleContainerScroll = useCallback(() => {
+        const container = messageContainerRef.current;
+        if (!container) return;
+        const { scrollTop, scrollHeight, clientHeight } = container;
+        const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
+        setShowScrollButton(distanceFromBottom > 150);
+
+        // Также вызываем handleScroll для подгрузки старых сообщений
+        handleScroll();
+    }, [handleScroll]);
+
     // Получаем собеседника для личного чата
     const getChatPartner = (): UserDTO | null => {
         if (props.chat.isGroup) return null;
@@ -184,9 +207,13 @@ const MessagePage = (props: MessagePageProps) => {
 
     // Получаем статус для отображения
     const getStatusText = (): string | null => {
+        if (props.chat.isGroup) {
+            const onlineCount = (props.chat.users || []).filter(u => u.isOnline).length;
+            const total = (props.chat.users || []).length;
+            return `${onlineCount} из ${total} онлайн`;
+        }
         const partner = getChatPartner();
-        if (!partner) return null; // Групповой чат
-
+        if (!partner) return null;
         if (partner.isOnline) return 'онлайн';
         if (partner.lastSeen) return `был(а) ${formatLastSeen(partner.lastSeen)}`;
         return null;
@@ -400,12 +427,21 @@ const MessagePage = (props: MessagePageProps) => {
                 />
     };
 
+    const unreadCount = props.messages.filter(msg =>
+        msg.user.id !== props.reqUser?.id &&
+        !msg.readBy.includes(props.reqUser!.id)
+    ).length;
+
     const getHeaderStatusText = (): string | null => {
         if (props.typingUserName) {
             return `${props.typingUserName} печатает...`;
         }
         return getStatusText();
     };
+
+    if (isMediaGallery) {
+        return <MediaGallery chat={props.chat} onClose={() => setIsMediaGallery(false)} />;
+    }
 
     return (
         <div
@@ -434,10 +470,15 @@ const MessagePage = (props: MessagePageProps) => {
                             <ColorAvatar
                                 name={getChatName(props.chat, props.reqUser)}
                                 size={40}
+                                src={props.chat.groupAvatar ?? undefined}
                             />
-                            {getChatPartner()?.isOnline && (
-                                <span className={styles.onlineIndicator}></span>
-                            )}
+                            {getChatPartner()?.isOnline && (() => {
+                                const partner = getChatPartner();
+                                const dotColor = partner?.userStatus === 'AWAY' ? '#f59e0b'
+                                    : partner?.userStatus === 'DO_NOT_DISTURB' ? '#ef4444'
+                                    : undefined;
+                                return <span className={styles.onlineIndicator} style={dotColor ? { backgroundColor: dotColor } : undefined}></span>;
+                            })()}
                         </div>
                         <div className={styles.chatInfoContainer}>
                             <p className={styles.chatName}>{getChatName(props.chat, props.reqUser)}</p>
@@ -446,7 +487,11 @@ const MessagePage = (props: MessagePageProps) => {
                             )}
                         </div>
                     </div>
-                    <div className={styles.messagePageHeaderNameContainer}>
+                    <div className={styles.messagePageHeaderActions}>
+                        {!isSearch &&
+                            <IconButton onClick={() => setIsMediaGallery(true)} title="Медиафайлы">
+                                <PermMediaIcon/>
+                            </IconButton>}
                         {!isSearch &&
                             <IconButton onClick={onChangeSearch} sx={{ color: '#6B7280 !important' }}>
                                 <SearchIcon/>
@@ -513,9 +558,9 @@ const MessagePage = (props: MessagePageProps) => {
             {/*Message Page Content*/}
             <div
                 className={styles.messageContentContainer}
-                onClick={onCloseEmojiPicker}
                 ref={messageContainerRef}
-                onScroll={handleScroll}
+                onScroll={handleContainerScroll}
+                onClick={onCloseEmojiPicker}
             >
                 {/* Индикатор загрузки старых сообщений */}
                 {props.isLoadingOlder && (
@@ -533,6 +578,17 @@ const MessagePage = (props: MessagePageProps) => {
                 )}
                 <div ref={lastMessageRef}></div>
             </div>
+
+            {/* Кнопка «прокрутить вниз» */}
+            {showScrollButton && (
+                <button
+                    className={styles.scrollToBottomBtn}
+                    onClick={() => { scrollToBottom(); setShowScrollButton(false); }}
+                >
+                    <KeyboardArrowDownIcon sx={{ fontSize: '1.4rem' }} />
+                    {unreadCount > 0 && <span className={styles.scrollBtnBadge}>{unreadCount}</span>}
+                </button>
+            )}
 
             {/*Message Page Footer*/}
             <div className={styles.footerContainer}>

@@ -35,4 +35,7 @@ public interface ChatService {
     // Открепление сообщения
     Chat unpinMessage(UUID chatId, User reqUser) throws ChatException, UserException;
 
+    // Обновление аватара группы
+    Chat updateGroupAvatar(UUID chatId, String groupAvatar, User reqUser) throws ChatException, UserException;
+
 }

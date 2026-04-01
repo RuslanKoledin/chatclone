@@ -1,6 +1,7 @@
 package com.chat.app.dto.response;
 
 import com.chat.app.model.User;
+import com.chat.app.model.UserStatus;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -8,7 +9,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Builder
-public record UserDTO(UUID id, String username, String email, String fullName, String department, String title, LocalDateTime lastSeen, Boolean isOnline, Set<UUID> pinnedChatIds, Set<UUID> mutedChatIds, String profilePhoto) {
+public record UserDTO(UUID id, String username, String email, String fullName, String department, String title, LocalDateTime lastSeen, Boolean isOnline, Set<UUID> pinnedChatIds, Set<UUID> mutedChatIds, String profilePhoto, UserStatus userStatus) {
 
     public static UserDTO fromUser(User user) {
         if (Objects.isNull(user)) return null;
@@ -24,6 +25,7 @@ public record UserDTO(UUID id, String username, String email, String fullName, S
                 .pinnedChatIds(user.getPinnedChatIds() != null ? new HashSet<>(user.getPinnedChatIds()) : new HashSet<>())
                 .mutedChatIds(user.getMutedChatIds() != null ? new HashSet<>(user.getMutedChatIds()) : new HashSet<>())
                 .profilePhoto(user.getProfilePhoto())
+                .userStatus(user.getUserStatus() != null ? user.getUserStatus() : UserStatus.ONLINE)
                 .build();
     }
 

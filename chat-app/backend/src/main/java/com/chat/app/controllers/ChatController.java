@@ -2,6 +2,7 @@ package com.chat.app.controllers;
 
 import com.chat.app.config.JwtConstants;
 import com.chat.app.dto.request.GroupChatRequestDTO;
+import com.chat.app.dto.request.UpdateGroupAvatarRequestDTO;
 import com.chat.app.dto.response.ApiResponseDTO;
 import com.chat.app.dto.response.ChatDTO;
 import com.chat.app.exception.ChatException;
@@ -157,6 +158,20 @@ public class ChatController {
         User user = userService.findUserByProfile(jwt);
         Chat chat = chatService.pinMessage(chatId, messageId, user);
         log.info("User {} pinned message {} in chat: {}", user.getEmail(), messageId, chatId);
+
+        return new ResponseEntity<>(ChatDTO.fromChat(chat), HttpStatus.OK);
+    }
+
+    // Обновление аватара группы
+    @PutMapping("/{chatId}/avatar")
+    public ResponseEntity<ChatDTO> updateGroupAvatar(@PathVariable UUID chatId,
+                                                     @RequestBody UpdateGroupAvatarRequestDTO req,
+                                                     @RequestHeader(JwtConstants.TOKEN_HEADER) String jwt)
+            throws UserException, ChatException {
+
+        User user = userService.findUserByProfile(jwt);
+        Chat chat = chatService.updateGroupAvatar(chatId, req.groupAvatar(), user);
+        log.info("User {} updated avatar for group chat: {}", user.getEmail(), chatId);
 
         return new ResponseEntity<>(ChatDTO.fromChat(chat), HttpStatus.OK);
     }

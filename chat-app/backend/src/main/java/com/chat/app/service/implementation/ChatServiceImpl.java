@@ -212,4 +212,14 @@ public class ChatServiceImpl implements ChatService {
         return chatRepository.save(chat);
     }
 
+    @Override
+    public Chat updateGroupAvatar(UUID chatId, String groupAvatar, User reqUser) throws ChatException, UserException {
+        Chat chat = findChatById(chatId);
+        if (!chat.getUsers().contains(reqUser)) {
+            throw new UserException("User is not a member of this chat");
+        }
+        chat.setGroupAvatar(groupAvatar);
+        return chatRepository.save(chat);
+    }
+
 }

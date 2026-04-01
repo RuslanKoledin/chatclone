@@ -5,12 +5,18 @@ import {AuthReducerState, UpdateUserRequestDTO} from "../../redux/auth/AuthModel
 import {TOKEN} from "../../config/Config";
 import {currentUser, updateUser} from "../../redux/auth/AuthAction";
 import WestIcon from '@mui/icons-material/West';
-import {Avatar, IconButton, TextField} from "@mui/material";
+import {Avatar, IconButton, TextField, Tooltip} from "@mui/material";
 import CreateIcon from '@mui/icons-material/Create';
 import CheckIcon from '@mui/icons-material/Check';
 import styles from './Profile.module.scss';
 import CloseIcon from '@mui/icons-material/Close';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
+
+const STATUS_OPTIONS = [
+    { value: 'ONLINE', label: 'В сети', color: '#22c55e' },
+    { value: 'AWAY', label: 'Нет на месте', color: '#f59e0b' },
+    { value: 'DO_NOT_DISTURB', label: 'Не беспокоить', color: '#ef4444' },
+];
 
 
 interface ProfileProps {
@@ -51,6 +57,16 @@ const Profile = (props: ProfileProps) => {
             setFullName(fullName);
             dispatch(updateUser(data, token));
             setIsEditName(false);
+        }
+    };
+
+    const onUpdateStatus = (status: string) => {
+        if (token) {
+            const data: UpdateUserRequestDTO = {
+                fullName: auth.reqUser?.fullName ?? '',
+                userStatus: status,
+            };
+            dispatch(updateUser(data, token));
         }
     };
 
@@ -144,6 +160,26 @@ const Profile = (props: ProfileProps) => {
             </div>
             <div className={styles.infoContainer}>
                 <p className={styles.infoText}>Это имя будет отображаться в ваших сообщениях</p>
+            </div>
+            <div className={styles.statusContainer}>
+                <p className={styles.statusLabel}>Статус</p>
+                <div className={styles.statusOptions}>
+                    {STATUS_OPTIONS.map(opt => {
+                        const isActive = (auth.reqUser?.userStatus ?? 'ONLINE') === opt.value;
+                        return (
+                            <Tooltip key={opt.value} title={opt.label} placement="top">
+                                <button
+                                    className={`${styles.statusBtn} ${isActive ? styles.statusBtnActive : ''}`}
+                                    style={{ borderColor: opt.color, backgroundColor: isActive ? opt.color : undefined }}
+                                    onClick={() => onUpdateStatus(opt.value)}
+                                >
+                                    <span className={styles.statusDot} style={{ backgroundColor: opt.color }} />
+                                    {opt.label}
+                                </button>
+                            </Tooltip>
+                        );
+                    })}
+                </div>
             </div>
         </div>
     );

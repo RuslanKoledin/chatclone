@@ -36,6 +36,9 @@ public class User {
     private LocalDateTime lastSeen;
     private Boolean isOnline = false;
 
+    @Enumerated(EnumType.STRING)
+    private UserStatus userStatus = UserStatus.ONLINE;
+
     // Закреплённые чаты (ID чатов)
     @ElementCollection
     private Set<UUID> pinnedChatIds = new HashSet<>();

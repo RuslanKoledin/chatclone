@@ -3,14 +3,14 @@ import mchatLogo from '../../assets/mchat-logo.png';
 
 interface MBankLogoProps {
     size?: number;
-    showText?: boolean;  // не используется, оставлен для совместимости
+    showText?: boolean;
     textSize?: number;
     textColor?: string;
     variant?: 'light' | 'dark';
 }
 
 const MBankLogo: React.FC<MBankLogoProps> = ({ size = 48 }) => {
-    const radius = Math.round(size * 0.24); // ~24% — как у WhatsApp
+    const radius = Math.round(size * 0.24);
 
     return (
         <div
@@ -29,13 +29,8 @@ const MBankLogo: React.FC<MBankLogoProps> = ({ size = 48 }) => {
         >
             <img
                 src={mchatLogo}
-                alt="MChat"
-                style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    display: 'block',
-                }}
+                alt="MyChat"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             />
         </div>
     );
