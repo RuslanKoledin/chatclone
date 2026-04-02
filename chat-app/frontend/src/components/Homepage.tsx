@@ -436,7 +436,7 @@ const Homepage = () => {
                 replyToId: replyToId as any
             }, token));
             if (result) {
-                const webSocketMessage: WebSocketMessageDTO = {...result, chat: currentChat};
+                const webSocketMessage: WebSocketMessageDTO = {...result, chat: { id: currentChat.id }};
                 client.send("/app/messages", {}, JSON.stringify(webSocketMessage));
             }
         }
