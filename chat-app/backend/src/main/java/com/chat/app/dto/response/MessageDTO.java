@@ -18,7 +18,7 @@ public record MessageDTO(UUID id, String content, LocalDateTime timeStamp, UserD
                 .id(message.getId())
                 .content(message.getContent())
                 .timeStamp(message.getTimeStamp())
-                .user(UserDTO.fromUser(message.getUser()))
+                .user(UserDTO.fromUserLight(message.getUser()))
                 .readBy(new HashSet<>(message.getReadBy()))
                 .deliveredTo(message.getDeliveredTo() != null ? new HashSet<>(message.getDeliveredTo()) : new HashSet<>())
                 .editedAt(message.getEditedAt())

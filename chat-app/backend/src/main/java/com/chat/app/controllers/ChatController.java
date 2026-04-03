@@ -114,7 +114,7 @@ public class ChatController {
         Chat chat = chatService.markAsRead(chatId, user);
         log.info("Chat {} marked as read for user: {}", chatId, user.getEmail());
 
-        return new ResponseEntity<>(ChatDTO.fromChat(chat), HttpStatus.OK);
+        return new ResponseEntity<>(ChatDTO.fromChatLight(chat, 5), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
