@@ -176,6 +176,21 @@ public class ChatController {
         return new ResponseEntity<>(ChatDTO.fromChat(chat), HttpStatus.OK);
     }
 
+    // Переименование группы
+    @PutMapping("/{chatId}/rename")
+    public ResponseEntity<ChatDTO> renameGroup(@PathVariable UUID chatId,
+                                                @RequestBody java.util.Map<String, String> body,
+                                                @RequestHeader(JwtConstants.TOKEN_HEADER) String jwt)
+            throws UserException, ChatException {
+
+        User user = userService.findUserByProfile(jwt);
+        String newName = body.get("groupName");
+        Chat chat = chatService.renameGroup(chatId, newName, user);
+        log.info("User {} renamed group chat {} to: {}", user.getEmail(), chatId, newName);
+
+        return new ResponseEntity<>(ChatDTO.fromChat(chat), HttpStatus.OK);
+    }
+
     // Открепление сообщения в чате
     @PostMapping("/{chatId}/unpin")
     public ResponseEntity<ChatDTO> unpinMessage(@PathVariable UUID chatId,

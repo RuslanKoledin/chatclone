@@ -8,3 +8,4 @@ export const MARK_CHAT_AS_READ = "MARK_CHAT_AS_READ";
 export const PIN_MESSAGE = "PIN_MESSAGE";
 export const UNPIN_MESSAGE = "UNPIN_MESSAGE";
 export const UPDATE_GROUP_AVATAR = "UPDATE_GROUP_AVATAR";
+export const RENAME_GROUP = "RENAME_GROUP";

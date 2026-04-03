@@ -95,7 +95,7 @@ const ChatCard = (props: ChatCardProps) => {
     return (
         <div className={styles.chatCardOuterContainer} onContextMenu={handleContextMenu}>
             <div className={styles.chatCardAvatarContainer}>
-                <ColorAvatar name={name} size={44} />
+                <ColorAvatar name={name} size={44} src={props.chat.isGroup ? (props.chat.groupAvatar ?? undefined) : (otherUser?.profilePhoto ?? undefined)} />
                 {isOnline && (
                     <span
                         className={styles.onlineDot}

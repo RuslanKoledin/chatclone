@@ -175,6 +175,26 @@ export const updateGroupAvatar = (chatId: UUID, groupAvatar: string, token: stri
     }
 };
 
+// Переименование группы
+export const renameGroup = (chatId: UUID, groupName: string, token: string) => async (dispatch: AppDispatch): Promise<void> => {
+    try {
+        const res: Response = await fetch(`${BASE_API_URL}/${CHAT_PATH}/${chatId}/rename`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `${AUTHORIZATION_PREFIX}${token}`,
+            },
+            body: JSON.stringify({ groupName }),
+        });
+
+        const resData: ChatDTO = await res.json();
+        logger.log('Renamed group: ', resData);
+        dispatch({type: actionTypes.RENAME_GROUP, payload: resData});
+    } catch (error: any) {
+        logger.error('Renaming group failed: ', error);
+    }
+};
+
 // Открепление сообщения в чате
 export const unpinMessage = (chatId: UUID, token: string) => async (dispatch: AppDispatch): Promise<void> => {
     try {

@@ -4,15 +4,17 @@ import {useDispatch, useSelector} from "react-redux";
 import {TOKEN} from "../../config/Config";
 import {UserDTO} from "../../redux/auth/AuthModel";
 import {searchUser} from "../../redux/auth/AuthAction";
-import {IconButton, InputAdornment, TextField} from "@mui/material";
+import {IconButton, InputAdornment, TextField, Button} from "@mui/material";
 import WestIcon from "@mui/icons-material/West";
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import EditIcon from '@mui/icons-material/Edit';
+import CheckIcon from '@mui/icons-material/Check';
 import styles from './EditGroupChat.module.scss';
 import GroupMember from "./GroupMember";
 import SearchIcon from "@mui/icons-material/Search";
 import ClearIcon from "@mui/icons-material/Clear";
 import {ChatDTO} from "../../redux/chat/ChatModel";
-import {addUserToGroupChat, removeUserFromGroupChat, updateGroupAvatar} from "../../redux/chat/ChatAction";
+import {addUserToGroupChat, removeUserFromGroupChat, updateGroupAvatar, renameGroup} from "../../redux/chat/ChatAction";
 import ColorAvatar from "../common/ColorAvatar";
 
 interface CreateGroupProps {
@@ -25,6 +27,8 @@ const EditGroupChat = (props: CreateGroupProps) => {
     const authState = useSelector((state: RootState) => state.auth);
     const [userQuery, setUserQuery] = useState<string>("");
     const [focused, setFocused] = useState<boolean>(false);
+    const [groupName, setGroupName] = useState<string>(props.currentChat?.chatName || "");
+    const [isEditingName, setIsEditingName] = useState<boolean>(false);
     const dispatch: AppDispatch = useDispatch();
     const token = localStorage.getItem(TOKEN);
     const avatarInputRef = useRef<HTMLInputElement>(null);
@@ -49,6 +53,13 @@ const EditGroupChat = (props: CreateGroupProps) => {
 
     const handleBack = () => {
         props.setIsShowEditGroupChat(false);
+    };
+
+    const handleRenameGroup = () => {
+        if (token && props.currentChat && groupName.trim().length > 0 && groupName !== props.currentChat.chatName) {
+            dispatch(renameGroup(props.currentChat.id, groupName.trim(), token));
+        }
+        setIsEditingName(false);
     };
 
     const handleAvatarClick = () => avatarInputRef.current?.click();
@@ -109,6 +120,35 @@ const EditGroupChat = (props: CreateGroupProps) => {
                     style={{ display: 'none' }}
                     onChange={handleAvatarChange}
                 />
+            </div>
+
+            {/* Название группы */}
+            <div style={{ padding: '0 16px 12px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                {isEditingName ? (
+                    <>
+                        <TextField
+                            size="small"
+                            fullWidth
+                            value={groupName}
+                            onChange={(e) => setGroupName(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') handleRenameGroup(); }}
+                            autoFocus
+                            placeholder="Название группы"
+                        />
+                        <IconButton onClick={handleRenameGroup} size="small" sx={{ color: '#00875A' }}>
+                            <CheckIcon />
+                        </IconButton>
+                    </>
+                ) : (
+                    <>
+                        <p style={{ flex: 1, margin: 0, fontSize: 16, fontWeight: 600 }}>
+                            {props.currentChat?.chatName}
+                        </p>
+                        <IconButton onClick={() => setIsEditingName(true)} size="small">
+                            <EditIcon fontSize="small" />
+                        </IconButton>
+                    </>
+                )}
             </div>
 
             <div>

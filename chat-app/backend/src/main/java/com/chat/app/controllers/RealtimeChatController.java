@@ -30,6 +30,7 @@ public class RealtimeChatController {
     private final ChatService chatService;
     private final MessageRepository messageRepository;
 
+    @Transactional(readOnly = true)
     @MessageMapping("/messages")
     public void receiveMessage(@Payload JsonNode messageJson) {
         JsonNode chatNode = messageJson.get("chat");

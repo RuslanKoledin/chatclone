@@ -30,6 +30,7 @@ const chatReducer = (state: ChatReducerState = initialState, action: Action): Ch
         case actionTypes.PIN_MESSAGE:
         case actionTypes.UNPIN_MESSAGE:
         case actionTypes.UPDATE_GROUP_AVATAR:
+        case actionTypes.RENAME_GROUP:
             return {
                 ...state,
                 editedGroup: action.payload,
