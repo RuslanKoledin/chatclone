@@ -144,7 +144,12 @@ const Homepage = () => {
         if (token) {
             dispatch(getUserChats(token));
         }
-    }, [chatState.createdChat, chatState.createdGroup, dispatch, token, chatState.deletedChat, chatState.editedGroup, chatState.markedAsReadChat]);
+    }, [token]);
+
+    // При изменении чатов (создание/удаление/редактирование) — обновляем с дебаунсом
+    useEffect(() => {
+        refreshChatsDebounced();
+    }, [chatState.createdChat, chatState.createdGroup, chatState.deletedChat, chatState.editedGroup, chatState.markedAsReadChat]);
 
     useEffect(() => {
         setCurrentChat(chatState.editedGroup);

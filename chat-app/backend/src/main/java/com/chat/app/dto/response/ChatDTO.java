@@ -43,7 +43,7 @@ public record ChatDTO(
             lastMessages = chat.getMessages().stream()
                     .sorted((a, b) -> a.getTimeStamp().compareTo(b.getTimeStamp()))
                     .skip(Math.max(0, chat.getMessages().size() - lastMessagesCount))
-                    .map(MessageDTO::fromMessage)
+                    .map(MessageDTO::fromMessageLight)
                     .toList();
         }
 
@@ -51,11 +51,11 @@ public record ChatDTO(
                 .id(chat.getId())
                 .chatName(chat.getChatName())
                 .isGroup(chat.getIsGroup())
-                .admins(UserDTO.fromUsers(chat.getAdmins()))
-                .users(UserDTO.fromUsers(chat.getUsers()))
-                .createdBy(UserDTO.fromUser(chat.getCreatedBy()))
+                .admins(UserDTO.fromUsersLight(chat.getAdmins()))
+                .users(UserDTO.fromUsersLight(chat.getUsers()))
+                .createdBy(UserDTO.fromUserLight(chat.getCreatedBy()))
                 .messages(lastMessages)
-                .pinnedMessage(MessageDTO.fromMessage(chat.getPinnedMessage()))
+                .pinnedMessage(null)
                 .groupAvatar(chat.getGroupAvatar())
                 .build();
     }
