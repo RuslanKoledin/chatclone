@@ -32,10 +32,45 @@ public record ChatDTO(
                 .build();
     }
 
+    /**
+     * Облегчённая версия — только последние N сообщений (для списка чатов в сайдбаре)
+     */
+    public static ChatDTO fromChatLight(Chat chat, int lastMessagesCount) {
+        if (Objects.isNull(chat)) return null;
+
+        List<MessageDTO> lastMessages = List.of();
+        if (chat.getMessages() != null && !chat.getMessages().isEmpty()) {
+            lastMessages = chat.getMessages().stream()
+                    .sorted((a, b) -> a.getTimeStamp().compareTo(b.getTimeStamp()))
+                    .skip(Math.max(0, chat.getMessages().size() - lastMessagesCount))
+                    .map(MessageDTO::fromMessage)
+                    .toList();
+        }
+
+        return ChatDTO.builder()
+                .id(chat.getId())
+                .chatName(chat.getChatName())
+                .isGroup(chat.getIsGroup())
+                .admins(UserDTO.fromUsers(chat.getAdmins()))
+                .users(UserDTO.fromUsers(chat.getUsers()))
+                .createdBy(UserDTO.fromUser(chat.getCreatedBy()))
+                .messages(lastMessages)
+                .pinnedMessage(MessageDTO.fromMessage(chat.getPinnedMessage()))
+                .groupAvatar(chat.getGroupAvatar())
+                .build();
+    }
+
     public static List<ChatDTO> fromChats(Collection<Chat> chats) {
         if (Objects.isNull(chats)) return List.of();
         return chats.stream()
                 .map(ChatDTO::fromChat)
+                .toList();
+    }
+
+    public static List<ChatDTO> fromChatsLight(Collection<Chat> chats, int lastMessagesCount) {
+        if (Objects.isNull(chats)) return List.of();
+        return chats.stream()
+                .map(c -> fromChatLight(c, lastMessagesCount))
                 .toList();
     }
 

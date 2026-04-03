@@ -85,10 +85,24 @@ const Homepage = () => {
     const currentChatRef = useRef<ChatDTO | null>(null);
     const tokenRef = useRef<string | null>(token);
     const subscriptionRef = useRef<Subscription | null>(null);
+    const refreshChatsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     // Синхронизируем ref с state
     useEffect(() => { currentChatRef.current = currentChat; }, [currentChat]);
     useEffect(() => { tokenRef.current = token; }, [token]);
+
+    // Дебаунс обновления списка чатов — не чаще раза в секунду
+    const refreshChatsDebounced = useCallback(() => {
+        if (refreshChatsTimeoutRef.current) {
+            clearTimeout(refreshChatsTimeoutRef.current);
+        }
+        refreshChatsTimeoutRef.current = setTimeout(() => {
+            const tk = tokenRef.current;
+            if (tk) {
+                dispatch(getUserChats(tk));
+            }
+        }, 1000);
+    }, [dispatch]);
 
     useEffect(() => {
         if (token && !authState.reqUser) {
@@ -184,9 +198,7 @@ const Homepage = () => {
 
             // === Read receipt — НЕ перезагружаем messages, только обновляем список чатов ===
             if (data.type === 'READ_RECEIPT') {
-                if (tk) {
-                    dispatch(getUserChats(tk));
-                }
+                refreshChatsDebounced();
                 return;
             }
 
@@ -195,9 +207,7 @@ const Homepage = () => {
                 if (chat?.id && data.chatId === chat.id.toString()) {
                     setCurrentChat(null);
                 }
-                if (tk) {
-                    dispatch(getUserChats(tk));
-                }
+                refreshChatsDebounced();
                 return;
             }
 
@@ -230,10 +240,8 @@ const Homepage = () => {
                 });
             }
 
-            // Обновляем список чатов в сайдбаре
-            if (tk) {
-                dispatch(getUserChats(tk));
-            }
+            // Обновляем список чатов в сайдбаре (с дебаунсом)
+            refreshChatsDebounced();
 
             // Уведомления — только для чужих сообщений не в открытом чате
             if (!isOwnMessage && !isChatOpen) {
@@ -252,7 +260,7 @@ const Homepage = () => {
         } catch (e) {
             logger.error('Error parsing WebSocket message:', e);
         }
-    }, [authState.reqUser?.id, dispatch]);
+    }, [authState.reqUser?.id, dispatch, refreshChatsDebounced]);
 
     // === WebSocket подключение + подписка — ОДИН РАЗ ===
     useEffect(() => {

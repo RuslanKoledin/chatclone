@@ -77,7 +77,8 @@ public class ChatController {
         User user = userService.findUserByProfile(jwt);
         List<Chat> chats = chatService.findAllByUserId(user.getId());
 
-        return new ResponseEntity<>(ChatDTO.fromChats(chats), HttpStatus.OK);
+        // Облегчённый ответ — только последние 5 сообщений на чат (для превью в сайдбаре)
+        return new ResponseEntity<>(ChatDTO.fromChatsLight(chats, 5), HttpStatus.OK);
     }
 
     @PutMapping("/{chatId}/add/{userId}")
